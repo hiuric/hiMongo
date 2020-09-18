@@ -1,0 +1,11 @@
+last=1597648060000 start=1597648030000
+min=0.12 max=7.89 avg=4.19
+min=0.12 max=7.89 avg=4.19
+======== 異常系 =========
+EXCEPTION TEST unset field Test$WithDate_X.NNN
+======== 異常回避 =========
+_last_date_Y 1597648060000
+======== 異常系 =========
+EXCEPTION TEST no such field _id
+======== 異常回避 =========
+_last_date_Y 1597648060000

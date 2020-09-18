@@ -1,0 +1,906 @@
+/* Javadoc style sheet */
+/*
+Overall document style
+*/
+
+@import url('resources/fonts/dejavu.css');
+
+body {
+    background-color:#ffffff;
+    color:#353833;
+    font-family:'DejaVu Sans', Arial, Helvetica, sans-serif;
+    font-size:14px;
+    margin:0;
+}
+a:link, a:visited {
+    text-decoration:none;
+    color:#4A6782;
+}
+a:hover, a:focus {
+    text-decoration:none;
+    color:#bb7a2a;
+}
+a:active {
+    text-decoration:none;
+    color:#4A6782;
+}
+a[name] {
+    color:#353833;
+}
+a[name]:hover {
+    text-decoration:none;
+    color:#353833;
+}
+pre {
+    font-family:'DejaVu Sans Mono', monospace;
+    font-size:14px;
+}
+h1 {
+    font-size:20px;
+}
+h2 {
+    font-size:18px;
+}
+h3 {
+    font-size:16px;
+    font-style:italic;
+}
+h4 {
+    font-size:13px;
+}
+h5 {
+    font-size:12px;
+}
+h6 {
+    font-size:11px;
+}
+ul {
+    list-style-type:disc;
+}
+code, tt {
+    font-family:'DejaVu Sans Mono', monospace;
+    font-size:14px;
+    padding-top:4px;
+    margin-top:8px;
+    line-height:1.4em;
+}
+dt code {
+    font-family:'DejaVu Sans Mono', monospace;
+    font-size:14px;
+    padding-top:4px;
+}
+table tr td dt code {
+    font-family:'DejaVu Sans Mono', monospace;
+    font-size:14px;
+    vertical-align:top;
+    padding-top:4px;
+}
+sup {
+    font-size:8px;
+}
+/*
+Document title and Copyright styles
+*/
+.clear {
+    clear:both;
+    height:0px;
+    overflow:hidden;
+}
+.aboutLanguage {
+    float:right;
+    padding:0px 21px;
+    font-size:11px;
+    z-index:200;
+    margin-top:-9px;
+}
+.legalCopy {
+    margin-left:.5em;
+}
+.bar a, .bar a:link, .bar a:visited, .bar a:active {
+    color:#FFFFFF;
+    text-decoration:none;
+}
+.bar a:hover, .bar a:focus {
+    color:#bb7a2a;
+}
+.tab {
+    background-color:#0066FF;
+    color:#ffffff;
+    padding:8px;
+    width:5em;
+    font-weight:bold;
+}
+/*
+Navigation bar styles
+*/
+.bar {
+    background-color:#4D7A97;
+    color:#FFFFFF;
+    padding:.8em .5em .4em .8em;
+    height:auto;/*height:1.8em;*/
+    font-size:11px;
+    margin:0;
+}
+.topNav {
+    background-color:#4D7A97;
+    color:#FFFFFF;
+    float:left;
+    padding:0;
+    width:100%;
+    clear:right;
+    height:2.8em;
+    padding-top:10px;
+    overflow:hidden;
+    font-size:12px; 
+}
+.bottomNav {
+    margin-top:10px;
+    background-color:#4D7A97;
+    color:#FFFFFF;
+    float:left;
+    padding:0;
+    width:100%;
+    clear:right;
+    height:2.8em;
+    padding-top:10px;
+    overflow:hidden;
+    font-size:12px;
+}
+.subNav {
+    background-color:#dee3e9;
+    float:left;
+    width:100%;
+    overflow:hidden;
+    font-size:12px;
+}
+.subNav div {
+    clear:left;
+    float:left;
+    padding:0 0 5px 6px;
+    text-transform:uppercase;
+}
+ul.navList, ul.subNavList {
+    float:left;
+    margin:0 25px 0 0;
+    padding:0;
+}
+ul.navList li{
+    list-style:none;
+    float:left;
+    padding: 5px 6px;
+    text-transform:uppercase;
+}
+ul.subNavList li{
+    list-style:none;
+    float:left;
+}
+.topNav a:link, .topNav a:active, .topNav a:visited, .bottomNav a:link, .bottomNav a:active, .bottomNav a:visited {
+    color:#FFFFFF;
+    text-decoration:none;
+    text-transform:uppercase;
+}
+.topNav a:hover, .bottomNav a:hover {
+    text-decoration:none;
+    color:#bb7a2a;
+    text-transform:uppercase;
+}
+.navBarCell1Rev {
+    background-color:#F8981D;
+    color:#253441;
+    margin: auto 5px;
+}
+.skipNav {
+    position:absolute;
+    top:auto;
+    left:-9999px;
+    overflow:hidden;
+}
+/*
+Page header and footer styles
+*/
+.header, .footer {
+    clear:both;
+    margin:0 20px;
+    padding:5px 0 0 0;
+}
+.indexHeader {
+    margin:10px;
+    position:relative;
+}
+.indexHeader span{
+    margin-right:15px;
+}
+.indexHeader h1 {
+    font-size:13px;
+}
+.title {
+    color:#2c4557;
+    margin:10px 0;
+}
+.subTitle {
+    margin:5px 0 0 0;
+}
+.header ul {
+    margin:0 0 15px 0;
+    padding:0;
+}
+.footer ul {
+    margin:20px 0 5px 0;
+}
+.header ul li, .footer ul li {
+    list-style:none;
+    font-size:13px;
+}
+/*
+Heading styles
+*/
+div.details ul.blockList ul.blockList ul.blockList li.blockList h4, div.details ul.blockList ul.blockList ul.blockListLast li.blockList h4 {
+    background-color:#dee3e9;
+    border:1px solid #d0d9e0;
+    margin:0 0 6px -8px;
+    padding:7px 5px;
+}
+ul.blockList ul.blockList ul.blockList li.blockList h3 {
+    background-color:#dee3e9;
+    border:1px solid #d0d9e0;
+    margin:0 0 6px -8px;
+    padding:7px 5px;
+}
+ul.blockList ul.blockList li.blockList h3 {
+    padding:0;
+    margin:15px 0;
+}
+ul.blockList li.blockList h2 {
+    padding:0px 0 20px 0;
+}
+/*
+Page layout container styles
+*/
+.contentContainer, .sourceContainer, .classUseContainer, .serializedFormContainer, .constantValuesContainer {
+    clear:both;
+    padding:10px 20px;
+    position:relative;
+}
+.indexContainer {
+    margin:10px;
+    position:relative;
+    font-size:12px;
+}
+.indexContainer h2 {
+    font-size:13px;
+    padding:0 0 3px 0;
+}
+.indexContainer ul {
+    margin:0;
+    padding:0;
+}
+.indexContainer ul li {
+    list-style:none;
+    padding-top:2px;
+}
+.contentContainer .description dl dt, .contentContainer .details dl dt, .serializedFormContainer dl dt {
+    font-size:12px;
+    font-weight:bold;
+    margin:10px 0 0 0;
+    color:#4E4E4E;
+}
+.contentContainer .description dl dd, .contentContainer .details dl dd, .serializedFormContainer dl dd {
+    margin:5px 0 10px 0px;
+    font-size:14px;
+    font-family:'DejaVu Sans Mono',monospace;
+}
+.serializedFormContainer dl.nameValue dt {
+    margin-left:1px;
+    font-size:1.1em;
+    display:inline;
+    font-weight:bold;
+}
+.serializedFormContainer dl.nameValue dd {
+    margin:0 0 0 1px;
+    font-size:1.1em;
+    display:inline;
+}
+/*
+List styles
+*/
+ul.horizontal li {
+    display:inline;
+    font-size:0.9em;
+}
+ul.inheritance {
+    margin:0;
+    padding:0;
+}
+ul.inheritance li {
+    display:inline;
+    list-style:none;
+}
+ul.inheritance li ul.inheritance {
+    margin-left:15px;
+    padding-left:15px;
+    padding-top:1px;
+}
+ul.blockList, ul.blockListLast {
+    margin:10px 0 10px 0;
+    padding:0;
+}
+ul.blockList li.blockList, ul.blockListLast li.blockList {
+    list-style:none;
+    margin-bottom:15px;
+    line-height:1.4;
+}
+ul.blockList ul.blockList li.blockList, ul.blockList ul.blockListLast li.blockList {
+    padding:0px 20px 5px 10px;
+    border:1px solid #ededed; 
+    background-color:#f8f8f8;
+}
+ul.blockList ul.blockList ul.blockList li.blockList, ul.blockList ul.blockList ul.blockListLast li.blockList {
+    padding:0 0 5px 8px;
+    background-color:#ffffff;
+    border:none;
+}
+ul.blockList ul.blockList ul.blockList ul.blockList li.blockList {
+    margin-left:0;
+    padding-left:0;
+    padding-bottom:15px;
+    border:none;
+}
+ul.blockList ul.blockList ul.blockList ul.blockList li.blockListLast {
+    list-style:none;
+    border-bottom:none;
+    padding-bottom:0;
+}
+table tr td dl, table tr td dl dt, table tr td dl dd {
+    margin-top:0;
+    margin-bottom:1px;
+}
+/*
+Table styles
+*/
+.overviewSummary, .memberSummary, .typeSummary, .useSummary, .constantsSummary, .deprecatedSummary {
+    width:100%;
+    border-left:1px solid #EEE; 
+    border-right:1px solid #EEE; 
+    border-bottom:1px solid #EEE; 
+}
+.overviewSummary, .memberSummary  {
+    padding:0px;
+}
+.overviewSummary caption, .memberSummary caption, .typeSummary caption,
+.useSummary caption, .constantsSummary caption, .deprecatedSummary caption {
+    position:relative;
+    text-align:left;
+    background-repeat:no-repeat;
+    color:#253441;
+    font-weight:bold;
+    clear:none;
+    overflow:hidden;
+    padding:0px;
+    padding-top:10px;
+    padding-left:1px;
+    margin:0px;
+    white-space:pre;
+}
+.overviewSummary caption a:link, .memberSummary caption a:link, .typeSummary caption a:link,
+.useSummary caption a:link, .constantsSummary caption a:link, .deprecatedSummary caption a:link,
+.overviewSummary caption a:hover, .memberSummary caption a:hover, .typeSummary caption a:hover,
+.useSummary caption a:hover, .constantsSummary caption a:hover, .deprecatedSummary caption a:hover,
+.overviewSummary caption a:active, .memberSummary caption a:active, .typeSummary caption a:active,
+.useSummary caption a:active, .constantsSummary caption a:active, .deprecatedSummary caption a:active,
+.overviewSummary caption a:visited, .memberSummary caption a:visited, .typeSummary caption a:visited,
+.useSummary caption a:visited, .constantsSummary caption a:visited, .deprecatedSummary caption a:visited {
+    color:#FFFFFF;
+}
+.overviewSummary caption span, .memberSummary caption span, .typeSummary caption span,
+.useSummary caption span, .constantsSummary caption span, .deprecatedSummary caption span {
+    white-space:nowrap;
+    padding-top:5px;
+    padding-left:12px;
+    padding-right:12px;
+    padding-bottom:7px;
+    display:inline-block;
+    float:left;
+    background-color:#F8981D;
+    border: none;
+    height:16px;
+}
+.memberSummary caption span.activeTableTab span {
+    white-space:nowrap;
+    padding-top:5px;
+    padding-left:12px;
+    padding-right:12px;
+    margin-right:3px;
+    display:inline-block;
+    float:left;
+    background-color:#F8981D;
+    height:16px;
+}
+.memberSummary caption span.tableTab span {
+    white-space:nowrap;
+    padding-top:5px;
+    padding-left:12px;
+    padding-right:12px;
+    margin-right:3px;
+    display:inline-block;
+    float:left;
+    background-color:#4D7A97;
+    height:16px;
+}
+.memberSummary caption span.tableTab, .memberSummary caption span.activeTableTab {
+    padding-top:0px;
+    padding-left:0px;
+    padding-right:0px;
+    background-image:none;
+    float:none;
+    display:inline;
+}
+.overviewSummary .tabEnd, .memberSummary .tabEnd, .typeSummary .tabEnd,
+.useSummary .tabEnd, .constantsSummary .tabEnd, .deprecatedSummary .tabEnd {
+    display:none;
+    width:5px;
+    position:relative;
+    float:left;
+    background-color:#F8981D;
+}
+.memberSummary .activeTableTab .tabEnd {
+    display:none;
+    width:5px;
+    margin-right:3px;
+    position:relative; 
+    float:left;
+    background-color:#F8981D;
+}
+.memberSummary .tableTab .tabEnd {
+    display:none;
+    width:5px;
+    margin-right:3px;
+    position:relative;
+    background-color:#4D7A97;
+    float:left;
+
+}
+.overviewSummary td, .memberSummary td, .typeSummary td,
+.useSummary td, .constantsSummary td, .deprecatedSummary td {
+    text-align:left;
+    padding:0px 0px 12px 10px;
+}
+th.colOne, th.colFirst, th.colLast, .useSummary th, .constantsSummary th,
+td.colOne, td.colFirst, td.colLast, .useSummary td, .constantsSummary td{
+    vertical-align:top;
+    padding-right:0px;
+    padding-top:8px;
+    padding-bottom:3px;
+}
+th.colFirst, th.colLast, th.colOne, .constantsSummary th {
+    background:#dee3e9;
+    text-align:left;
+    padding:8px 3px 3px 7px;
+}
+td.colFirst, th.colFirst {
+    white-space:nowrap;
+    font-size:13px;
+}
+td.colLast, th.colLast {
+    font-size:13px;
+}
+td.colOne, th.colOne {
+    font-size:13px;
+}
+.overviewSummary td.colFirst, .overviewSummary th.colFirst,
+.useSummary td.colFirst, .useSummary th.colFirst,
+.overviewSummary td.colOne, .overviewSummary th.colOne,
+.memberSummary td.colFirst, .memberSummary th.colFirst,
+.memberSummary td.colOne, .memberSummary th.colOne,
+.typeSummary td.colFirst{
+    width:25%;
+    vertical-align:top;
+}
+td.colOne a:link, td.colOne a:active, td.colOne a:visited, td.colOne a:hover, td.colFirst a:link, td.colFirst a:active, td.colFirst a:visited, td.colFirst a:hover, td.colLast a:link, td.colLast a:active, td.colLast a:visited, td.colLast a:hover, .constantValuesContainer td a:link, .constantValuesContainer td a:active, .constantValuesContainer td a:visited, .constantValuesContainer td a:hover {
+    font-weight:bold;
+}
+.tableSubHeadingColor {
+    background-color:#EEEEFF;
+}
+.altColor {
+    background-color:#FFFFFF;
+}
+.rowColor {
+    background-color:#EEEEEF;
+}
+/*
+Content styles
+*/
+.description pre {
+    margin-top:0;
+}
+.deprecatedContent {
+    margin:0;
+    padding:10px 0;
+}
+.docSummary {
+    padding:0;
+}
+
+ul.blockList ul.blockList ul.blockList li.blockList h3 {
+    font-style:normal;
+}
+
+div.block {
+    font-size:14px;
+    font-family:'DejaVu Serif', Georgia, "Times New Roman", Times, serif;
+}
+
+td.colLast div {
+    padding-top:0px;
+}
+
+
+td.colLast a {
+    padding-bottom:3px;
+}
+/*
+Formatting effect styles
+*/
+.sourceLineNo {
+    color:green;
+    padding:0 30px 0 0;
+}
+h1.hidden {
+    visibility:hidden;
+    overflow:hidden;
+    font-size:10px;
+}
+.block {
+    display:block;
+    margin:3px 10px 2px 0px;
+    color:#474747;
+}
+.deprecatedLabel, .descfrmTypeLabel, .memberNameLabel, .memberNameLink,
+.overrideSpecifyLabel, .packageHierarchyLabel, .paramLabel, .returnLabel,
+.seeLabel, .simpleTagLabel, .throwsLabel, .typeNameLabel, .typeNameLink {
+    font-weight:bold;
+}
+.deprecationComment, .emphasizedPhrase, .interfaceName {
+    font-style:italic;
+}
+
+div.block div.block span.deprecationComment, div.block div.block span.emphasizedPhrase,
+div.block div.block span.interfaceName {
+    font-style:normal;
+}
+
+div.contentContainer ul.blockList li.blockList h2{
+    padding-bottom:0px;
+}
+﻿#t{border:1px solid black ; border-collapse:collapse}
+#d{border:1px solid black ; vertical-align:top}
+#c{color: #000000;background-color: #cccccc}
+#i{vertical-align:middle}
+#B1{border-left:blue 1.2em solid;border-bottom:blue 2pt solid;}
+#G1{border-left:green 1.2em solid;border-bottom:green 2pt solid;}
+#R1{border-left:red 1.2em solid;border-bottom:red 2pt solid;}
+#B2{border-left:blue 1.2em solid;border-top:blue 2pt solid;}
+#G2{border-left:green 1.2em solid;border-top:green 2pt solid;}
+#R2{border-left:red 1.2em solid;border-top:red 2pt solid;}
+#A1{text-decoration:underline}
+#A1:link{color:#0000BB}
+#A1:link img{border-color:blue}
+#A1:visited{color:#003377}
+#A1:visited img{border-color:blue}
+#A1:hover{text-decoration:none;color:white;background-color:#4444bb}
+#A1:hover img{border-color:red}
+
+table.t{border:1px solid black ; border-collapse:collapse}
+table.t td{border:1px solid black ; vertical-align:top}
+table.t th{border:1px solid black ; vertical-align:top}
+table.t0{border-collapse:collapse}
+table.t0 td{vertical-align:top}
+table.t0 th{vertical-align:top}
+TD.d{border:1px solid black ; vertical-align:top}
+img.i{vertical-align:middle;border-width:1;border-style:solid}
+img.b{vertical-align:middle;border-width:1;border-style:solid}
+img.n{vertical-align:middle;border:1px solid #cccccc}
+
+P.B1{border-left:blue 1.2em solid;border-bottom:blue 2pt solid;}
+P.G1{border-left:green 1.2em solid;border-bottom:green 2pt solid;}
+P.R1{border-left:red 1.2em solid;border-bottom:red 2pt solid;}
+P.B2{border-left:blue 1.2em solid;border-top:blue 2pt solid;}
+P.G2{border-left:green 1.2em solid;border-top:green 2pt solid;}
+P.R2{border-left:red 1.2em solid;border-top:red 2pt solid;}
+P.B1_2{border-left:lightsteelblue 2.5em solid;border-bottom:lightsteelblue 2pt solid;}
+P.G1_2{border-left:darkseagreen 2.5em solid;border-bottom:darkseagreen 2pt solid;}
+P.R1_2{border-left:salmon 2.5em solid;border-bottom:salmon 2pt solid;}
+P.B2_2{border-left:lightsteelblue 2.5em solid;border-top:lightsteelblue 2pt solid;}
+P.G2_2{border-left:darkseagreen 2.5em solid;border-top:darkseagreen 2pt solid;}
+P.R2_2{border-left:salmon 2.5em solid;border-top:salmon 2pt solid;}
+P.c{color: #000000;background-color: #cccccc}
+A.A1{text-decoration:underline}
+A.A1:link{color:#0000BB}
+A.A1:link img{border-color:blue}
+A.A1:visited{color:#003377}
+A.A1:visited img{border-color:blue}
+A.A1:hover{text-decoration:none;color:white;background-color:#4444bb}
+A.A1:hover img{border-color:red}
+
+A.A2{text-decoration:underline}
+A.A2:link{color:#FFEEFF}
+A.A2:link img{border-color:blue}
+A.A2:visited{color:#EEEEEE}
+A.A2:visited img{border-color:blue}
+A.A2:hover{text-decoration:none;color:white;background-color:#4444bb}
+A.A2:hover img{border-color:red}
+
+.red{color:red}
+.blue{color:blue}
+.green{color:green}
+.brown{color:brown}
+.gray{color:gray}
+.orange{color:orange}
+.purple{color:purple}
+.white{color:white}
+.yellow{color:yellow}
+.center{margin-left:auto;margin-right:auto;text-align:center}
+.right{float:right;}
+b{font-weight:bold}
+
+.quote{padding-left:0em;background:#EAEAEA;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:7.5pt;
+       font-size:7.5pt}
+.quote_indent{padding-left:1.5em;background:#EAEAEA;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:7.5pt;
+       font-size:7.5pt}
+.quote8{padding-left:0em;background:#EAEAEA;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:8.5pt;
+       font-size:8.5pt}
+.quote8_indent{padding-left:1.5em;background:#EAEAEA;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:8.5pt;
+       font-size:8.5pt}
+.quote9{padding-left:0em;background:#EAEAEA;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:9.3pt;
+       font-size:9.3pt}
+.quote9_indent{padding-left:1.5em;background:#EAEAEA;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:9.3pt;
+       font-size:9.3pt}
+.quote10{padding-left:0em;background:#EAEAEA;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:10pt;
+       font-size:10pt}
+.quote12{padding-left:0em;background:#EAEAEA;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:12pt;
+       font-size:12pt}
+.quote12_indent{padding-left:1.5em;background:#EAEAEA;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:12pt;
+       font-size:12pt}
+.quote14{padding-left:0em;background:#EAEAEA;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:14pt;
+       font-size:14pt}
+.quote14_indent{padding-left:1.5em;background:#EAEAEA;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:14pt;
+       font-size:14pt}
+
+
+.prog{padding-left:0em;background:#F5F5F5;line-height:100%;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:7.5pt;
+       font-size:7.5pt}
+.prog_indent{padding-left:1.5em;background:#F5F5F5;line-height:100%;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:7.5pt;
+       font-size:7.5pt}
+.prog8{padding-left:0em;background:#F5F5F5;line-height:100%;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:8.5pt;
+       font-size:8.5pt}
+.prog8_indent{padding-left:1.5em;background:#F5F5F5;line-height:100%;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:8.5pt;
+       font-size:8.5pt}
+.prog9{padding-left:0em;background:#F5F5F5;line-height:100%;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:9.3pt;
+       font-size:9.3pt}
+.prog9_indent{padding-left:1.5em;background:#F5F5F5;line-height:100%;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:9.3pt;
+       font-size:9.3pt}
+.prog10{padding-left:0em;background:#F5F5F5;line-height:100%;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:10pt;
+       font-size:10pt}
+.prog10_indent{padding-left:1.5em;background:#F5F5F5;line-height:100%;
+       font-family:'ＭＳ ゴシック', monospace;
+      line-height:10pt;
+       font-size:10pt}
+.prog12{padding-left:0em;background:#F5F5F5;line-height:100%;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:12pt;
+       font-size:12pt}
+.prog12_indent{padding-left:1.5em;background:#F5F5F5;line-height:100%;
+       font-family:'ＭＳ ゴシック', monospace;
+      line-height:12pt;
+       font-size:12pt}
+.prog14{padding-left:0em;background:#F5F5F5;line-height:100%;
+       font-family:'ＭＳ ゴシック', monospace;
+       line-height:14pt;
+       font-size:14pt}
+.prog14_indent{padding-left:1.5em;background:#F5F5F5;line-height:100%;
+       font-family:'ＭＳ ゴシック', monospace;
+      line-height:14pt;
+       font-size:12pt}
+
+.quote_white{padding-left:0em;
+       font-family:'ＭＳ ゴシック', monospace;
+   　　line-height:7.5pt;
+       font-size:7.5pt}
+.quote_white_indent{padding-left:1.5em;
+       font-family:'ＭＳ ゴシック', monospace;
+   　　line-height:7.5pt;
+       font-size:7.5pt}
+.quote8_white{padding-left:0em;
+       font-family:'ＭＳ ゴシック', monospace;
+   　　line-height:8.5pt;
+       font-size:8.5pt}
+.quote8_white_indent{padding-left:1.5em;
+       font-family:'ＭＳ ゴシック', monospace;
+   　　line-height:8.5pt;
+       font-size:8.5pt}
+.quote10_white{padding-left:0em;
+       font-family:'ＭＳ ゴシック', monospace;
+   　　line-height:10pt;
+       font-size:10pt}
+.quote10_white_indent{padding-left:1.5em;
+       font-family:'ＭＳ ゴシック', monospace;
+   　　line-height:10pt;
+       font-size:10pt}
+
+span.root {
+   /*font-size:   1.1em;*/
+   /*line-height: 1.3;*/
+   font-family: 'Arial', 'Tahoma', sans-serif;
+   }
+span.inRoot {
+   text-decoration:overline;
+   /*font-size:   0.9em;*/
+   /*line-height: 0.9;*/
+   font-family: 'Arial', 'Tahoma', sans-serif;
+   }
+
+div.indent{padding-left:1.5em}
+pre.indent{padding-left:1.5em}
+
+a.naviBase {
+   background-image:url('./base_b.gif');
+   text-decoration:none;
+   height:25px;
+   position:absolute;
+   top:0px;
+   }
+a.naviBase:hover {
+   background-image:url('./base_r.gif');
+   }
+a.naviBase2 {
+   background-image:url('./base_b.gif');
+   text-decoration:none;
+   height:25px;
+   position:absolute;
+   top:0px;
+   }
+a.naviBase2:hover {
+   background-image:url('./base_b_light.gif');
+   }
+a.naviBase3 {
+   background-image:url('./base_g.gif');
+   text-decoration:none;
+   height:25px;
+   position:absolute;
+   top:0px;
+   }
+a.naviBase3:hover {
+   background-image:url('./base_r.gif');
+   }
+span.naviBase {
+   color:white;
+   font-size:14px;
+   font-weight:bold;
+   font-family:'ＭＳ ゴシック',monospace;
+   text-align:center;
+   position:absolute;
+   top:3px;
+   width:100%;
+   }
+//span.naviBase:hover {
+   //color:white;
+   //}
+/*
+input.B {
+   background-image:url("./base_b.gif");
+   color:white;
+   }
+input.B:hover {
+   background-image:url("./base_r.gif");
+   }
+*/
+input.B       {background-image:url(./base_g.gif);color:white;}/*height:1.5em;
+               font-size:15px}*/
+input.B:hover {background-image:url(./base_r.gif)}
+input.B:active{background-image:url(./base_y_light.gif)}
+input.B2       {background-image:url(./base_b.gif);color:white;}/*height:1.5em;
+               font-size:15px}*/
+input.B2:hover {background-image:url(./base_r.gif)}
+input.B2:active{background-image:url(./base_y_light.gif)}
+input.B3       {background-image:url(./base_p.gif);color:white;}/*height:1.5em;
+               font-size:15px}*/
+input.B3:hover {background-image:url(./base_r.gif)}
+input.B3:active{background-image:url(./base_y_light.gif)}
+input.B4       {background-image:url(./base_gray.gif);color:white;}/*height:1.5em;
+               font-size:15px}*/
+input.B4:hover {background-image:url(./base_r.gif)}
+input.B4:active{background-image:url(./base_y_light.gif)}
+
+span.naviBaseL {
+   color:white;
+   font-size:12px;
+   font-weight:bold;
+   font-family:'ＭＳ ゴシック',monospace;
+   text-align:left;
+   position:absolute;
+   top:4px;
+   width:100%;
+   }
+span.naviComment {
+   color:#8080B0;
+   font-size:10px;
+   font-weight:bold;
+   text-align:left;
+   overflow:hidden;
+   height:25px;
+   position:absolute;
+   top:5px;
+   }
+img.naviButton {
+   position:absolute;
+   top:0px;
+   border:0px;
+   }
+span.naviBar {
+   height:25px;
+   position:relative;
+   top:0px;
+   width:100%;
+   background-image:url('./base_b.gif');
+   background-repeat:repeat-x
+   }
+
+audio.l {
+   width: 480px;
+height:35px;
+   }
+audio.m {
+   width: 390px;
+height:35px;
+   }
+audio.s {
+   width: 300px;
+height:35px;
+   }
+audio.ss {
+   width: 210px;
+height:35px;
+   }
+
+div.bar { background-image:url(./base_gray.gif);
+          height:1.5em; background-repeat:repeat-x;color:white }
+
+<style type="text/css">
+ audio { width: 450px; height:35px;display: block; margin:0px; }
+</style>

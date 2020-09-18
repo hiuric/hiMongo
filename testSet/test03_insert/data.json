@@ -1,0 +1,22 @@
+// 作曲家リスト
+// 出生国と異なる国に移住し活躍した場合はnationalityに
+// 出生国,移住国の順で記述
+// 生存中の場合はlifeTimeに出生年のみ記述
+// リストの並びはソートされている必要はない
+
+{famiryName:'Bach',givenName:['Johann','Sebastian'],
+ nationality:['独'],lifeTime:[1685,1750]}
+
+{famiryName:'Bartók',givenName:['Béla'],
+ nationality:['ハンガリー','米'],lifeTime:[1881,1945]}
+
+{famiryName:'Beethoven',givenName:['Ludwig','van'],
+ nationality:['独'],lifeTime:[1770,1827]}
+
+{famiryName:'Brahms',givenName:['Johannes'],
+ nationality:['独'],lifeTime:[1833,1897]}
+
+{famiryName:'Chopin',givenName:['Frédéric-Françoic'],
+ nationality:['ポーランド','仏'],lifeTime:[1810,1849]}
+
+

@@ -1,0 +1,60 @@
+--- insertOne/insertMany
+{"type": "A", "value": 12.3}
+{"type": "A", "value": 4.56}
+{"type": "B", "value": 2001}
+{"type": "A", "value": 7.98}
+{"type": "A", "value": 0.12}
+
+--- with Object updateOne 0.12 -> 0.01
+{"type": "A", "value": 12.3}
+{"type": "A", "value": 4.56}
+{"type": "B", "value": 2001}
+{"type": "A", "value": 7.98}
+{"type": "A", "value": 0.01}
+condition=(Document){
+   (String)"$and"=(Arrays$ArrayList)[
+      (Document){
+         (String)"type"=(String)"A"},
+      (Document){
+         (String)"value"=(Document){
+            (String)"$lt"=(Integer)1}}]}
+update(Obj)=(Test$6){
+   (String)"$set"=(Test$5){
+      (String)"value"=(Double)0.01}}
+
+--- with Document updateOne 2001->4.32
+{"type": "A", "value": 12.3}
+{"type": "A", "value": 4.56}
+{"type": "B", "value": 4.32}
+{"type": "A", "value": 7.98}
+{"type": "A", "value": 0.01}
+filter(Doc)=(Document){
+   (String)"$and"=(Arrays$ArrayList)[
+      (Document){
+         (String)"type"=(String)"B"},
+      (Document){
+         (String)"value"=(Document){
+            (String)"$gt"=(Integer)5}}]}
+update(Doc)=(Document){
+   (String)"$set"=(Document){
+      (String)"value"=(Double)4.32}}
+
+--- with Bson (Filters/Updates) updateOne 2001->23.4
+{"type": "A", "value": 12.3}
+{"type": "A", "value": 23.4}
+{"type": "B", "value": 4.32}
+{"type": "A", "value": 7.98}
+{"type": "A", "value": 0.01}
+filter=(Filters$AndFilter){
+   filters=(Arrays$ArrayList)[
+      (Filters$SimpleEncodingFilter){
+         fieldName=(String)"type",
+         value=(String)"A"},
+      (Filters$OperatorFilter){
+         operatorName=(String)"$lt",
+         fieldName=(String)"value",
+         value=(Integer)5}]}
+update=(Updates$SimpleUpdate){
+   fieldName=(String)"value",
+   value=(Double)23.4,
+   operator=(String)"$set"}

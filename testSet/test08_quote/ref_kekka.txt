@@ -1,0 +1,27 @@
+-- org.bson.Document
+doc        =Document{{$and=[Document{{type=A}}, Document{{date=Document{{$gte=Mon Aug 17 16:07:00 JST 2020}}}}, Document{{date2=Document{{$gte=Mon Aug 17 16:07:01 JST 2020}}}}]}}
+doc.toJson ={"$and": [{"type": "A"}, {"date": {"$gte": {"$date": 1597648020000}}}, {"date2": {"$gte": {"$date": 1597648021000}}}]}
+-- hi.hiMongo
+node/mson  ={'$and':[{'type':'A'}, {'date':{'$gte':ISODate('2020-08-17T07:07:00.000Z')}}, {'date2':{'$gte':ISODate('2020-08-17T07:07:01.000Z')}}]}
+node/json  ={"$and":[{"type":"A"}, {"date":{"$gte":{"$date":1597648020000}}}, {"date2":{"$gte":{"$date":1597648021000}}}]}
+---------
+doc/Object =(Document){
+   (String)"$and"=(ArrayList)[
+      (Document){
+         (String)"type"=(String)"A"},
+      (Document){
+         (String)"date"=(Document){
+            (String)"$gte"=(Date)Mon Aug 17 16:07:00 JST 2020}},
+      (Document){
+         (String)"date2"=(Document){
+            (String)"$gte"=(Date)Mon Aug 17 16:07:01 JST 2020}}]}
+node/Object=(LinkedHashMap){
+   (String)"$and"=(ArrayList)[
+      (LinkedHashMap){
+         (String)"type"=(String)"A"},
+      (LinkedHashMap){
+         (String)"date"=(LinkedHashMap){
+            (String)"$gte"=(Date)Mon Aug 17 16:07:00 JST 2020}},
+      (LinkedHashMap){
+         (String)"date2"=(LinkedHashMap){
+            (String)"$gte"=(Date)Mon Aug 17 16:07:01 JST 2020}}]}

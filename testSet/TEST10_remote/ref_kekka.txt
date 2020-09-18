@@ -1,0 +1,44 @@
+{"type":"A", "value":4.56, "date":{"$date":1597648090000}}
+{"type":"A", "value":7.89, "date":{"$date":1597648110000}}
+{"type":"A", "value":0.12, "date":{"$date":1597648120000}}
+#### MsonList
+{'_id':ObjectId('5f4b5b80a3cd4f89daf77467'), 'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:08:10.000Z')}
+{'_id':ObjectId('5f4b5b80a3cd4f89daf77469'), 'type':'A', 'value':7.89, 'date':ISODate('2020-08-17T07:08:30.000Z')}
+{'_id':ObjectId('5f4b5b80a3cd4f89daf7746a'), 'type':'A', 'value':0.12, 'date':ISODate('2020-08-17T07:08:40.000Z')}
+#### ClassList
+(Test$Record){_id=(ObjectId)5f4b5b80a3cd4f89daf77467, type=(String)"A", value=(double)4.56, date=(Date)Mon Aug 17 16:08:10 JST 2020}
+(Test$Record){_id=(ObjectId)5f4b5b80a3cd4f89daf77469, type=(String)"A", value=(double)7.89, date=(Date)Mon Aug 17 16:08:30 JST 2020}
+(Test$Record){_id=(ObjectId)5f4b5b80a3cd4f89daf7746a, type=(String)"A", value=(double)0.12, date=(Date)Mon Aug 17 16:08:40 JST 2020}
+#### MNodeList
+Document{{_id=5f4b5b80a3cd4f89daf77467, type=A, value=4.56, date=Mon Aug 17 16:08:10 JST 2020}}
+Document{{_id=5f4b5b80a3cd4f89daf77469, type=A, value=7.89, date=Mon Aug 17 16:08:30 JST 2020}}
+Document{{_id=5f4b5b80a3cd4f89daf7746a, type=A, value=0.12, date=Mon Aug 17 16:08:40 JST 2020}}
+#### MNodeList/hiU.str(WITH_TYPE)
+(Document){(String)"_id"=(ObjectId)5f4b5b80a3cd4f89daf77467, (String)"type"=(String)"A", (String)"value"=(Double)4.56, (String)"date"=(Date)Mon Aug 17 16:08:10 JST 2020}
+(Document){(String)"_id"=(ObjectId)5f4b5b80a3cd4f89daf77469, (String)"type"=(String)"A", (String)"value"=(Double)7.89, (String)"date"=(Date)Mon Aug 17 16:08:30 JST 2020}
+(Document){(String)"_id"=(ObjectId)5f4b5b80a3cd4f89daf7746a, (String)"type"=(String)"A", (String)"value"=(Double)0.12, (String)"date"=(Date)Mon Aug 17 16:08:40 JST 2020}
+#### MNodeList/mson
+{'_id':ObjectId('5f4b5b80a3cd4f89daf77467'), 'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:08:10.000Z')}
+{'_id':ObjectId('5f4b5b80a3cd4f89daf77469'), 'type':'A', 'value':7.89, 'date':ISODate('2020-08-17T07:08:30.000Z')}
+{'_id':ObjectId('5f4b5b80a3cd4f89daf7746a'), 'type':'A', 'value':0.12, 'date':ISODate('2020-08-17T07:08:40.000Z')}
+#### MNodeList/json
+{"_id":{"$oid":5f4b5b80a3cd4f89daf77467}, "type":"A", "value":4.56, "date":{"$date":1597648090000}}
+{"_id":{"$oid":5f4b5b80a3cd4f89daf77469}, "type":"A", "value":7.89, "date":{"$date":1597648110000}}
+{"_id":{"$oid":5f4b5b80a3cd4f89daf7746a}, "type":"A", "value":0.12, "date":{"$date":1597648120000}}
+#### MNodeList/mongo.str
+{"_id"=5f4b5b80a3cd4f89daf77467, "type"="A", "value"=4.56, "date"=Mon Aug 17 16:08:10 JST 2020}
+{"_id"=5f4b5b80a3cd4f89daf77469, "type"="A", "value"=7.89, "date"=Mon Aug 17 16:08:30 JST 2020}
+{"_id"=5f4b5b80a3cd4f89daf7746a, "type"="A", "value"=0.12, "date"=Mon Aug 17 16:08:40 JST 2020}
+========= USE hiMongo.parse()
+#### MsonList
+{'_id':ObjectId('5f4b5b80a3cd4f89daf77467'), 'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:08:10.000Z')}
+{'_id':ObjectId('5f4b5b80a3cd4f89daf77469'), 'type':'A', 'value':7.89, 'date':ISODate('2020-08-17T07:08:30.000Z')}
+{'_id':ObjectId('5f4b5b80a3cd4f89daf7746a'), 'type':'A', 'value':0.12, 'date':ISODate('2020-08-17T07:08:40.000Z')}
+========= local USE {}
+{'_id':ObjectId('5f644e8e9906171376ffa9c2'), 'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
+{'_id':ObjectId('5f644e8e9906171376ffa9c4'), 'type':'A', 'value':7.89, 'date':ISODate('2020-08-17T07:07:30.000Z')}
+{'_id':ObjectId('5f644e8e9906171376ffa9c5'), 'type':'A', 'value':0.12, 'date':ISODate('2020-08-17T07:07:40.000Z')}
+========= local USE {} node
+{'_id':ObjectId('5f644e8e9906171376ffa9c2'), 'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
+{'_id':ObjectId('5f644e8e9906171376ffa9c4'), 'type':'A', 'value':7.89, 'date':ISODate('2020-08-17T07:07:30.000Z')}
+{'_id':ObjectId('5f644e8e9906171376ffa9c5'), 'type':'A', 'value':0.12, 'date':ISODate('2020-08-17T07:07:40.000Z')}

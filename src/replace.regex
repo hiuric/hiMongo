@@ -1,0 +1,6 @@
+param = [
+   {  // 外部参照にhttp/https関係なくtarget=_blankを付ける。StringなどJava基礎ライブラリ参照も同じ
+      regex  =<a\s+href="((http:|https:)[\-\d\w\./]+)\?is-external=true
+      replace=<a target="_blank" rel="noopener noreferrer" href="${1}?is-external=true
+      }
+   ]

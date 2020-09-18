@@ -1,0 +1,8 @@
+//
+// <NOW>がinsert時刻に置き換わります
+// 
+{type:'A',value:12.3,date:<NOW>}
+{type:'A',value:4.56,date:<NOW>}
+{type:'B',value:2001,date:<NOW>}
+{type:'A',value:7.89,date:<NOW>}
+{type:'A',value:1e100,date:<NOW>}
