@@ -1826,10 +1826,10 @@ public class Test {
 <pre class=quote10>
 <span class=gray>db.get("coll_01")
   .find("{type:'A'}")
-  .sort("{_id:-1}")</span>
-  <span class=gray>.limit(3)
+  .sort("{_id:-1}")
+  .limit(3)</span>
   <b>.forThis(T->T.getIterator().showRecordId(true))</b>
-  .forEachJson(J->System.out.println(J));</span>
+  <span class=gray>.forEachJson(J->System.out.println(J));</span>
 </pre>
 
 <p class=B1 id="node">

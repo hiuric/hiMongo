@@ -46,6 +46,7 @@ for(MyRecord rec:recs){
 Javaは8以上が必要です。
 サンプル/試験はmongoDBサーバーがローカルに動作していることを前提としています。
 
+|-- run_this_to_set755.sh .shに実行パーミションを付加するスクリプト
 |-- configure  サンプル、試験、ビルドの共通設定
 |   `-- configure.sh
 |-- docs       hiMongo-jdoc
@@ -81,6 +82,10 @@ mongo-java-driver-3.12.5.jar:
 hiNote_3_09.jar:
    http://www.otsu.co.jp/OtsuLibrary/
 
+＝＝＝＝＝ 実行権限の付与＝＝＝＝＝ 
+展開後最初に一度だけ
+   sh run_this_to_set755.sh
+を実行し、全フォルダの.shに実行権限を与えます
 
 ＝＝＝＝＝ sample実行 ＝＝＝＝＝ 
 sampleSetの各ディレクトリで
