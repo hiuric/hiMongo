@@ -12,13 +12,13 @@
 {"famiryName":"Tchaikovsky", "givenName":["Peter", "Ilyich"], "nationality":["露"], "lifeTime":[1840, 1893]}
 Document{{famiryName=BsonRegularExpression{pattern='^Ba"'', options=''}}}
 {"famiryName": {"$regex": "^Ba\"'", "$options": ""}}
-(Document){
+hiMongo.str=(Document){
    (String)"famiryName"=(BsonRegularExpression)BsonRegularExpression{pattern='^Ba"'', options=''}}
-(Document){
+Mongo.mson=(Document){
    (String)'famiryName':(BsonRegularExpression){
       'pattern':(String)'^Ba"\'',
       'options':(String)''}}
-(Document){
+hiMongo.json=(Document){
    (String)"famiryName":(BsonRegularExpression){
       "pattern":(String)"^Ba\"'",
       "options":(String)""}}

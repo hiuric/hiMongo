@@ -1,0 +1,6 @@
+param = [
+   {  // 外部参照にhttp/https関係なくtarget=_blankを付ける。StringなどJava基礎ライブラリ参照も同じ
+      literal=/mongodb.github.io/mongo-java-driver/3.7/javadoc/
+      replace=/mongodb.github.io/mongo-java-driver/3.12/javadoc/
+      }
+   ]

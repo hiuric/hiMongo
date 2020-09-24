@@ -32,7 +32,8 @@ public class Test {
                        "user:'testUser',"+
                        "password:'xxx'"+
                       "}";
-      try(hiMongo.DB db=hiMongo.connect(_remote).use("db01")){
+      try{
+         hiMongo.DB db=hiMongo.connect(_remote).use("db01");
          db.get("coll_01")                     // collection 'coll_01'選択
             .find("{type:'A'}","{_id:0}")        // typeが'A'のレコード,_idは不要
             .sort("{_id:-1}")                    // _idで逆向きにソート

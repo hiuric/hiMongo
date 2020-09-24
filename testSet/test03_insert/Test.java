@@ -12,7 +12,8 @@ public class Test {
       }
    public static void main(String[] args_){
       if( "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
-      try(hiMongo.DB          db   =hiMongo.use("db02")){
+      try{
+         hiMongo.DB db  =hiMongo.use("db02");
          String _records=
               "[{type:'A',value:12.3,date:ISODate('2020-08-17T07:07:00.000Z')}"+
               ",{type:'A',value:4.56,date:ISODate('2020-08-17T07:07:10.000Z')}"+

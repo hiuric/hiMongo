@@ -18,7 +18,8 @@ public class Test {
       }
    public static void main(String[] args_){
       if( "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
-      try(hiMongo.DB db=hiMongo.use("db01")){
+      try{
+         hiMongo.DB db=hiMongo.use("db01");
          long _start_date=
          db.get("coll_01")
             .find("{type:'A'}","{_id:0,date:1}")
@@ -39,7 +40,7 @@ public class Test {
                      "max:{$max:'$value'},"+
                      "avg:{$avg:'$value'}}}"+
                 "]")
-            .forEach(R->ps.println(hiMongo.json(R)))
+            .forEachNode(R->ps.println(hiMongo.json(R)))
             ;
          ps.println("#####################");
          db.get("coll_01")
@@ -52,7 +53,7 @@ public class Test {
                      "min:{$min:'$value'},"+
                      "max:{$max:'$value'},"+
                      "avg:{$avg:'$value'}}")
-            .forEach(Arec.class,R->ps.println(R))
+            .forEachClass(Arec.class,R->ps.println(R))
             ;
          //
 

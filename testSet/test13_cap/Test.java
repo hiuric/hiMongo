@@ -1,7 +1,8 @@
 import hi.hiMongo;
 public class Test {
    public static void main(String[] args_){
-      try(hiMongo.DB db=hiMongo.use("db01")){ 
+      try{ 
+         hiMongo.DB db=hiMongo.use("db01");
          hiMongo.Collection col
          =db.createCappedCollection(
               "coll_cap",      // コレクション名

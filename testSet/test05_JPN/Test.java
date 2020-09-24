@@ -6,7 +6,8 @@ public class Test {
    static PrintStream ps=System.out;
    public static void main(String[] args_){
       if( "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
-      try(hiMongo.DB db=hiMongo.use("sampleDB")){
+      try{
+         hiMongo.DB db=hiMongo.use("sampleDB");
          db.get("商品").find("{}","{_id:0}")
             .forThis(T->ps.println("--- Node ---"))
             .forEach(R->ps.println(R))

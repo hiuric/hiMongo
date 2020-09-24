@@ -16,7 +16,8 @@ public class Test {
       }
    public static void main(String[] args_){
       if( "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
-      try(hiMongo.DB db=hiMongo.use("db01")){
+      try{
+         hiMongo.DB db=hiMongo.use("db01");
          // 最後の'A'レコードの時刻(unix-epoch)を得る
          long _last_date
          =db.get("coll_01")
@@ -60,7 +61,7 @@ public class Test {
                        "{date:{$gte:{$date:"+_start_date+"}}}"+
                         "]}",
                  "{_id:0}")
-           .forEach(Record.class,
+           .forEachClass(Record.class,
                     R->{
                        double _val=R.value;
                        _vals[0]=Math.min(_vals[0],_val);

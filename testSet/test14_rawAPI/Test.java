@@ -9,7 +9,8 @@ import otsu.hiNote.*;
 import java.util.*;
 public class Test {
    public static void main(String[] args_){
-      try(MongoClient client=new MongoClient("localhost",27017)){
+      try{
+         MongoClient client=new MongoClient("localhost",27017);
          MongoDatabase             db    = client.getDatabase("db01");
          MongoCollection<Document> col   = db.getCollection("coll_01");
          col.drop();

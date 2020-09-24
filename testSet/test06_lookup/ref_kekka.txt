@@ -2,7 +2,7 @@
 Document{{v=2, key=Document{{_id=1}}, name=_id_, ns=sampleDB.商品}}
 --- after creteIndex
 Document{{v=2, key=Document{{_id=1}}, name=_id_, ns=sampleDB.商品}}
-Document{{v=2, unique=true, key=Document{{商品id=1}}, name=商品id_1, ns=sampleDB.商品}}
+Document{{v=2, unique=true, key=Document{{商品id=1}}, name=商品id_1, ns=sampleDB.商品, expireAfterSeconds=63072000}}
 ----- foreach MNode -----
 Document{{店舗名=東京, 数量=30.0, from商品=Document{{商品名=Tシャツ, 販売単価=1000.0}}}}
 Document{{店舗名=東京, 数量=50.0, from商品=Document{{商品名=穴あけパンチ, 販売単価=500.0}}}}

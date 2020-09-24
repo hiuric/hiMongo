@@ -1,7 +1,7 @@
 ====== Documentによるテキストパーズ
-toString=Document{{int_1=100, int_func=201, int_dict=301, lng_1=1234567890123, lng_func=401, lng_dict=501, bd_1=123456789012345678901231, bd_func=22345678901234567890123, bd_dict=32345678901234567890123}}
-toJson  ={"int_1": 100, "int_func": 201, "int_dict": 301, "lng_1": {"$numberLong": "1234567890123"}, "lng_func": {"$numberLong": "401"}, "lng_dict": {"$numberLong": "501"}, "bd_1": "123456789012345678901231", "bd_func": {"$numberDecimal": "22345678901234567890123"}, "bd_dict": {"$numberDecimal": "32345678901234567890123"}}
-node    =(Document){
+doc.toString=Document{{int_1=100, int_func=201, int_dict=301, lng_1=1234567890123, lng_func=401, lng_dict=501, bd_1=123456789012345678901231, bd_func=22345678901234567890123, bd_dict=32345678901234567890123}}
+doc.toJson  ={"int_1": 100, "int_func": 201, "int_dict": 301, "lng_1": {"$numberLong": "1234567890123"}, "lng_func": {"$numberLong": "401"}, "lng_dict": {"$numberLong": "501"}, "bd_1": "123456789012345678901231", "bd_func": {"$numberDecimal": "22345678901234567890123"}, "bd_dict": {"$numberDecimal": "32345678901234567890123"}}
+hiU.str(doc)=(Document){
    (String)"int_1"=(Integer)100,
    (String)"int_func"=(Integer)201,
    (String)"int_dict"=(Integer)301,
@@ -12,7 +12,7 @@ node    =(Document){
    (String)"bd_func"=(Decimal128)22345678901234567890123,
    (String)"bd_dict"=(Decimal128)32345678901234567890123}
 ====== hiJSONによるノードパーズ
-str     =(Document){
+hiU.str(node)   =(Document){
    (String)"int_1"=(Integer)100,
    (String)"int_func"=(Integer)201,
    (String)"int_dict"=(Integer)301,
@@ -22,7 +22,7 @@ str     =(Document){
    (String)"bd_1"=(String)"123456789012345678901231",
    (String)"bd_func"=(Decimal128)22345678901234567890123,
    (String)"bd_dict"=(Decimal128)32345678901234567890123}
-json    =(Document){
+hiJSON.str(node)=(Document){
    (String)"int_1":(Integer)100,
    (String)"int_func":(Integer)201,
    (String)"int_dict":(Integer)301,
@@ -42,7 +42,7 @@ hiJSONによるテキストパーズ　例外発生のはず
 err=otsu.hiNote.hiException: otsu.hiNote.hiException:UNKOWN FUNCTION NumberInt line:0,col:35
 .........................{int_1:100,int_func:NumberInt('201'>>)<<,int_dict:{$numberInt:'301'},l: UNKOWN FUNCTION NumberInt
 ====== hiMongoによるノードパーズ
-str     =(Document){
+hiU.str     =(Document){
    (String)"int_1"=(Integer)100,
    (String)"int_func"=(Integer)201,
    (String)"int_dict"=(Integer)301,
@@ -52,7 +52,7 @@ str     =(Document){
    (String)"bd_1"=(String)"123456789012345678901231",
    (String)"bd_func"=(Decimal128)22345678901234567890123,
    (String)"bd_dict"=(Decimal128)32345678901234567890123}
-json    =(Document){
+hiJSON.str  =(Document){
    (String)"int_1":(Integer)100,
    (String)"int_func":(Integer)201,
    (String)"int_dict":(Integer)301,
@@ -66,7 +66,7 @@ json    =(Document){
    (String)"bd_dict":(Decimal128){
       "high":(long)3476778912330024665,
       "low":(long)8536540021723907275}}
-mson    =(Document){
+hiMongo.mson=(Document){
    (String)'int_1':(Integer)100,
    (String)'int_func':(Integer)201,
    (String)'int_dict':(Integer)301,
@@ -86,18 +86,18 @@ cls     =(Test$Values){
    lng_dict=(long)501,
    bd_1=(long)9223372036854775807}
 ====== hiMongoによるテキストパーズ
-toString={int_1=100, int_func=201, int_dict=301, lng_1=1234567890123, lng_func=401, lng_dict=501, bd_1=123456789012345678901231, bd_func=22345678901234567890123, bd_dict=32345678901234567890123}
-json  =(LinkedHashMap){
+node.toString  ={int_1=100, int_func=201, int_dict=301, lng_1=1234567890123, lng_func=401, lng_dict=501, bd_1=123456789012345678901231, bd_func=22345678901234567890123, bd_dict=32345678901234567890123}
+hiMo.json(node)=(LinkedHashMap){
    (String)"int_1":(Long)100,
    (String)"int_func":(Long)201,
    (String)"int_dict":(Long)301,
    (String)"lng_1":(Long)1234567890123,
    (String)"lng_func":(Long)401,
    (String)"lng_dict":(Long)501,
-   (String)"bd_1":(BigDecimal){"$numberDecimal":"123456789012345678901231"},
-   (String)"bd_func":(BigDecimal){"$numberDecimal":"22345678901234567890123"},
-   (String)"bd_dict":(BigDecimal){"$numberDecimal":"32345678901234567890123"}}
-mson  =(LinkedHashMap){
+   (String)"bd_1":(BigDecimal)123456789012345678901231,
+   (String)"bd_func":(BigDecimal)22345678901234567890123,
+   (String)"bd_dict":(BigDecimal)32345678901234567890123}
+hiMo.mson(node)=(LinkedHashMap){
    (String)'int_1':(Long)100,
    (String)'int_func':(Long)201,
    (String)'int_dict':(Long)301,
@@ -107,7 +107,7 @@ mson  =(LinkedHashMap){
    (String)'bd_1':(BigDecimal)NumberDecimal('123456789012345678901231'),
    (String)'bd_func':(BigDecimal)NumberDecimal('22345678901234567890123'),
    (String)'bd_dict':(BigDecimal)NumberDecimal('32345678901234567890123')}
-node    =(LinkedHashMap){
+hiU.str(node)  =(LinkedHashMap){
    (String)"int_1"=(Long)100,
    (String)"int_func"=(Long)201,
    (String)"int_dict"=(Long)301,
@@ -127,9 +127,9 @@ cls     =(Test$Values){
    lng_dict=(long)501,
    bd_1=(long)-7269072992350064657}
 ====== hiMongoによるテキスト->Dcoumentのparse
-toString=Document{{int_1=100, int_func=201, int_dict=301, lng_1=1234567890123, lng_func=401, lng_dict=501, bd_1=123456789012345678901231, bd_func=22345678901234567890123, bd_dict=32345678901234567890123}}
-toJson  ={"int_1": {"$numberLong": "100"}, "int_func": {"$numberLong": "201"}, "int_dict": {"$numberLong": "301"}, "lng_1": {"$numberLong": "1234567890123"}, "lng_func": {"$numberLong": "401"}, "lng_dict": {"$numberLong": "501"}, "bd_1": {"$numberDecimal": "123456789012345678901231"}, "bd_func": {"$numberDecimal": "22345678901234567890123"}, "bd_dict": {"$numberDecimal": "32345678901234567890123"}}
-node    =(Document){
+doc.toString=Document{{int_1=100, int_func=201, int_dict=301, lng_1=1234567890123, lng_func=401, lng_dict=501, bd_1=123456789012345678901231, bd_func=22345678901234567890123, bd_dict=32345678901234567890123}}
+doc.toJson  ={"int_1": {"$numberLong": "100"}, "int_func": {"$numberLong": "201"}, "int_dict": {"$numberLong": "301"}, "lng_1": {"$numberLong": "1234567890123"}, "lng_func": {"$numberLong": "401"}, "lng_dict": {"$numberLong": "501"}, "bd_1": {"$numberDecimal": "123456789012345678901231"}, "bd_func": {"$numberDecimal": "22345678901234567890123"}, "bd_dict": {"$numberDecimal": "32345678901234567890123"}}
+hiU.str(doc)=(Document){
    (String)"int_1"=(Long)100,
    (String)"int_func"=(Long)201,
    (String)"int_dict"=(Long)301,
@@ -141,9 +141,9 @@ node    =(Document){
    (String)"bd_dict"=(BigDecimal)32345678901234567890123}
 ==== insert to db02.coll_04
 ==== find JSON
-{"_id":{"$oid":5f566bfc25ab3072b25d21e3}, "int_1":100, "int_func":201, "int_dict":301, "lng_1":1234567890123, "lng_func":401, "lng_dict":501, "bd_1":{"$numberDecimal":"123456789012345678901231"}, "bd_func":{"$numberDecimal":"22345678901234567890123"}, "bd_dict":{"$numberDecimal":"32345678901234567890123"}}
+{"_id":{"$oid":5f6aaa552b661a4955bc484c}, "int_1":100, "int_func":201, "int_dict":301, "lng_1":1234567890123, "lng_func":401, "lng_dict":501, "bd_1":123456789012345678901231, "bd_func":22345678901234567890123, "bd_dict":32345678901234567890123}
 ==== find MSON
-{'_id':ObjectId('5f566bfc25ab3072b25d21e3'), 'int_1':100, 'int_func':201, 'int_dict':301, 'lng_1':1234567890123, 'lng_func':401, 'lng_dict':501, 'bd_1':NumberDecimal('123456789012345678901231'), 'bd_func':NumberDecimal('22345678901234567890123'), 'bd_dict':NumberDecimal('32345678901234567890123')}
+{'_id':ObjectId('5f6aaa552b661a4955bc484c'), 'int_1':100, 'int_func':201, 'int_dict':301, 'lng_1':1234567890123, 'lng_func':401, 'lng_dict':501, 'bd_1':NumberDecimal('123456789012345678901231'), 'bd_func':NumberDecimal('22345678901234567890123'), 'bd_dict':NumberDecimal('32345678901234567890123')}
 
 
 ============= PART2

@@ -1,0 +1,25 @@
+--- show dbs ---
+//admin
+//config
+db01
+db02
+//ecg
+//local
+//sampleDB
+//testDB
+//test_db
+//tmp
+--- use(db01) show collections ---
+coll_01
+coll_02
+--- use(db02) show collections ---
+coll_01
+coll_02
+--- use(db01) coll_02 exists ---
+true
+--- use(db01) coll_03 exists ---
+false
+--- use(db01) coll_01 count({}) ---
+5
+--- use(db01) coll_01 count({value:{$gt:5}}) ---
+3

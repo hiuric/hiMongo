@@ -15,7 +15,8 @@ public class Test {
    static PrintStream ps=System.out;
    public static void main(String[] args_){
       if( "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
-      try(hiMongo.DB db=hiMongo.use("db01")){
+      try{
+         hiMongo.DB db=hiMongo.use("db01");
          db.get("coll_01")
            .find("{}","{_id:0}")
            .forThis(C->ps.println("---- befor"))

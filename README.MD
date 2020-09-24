@@ -2,10 +2,9 @@
 ### mongo-shell-like simple [API](https://hiuric.github.io/hiMongo/) as below.
 ![sample0](docs/img/sample0.png)
 click [this](https://hiuric.github.io/hiMongo/) to see [API](https://hiuric.github.io/hiMongo/)-javadoc.
-### user class mapping
+### user class mapping (read)
 ```
 class MyRecord {
-   ObjectId _id;
    String   type;
    double   value;
    Date     date;
@@ -15,13 +14,29 @@ class MyRecord {
 hiMongo.DB     db=hiMongo.use("db01");
 List<MyRecord> recs
 =db.get("coll_01")
-   .find("{type:'A'}")
+   .find("{type:'A'}","{_id:0}")
    .sort("{_id:-1}")
    .limit(3)
    .getClassList(MyRecord.class,hiU.REVERSE);
 for(MyRecord rec:recs){
    System.out.println("value="+rec.value);
    }
+```
+### user class mapping (write)
+```
+class MyRecord {
+   String   type;
+   double   value;
+   Date     date;
+   }
+-----
+hiMongo.DB         db   = hiMongo.use("db01");
+hiMongo.Collection coll = db.get("coll_01")
+MyReord rec = new MyRecord();
+rec.type  = "D";
+rec.value = 12.3;
+rec.date  = new Date();
+coll.insertOne(rec);
 ```
 ### extended JSON input;comment,document array without bracket,ETC.
 ```
@@ -53,7 +68,7 @@ Javaは8以上が必要です。
 |   |-- index.html
 |   ...
 |-- lib        使用ライブラリおよびhiMongoライブラリ
-|   |-- hiMongo_0_05.jar
+|   |-- hiMongo_0_06.jar
 |   |-- hiNote_3_09.jar
 |   `-- mongo-java-driver-3.12.5.jar
 |-- sampleSet  サンプルセット
@@ -61,14 +76,16 @@ Javaは8以上が必要です。
 |   ...
 |   |-- configure.sh
 |   `-- run.sh
-|-- src
+|-- src        ソース
 |   |-- A00_clear.sh
 |   |-- A01_build.sh
 |   |-- A09_javadoc.sh
 |   |-- hiMongo.java
+|   ...
 |   `-- hi_style.css
-`-- testSet
-    |-- TEST10_remote
+`-- testSet     試験セット
+    |-- test_data     試験データ生成スクリプト
+    |-- test01_last3  
     ...
     |-- configure.sh
     `-- test.sh
@@ -86,6 +103,7 @@ hiNote_3_09.jar:
 展開後最初に一度だけ
    sh run_this_to_set755.sh
 を実行し、全フォルダの.shに実行権限を与えます
+
 
 ＝＝＝＝＝ sample実行 ＝＝＝＝＝ 
 sampleSetの各ディレクトリで

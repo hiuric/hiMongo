@@ -1,6 +1,6 @@
 #!/bin/bash
 # 注意！ 改行=LF
-(cd ../test_data;./db01.sh)
+../test_data/db01.sh > /dev/null
 source ../configure.sh
 eval ${BUILD_AND_RUN}
 status=$?

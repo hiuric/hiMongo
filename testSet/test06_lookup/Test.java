@@ -17,13 +17,13 @@ public class Test {
    static PrintStream ps=System.out;
    public static void main(String[] args_){
       if( "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
-      try(hiMongo.DB db=hiMongo.use("sampleDB")){
+      try{
+         hiMongo.DB db=hiMongo.use("sampleDB");
          System.out.println("--- befor creteIndex");
-         for(Document doc:db.get("商品").mongoCollection.listIndexes()){System.out.println(doc);}
-         db.get("商品").mongoCollection.createIndex(Document.parse("{商品id:1}"),
-                                                    new IndexOptions().unique(true));
+         db.get("商品").getIndexList().forEach(D->System.out.println(D));
+         db.get("商品").createIndex("{商品id:1}","{unique:true,expireAfterDays:730}");
          System.out.println("--- after creteIndex");
-         for(Document doc:db.get("商品").mongoCollection.listIndexes()){System.out.println(doc);}
+         db.get("商品").getIndexList().forEach(D->System.out.println(D));
 
          db.get("店舗商品").aggregate("["+
                "{$match:{$or:["+
@@ -45,9 +45,9 @@ public class Test {
                 "{$unwind:'$from商品'}"+
                "]")
             .forThis(A->ps.println("----- foreach MNode -----"))
-            .forEach(R->ps.println(R))
+            .forEachNode(R->ps.println(R))
             .forThis(A->ps.println("----- toClass -----"))
-            .forEach(A_Rec.class,
+            .forEachClass(A_Rec.class,
                      R->ps.println(hiU.str(R)))
             .forThis(A->ps.println("----- getMsonList -----"))
             .getMsonList().forEach(R->ps.println(R))

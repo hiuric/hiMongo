@@ -112,15 +112,15 @@ public class Test {
 
          System.out.println("====== Documentによるテキストパーズ");
          Document _doc=Document.parse(_mson);
-         System.out.println("toString="+_doc.toString());
-         System.out.println("toJson  ="+_doc.toJson());
-         System.out.println("node    ="+hiU.str(_doc,hiU.WITH_TYPE|hiU.WITH_INDENT));
+         System.out.println("doc.toString="+_doc.toString());
+         System.out.println("doc.toJson  ="+_doc.toJson());
+         System.out.println("hiU.str(doc)="+hiU.str(_doc,hiU.WITH_TYPE|hiU.WITH_INDENT));
 
          // hiJSONによるDocument-nodeパーズ
          System.out.println("====== hiJSONによるノードパーズ");
          Object _node=hiJSON.parseNode(_doc).asNode();
-         System.out.println("str     ="+hiU.str(_node,hiU.WITH_INDENT|hiU.WITH_TYPE));
-         System.out.println("json    ="+hiJSON.str(_node,hiU.WITH_INDENT|hiU.WITH_TYPE));
+         System.out.println("hiU.str(node)   ="+hiU.str(_node,hiU.WITH_INDENT|hiU.WITH_TYPE));
+         System.out.println("hiJSON.str(node)="+hiJSON.str(_node,hiU.WITH_INDENT|hiU.WITH_TYPE));
          //
          System.out.println("- - クラス化");
          try{
@@ -144,9 +144,9 @@ public class Test {
 
          System.out.println("====== hiMongoによるノードパーズ");
          Object _mnode=hiMongo.parseNode(_doc).asNode();
-         System.out.println("str     ="+hiU.str(_mnode,hiU.WITH_TYPE|hiU.WITH_INDENT));
-         System.out.println("json    ="+hiJSON.str(_mnode,hiU.WITH_TYPE|hiU.WITH_INDENT));
-         System.out.println("mson    ="+hiMongo.mson(_mnode,hiU.WITH_TYPE|hiU.WITH_INDENT));
+         System.out.println("hiU.str     ="+hiU.str(_mnode,hiU.WITH_TYPE|hiU.WITH_INDENT));
+         System.out.println("hiJSON.str  ="+hiJSON.str(_mnode,hiU.WITH_TYPE|hiU.WITH_INDENT));
+         System.out.println("hiMongo.mson="+hiMongo.mson(_mnode,hiU.WITH_TYPE|hiU.WITH_INDENT));
          System.out.println("- - クラス化　例外発生しない");
          Values _mvals=hiMongo.parseNode(_doc)
                               .without_option(hiU.CHECK_UNKNOWN_FIELD|hiU.CHECK_UNSET_FIELD)
@@ -156,10 +156,10 @@ public class Test {
          // hiMongoのパーズ機構
          System.out.println("====== hiMongoによるテキストパーズ");
          Object _mdoc=hiMongo.parse(_msonX).asNode();
-         System.out.println("toString="+_mdoc.toString());
-         System.out.println("json  ="+hiMongo.json(_mdoc,hiU.WITH_TYPE|hiU.WITH_INDENT));
-         System.out.println("mson  ="+hiMongo.mson(_mdoc,hiU.WITH_TYPE|hiU.WITH_INDENT));
-         System.out.println("node    ="+hiU.str(_mdoc,hiU.WITH_TYPE|hiU.WITH_INDENT));
+         System.out.println("node.toString  ="+_mdoc.toString());
+         System.out.println("hiMo.json(node)="+hiMongo.json(_mdoc,hiU.WITH_TYPE|hiU.WITH_INDENT));
+         System.out.println("hiMo.mson(node)="+hiMongo.mson(_mdoc,hiU.WITH_TYPE|hiU.WITH_INDENT));
+         System.out.println("hiU.str(node)  ="+hiU.str(_mdoc,hiU.WITH_TYPE|hiU.WITH_INDENT));
          System.out.println("- - クラス化　例外発生しない");
          Values _mmvals=hiMongo.parseNode(_mdoc)
                               .without_option(hiU.CHECK_UNKNOWN_FIELD|hiU.CHECK_UNSET_FIELD)
@@ -168,9 +168,9 @@ public class Test {
 
          System.out.println("====== hiMongoによるテキスト->Dcoumentのparse");
          Document _docX=new Document((Map<String,Object>)_mdoc);
-         System.out.println("toString="+_docX.toString());
-         System.out.println("toJson  ="+_docX.toJson());
-         System.out.println("node    ="+hiU.str(_docX,hiU.WITH_TYPE|hiU.WITH_INDENT));
+         System.out.println("doc.toString="+_docX.toString());
+         System.out.println("doc.toJson  ="+_docX.toJson());
+         System.out.println("hiU.str(doc)="+hiU.str(_docX,hiU.WITH_TYPE|hiU.WITH_INDENT));
 
          System.out.println("==== insert to db02.coll_04");
          try(hiMongo.DB db=hiMongo.use("db02")){
@@ -208,7 +208,8 @@ public class Test {
          System.out.println("\n\n============= PART3");
          String _text="{vals:"+hiFile.readTextAll("nums.json")+"}";
          System.out.println("---- use hson");
-         try(hiMongo.DB db=hiMongo.use("db02")){
+         {
+            hiMongo.DB db=hiMongo.use("db02");
             db.get("coll_05").drop()
               .with_hson(true)
               .insertOne(_text)
@@ -218,7 +219,8 @@ public class Test {
 
          //========== PART4
          System.out.println("\n\n============= PART4");
-         try(hiMongo.DB db=hiMongo.use("db02")){
+         {
+            hiMongo.DB db=hiMongo.use("db02");
             System.out.println("-- byte");
             byteArray _byteArray=db.get("coll_05")
               .with_hson(true)
@@ -265,7 +267,8 @@ public class Test {
          //========== PART5
          System.out.println("\n\n============= PART5");
          System.out.println("\n---- use bson");
-         try(hiMongo.DB db=hiMongo.use("db02")){
+         try{
+            hiMongo.DB db=hiMongo.use("db02");
             db.get("coll_05").drop()
               .with_hson(false)   // bson/mson解析　12345678901234567890解析不能
               .insertOne(_text)
@@ -279,7 +282,8 @@ public class Test {
          String _text2=hiRegex.with("//.*","")
                        .replace("{vals:"+hiFile.readTextAll("nums2.json")+"}")
                        .result();
-         try(hiMongo.DB db=hiMongo.use("db02")){
+         try{
+            hiMongo.DB db=hiMongo.use("db02");
             db.get("coll_06").drop()
               .with_hson(false)   // bson/mson解析　12345678901234567890解析不能
               .insertOne(_text2)

@@ -1,0 +1,11 @@
+// javadoc部を削除
+param = [
+   {  // Javadoc部削除
+      regex  =/\*\*[\s\S]*?\*/
+      replace=""
+      }
+   {  // 空白行削除
+      regex  =\n\s+
+      replace="\n"
+      }
+   ]

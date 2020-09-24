@@ -26,13 +26,14 @@ public class Test {
    public static void main(String[] args_){
       //hiMongo.nolog(Test.class);
       if( "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
-      try(hiMongo.DB db=hiMongo.use("db01")){ // database   'db01'選択
+      try{ // DBのcloseは呼ばない
+         hiMongo.DB db=hiMongo.use("db01");    // database   'db01'選択
          db.get("coll_01")                     // collection 'coll_01'選択
-            .find("{type:'A'}","{_id:0}")        // typeが'A'のレコード,_idは不要
-            .sort("{_id:-1}")                    // _idで逆向きにソート
-            .limit(3)                            // 個数制限
-            .getJsonList(hiU.REVERSE)            // 反転したリスト取得
-            .forEach(S->System.out.println(S))   // レコード表示
+            .find("{type:'A'}","{_id:0}")      // typeが'A'のレコード,_idは不要
+            .sort("{_id:-1}")                  // _idで逆向きにソート
+            .limit(3)                          // 個数制限
+            .getJsonList(hiU.REVERSE)          // 反転したリスト取得
+            .forEach(S->System.out.println(S)) // レコード表示
             ;
          hiMongo.Finder _find=db.get("coll_01")
                                 .find("{type:'A'}")

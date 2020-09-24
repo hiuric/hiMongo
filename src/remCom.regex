@@ -1,0 +1,15 @@
+param = [
+   {  // ブロックコメント削除
+      regex  =/\*[\s\S]*?\*/
+      replace=""
+      }
+   {  // 行コメント削除
+      regex  =[/][/].*
+      replace=""
+      }
+   {  // 空白行削除
+      regex  =\n\s+
+      replace="\n"
+      }
+   ]
+

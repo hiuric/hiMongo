@@ -1,49 +1,49 @@
-{type="A", value=12.3, date=Mon Sep 07 13:35:31 JST 2020}
-{type="A", value=4.56, date=Mon Sep 07 13:35:31 JST 2020}
-{type="B", value=2001, date=Mon Sep 07 13:35:31 JST 2020}
-{type="A", value=7.89, date=Mon Sep 07 13:35:31 JST 2020}
-{type="A", value=1E+100, date=Mon Sep 07 13:35:31 JST 2020}
+{type="A", value=12.3, date=Wed Sep 23 10:54:09 JST 2020}
+{type="A", value=4.56, date=Wed Sep 23 10:54:09 JST 2020}
+{type="B", value=2001, date=Wed Sep 23 10:54:09 JST 2020}
+{type="A", value=7.89, date=Wed Sep 23 10:54:09 JST 2020}
+{type="A", value=1E+100, date=Wed Sep 23 10:54:09 JST 2020}
 
 ---- mson ---
 (Test$Record){
    'type':(String)'A',
    'value':(BigDecimal)NumberDecimal('12.3'),
-   'date':(Date)ISODate('2020-09-07T04:35:31.947Z')}
+   'date':(Date)ISODate('2020-09-23T01:54:09.591Z')}
 (Test$Record){
    'type':(String)'A',
    'value':(BigDecimal)NumberDecimal('4.56'),
-   'date':(Date)ISODate('2020-09-07T04:35:31.947Z')}
+   'date':(Date)ISODate('2020-09-23T01:54:09.591Z')}
 (Test$Record){
    'type':(String)'B',
    'value':(BigDecimal)NumberDecimal('2001'),
-   'date':(Date)ISODate('2020-09-07T04:35:31.947Z')}
+   'date':(Date)ISODate('2020-09-23T01:54:09.591Z')}
 (Test$Record){
    'type':(String)'A',
    'value':(BigDecimal)NumberDecimal('7.89'),
-   'date':(Date)ISODate('2020-09-07T04:35:31.947Z')}
+   'date':(Date)ISODate('2020-09-23T01:54:09.591Z')}
 (Test$Record){
    'type':(String)'A',
    'value':(BigDecimal)NumberDecimal('1E+100'),
-   'date':(Date)ISODate('2020-09-07T04:35:31.947Z')}
+   'date':(Date)ISODate('2020-09-23T01:54:09.591Z')}
 
 ---- json ---
 (Test$Record){
    "type":(String)"A",
-   "value":(BigDecimal){"$numberDecimal":"12.3"},
-   "date":(Date){"$date":1599453331947}}
+   "value":(BigDecimal)12.3,
+   "date":(Date){"$date":1600826049591}}
 (Test$Record){
    "type":(String)"A",
-   "value":(BigDecimal){"$numberDecimal":"4.56"},
-   "date":(Date){"$date":1599453331947}}
+   "value":(BigDecimal)4.56,
+   "date":(Date){"$date":1600826049591}}
 (Test$Record){
    "type":(String)"B",
-   "value":(BigDecimal){"$numberDecimal":"2001"},
-   "date":(Date){"$date":1599453331947}}
+   "value":(BigDecimal)2001,
+   "date":(Date){"$date":1600826049591}}
 (Test$Record){
    "type":(String)"A",
-   "value":(BigDecimal){"$numberDecimal":"7.89"},
-   "date":(Date){"$date":1599453331947}}
+   "value":(BigDecimal)7.89,
+   "date":(Date){"$date":1600826049591}}
 (Test$Record){
    "type":(String)"A",
-   "value":(BigDecimal){"$numberDecimal":"1E+100"},
-   "date":(Date){"$date":1599453331947}}
+   "value":(BigDecimal)1E+100,
+   "date":(Date){"$date":1600826049591}}
