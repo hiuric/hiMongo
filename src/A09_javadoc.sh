@@ -35,6 +35,7 @@ convert_html() {
    java -jar ${hiNoteLIB} conv -with replace.regex -in ${1} -out ${1}.out
    echo -jar ${hiNoteLIB} conv -with convDrivVer.regex -in ${1}.out -out ${1}
    java -jar ${hiNoteLIB} conv -with convDrivVer.regex -in ${1}.out -out ${1}
+   rm -rf ${1}.out
    }
 export hiNoteLIB
 export -f convert_html
