@@ -19,41 +19,41 @@ public class Test {
          hiMongo.DB db=hiMongo.use("db01");
          db.get("coll_01")
            .find("{}","{_id:0}")
-           .forThis(C->ps.println("---- befor"))
-           .forEach(R->ps.println(R))
+           .forThis(Fi->ps.println("---- befor"))
+           .forEach(Rd->ps.println(Rd))
            .back()
 
            .updateOne("{$and:[{type:'A'},{value:4.56}]}",
                       "{$set:{value:0.55}}")
            .find("{}","{_id:0}")
-           .forThis(C->ps.println("---- after 4.56->0.55"))
-           .forEach(R->ps.println(R))
+           .forThis(Fi->ps.println("---- after 4.56->0.55"))
+           .forEach(Rd->ps.println(Rd))
            .back()
 
            .updateMany("{$and:[{type:'A'},{value:{$lt:1.00}}]}}",
                       "{$set:{value:1.00}}")
            .find("{}","{_id:0}")
-           .forThis(C->ps.println("---- after 0.xx -> 1.00 "))
-           .forEach(R->ps.println(R))
+           .forThis(Fi->ps.println("---- after 0.xx -> 1.00 "))
+           .forEach(Rd->ps.println(Rd))
            .back()
 
            .replaceOne("{$and:[{type:'A'},{value:7.89}]}",
                        "{type:'B',value:3000,date:ISODate('2020-08-17T07:07:50.000Z')}")
            .find("{}","{_id:0}")
-           .forThis(C->ps.println("---- after replaceOne "))
-           .forEach(R->ps.println(R))
+           .forThis(Fi->ps.println("---- after replaceOne "))
+           .forEach(Rd->ps.println(Rd))
            .back()
 
            .deleteOne("{type:'A'}")
            .find("{}","{_id:0}")
-           .forThis(C->ps.println("---- after deleteOne type:'A' "))
-           .forEach(R->ps.println(R))
+           .forThis(Fi->ps.println("---- after deleteOne type:'A' "))
+           .forEach(Rd->ps.println(Rd))
            .back()
 
            .deleteMany("{value:1}")
            .find("{}","{_id:0}")
-           .forThis(C->ps.println("---- after deleteMany value:1 "))
-           .forEach(R->ps.println(R))
+           .forThis(Fi->ps.println("---- after deleteMany value:1 "))
+           .forEach(Rd->ps.println(Rd))
            .back()
            ;
          }

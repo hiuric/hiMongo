@@ -8,7 +8,7 @@ public class Test {
          .sort("{_id:-1}")                  // _idで逆向きにソート
          .limit(3)                          // 個数制限
          .getMsonList(hiU.REVERSE)          // 反転したリスト取得
-         .forEach(S->System.out.println(S)) // レコード表
+         .forEach(Rm->System.out.println(Rm)) // レコード表示
          ;
       }
    }

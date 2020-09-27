@@ -25,49 +25,50 @@ public class Test {
       }
    public static void main(String[] args_){
       //hiMongo.nolog(Test.class);
-      if( "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
+      if( true || "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
       try{ // DBのcloseは呼ばない
          hiMongo.DB db=hiMongo.use("db01");    // database   'db01'選択
          db.get("coll_01")                     // collection 'coll_01'選択
             .find("{type:'A'}","{_id:0}")      // typeが'A'のレコード,_idは不要
             .sort("{_id:-1}")                  // _idで逆向きにソート
             .limit(3)                          // 個数制限
+            // .forThis(T->T.getIterable().showRecordId(true))
             .getJsonList(hiU.REVERSE)          // 反転したリスト取得
-            .forEach(S->System.out.println(S)) // レコード表示
+            .forEach(Rj->System.out.println(Rj)) // レコード表示
             ;
          hiMongo.Finder _find=db.get("coll_01")
                                 .find("{type:'A'}")
                                 .sort("{_id:-1}")
-                                .forThis(T->T.getIterator().showRecordId(true))
                                 .limit(3);
-         _find.forThis(R->ps.println("#### MsonList"));
+         _find.forThis(Fi->ps.println("#### MsonList"));
          _find.getMsonList(hiU.REVERSE)
-              .forEach(S->ps.println(S));
+              .forEach(Rm->ps.println(Rm));
 
-         _find.forThis(R->ps.println("#### ClassList"));
+         _find.forThis(Fi->ps.println("#### ClassList"));
          _find.getClassList(Record.class,hiU.REVERSE)
-              .forEach(S->ps.println(hiU.str(S,hiU.WITH_TYPE)));
+              .forEach(Rc->ps.println(hiU.str(Rc,hiU.WITH_TYPE)));
 
-         _find.forThis(R->ps.println("#### MNodeList"));
-         _find.getNodeList(hiU.REVERSE)
-              .forEach(S->ps.println(S));
+         _find.forThis(Fi->ps.println("#### MNodeList"));
+         _find.getDocumentList(hiU.REVERSE)
+              .forEach(Rd->ps.println(Rd));
 
-         _find.forThis(R->ps.println("#### MNodeList/hiU.str(WITH_TYPE)"));
-         _find.getNodeList(hiU.REVERSE)
-              .forEach(S->ps.println(hiU.str(hiMongo.parseNode(S).asNode(),hiU.WITH_TYPE)));
+         _find.forThis(Fi->ps.println("#### MNodeList/hiU.str(WITH_TYPE)"));
+         _find.getDocumentList(hiU.REVERSE)
+              .forEach(Rd->ps.println(hiU.str(hiMongo.parseNode(Rd).asNode(),hiU.WITH_TYPE)));
 
-         _find.forThis(R->ps.println("#### MNodeList/mson"));
-         _find.getNodeList(hiU.REVERSE)
-              .forEach(S->ps.println(hiMongo.mson(S)));
+         _find.forThis(Fi->ps.println("#### MNodeList/mson"));
+         _find.getDocumentList(hiU.REVERSE)
+              .forEach(Rd->ps.println(hiMongo.mson(Rd)));
 
-         _find.forThis(R->ps.println("#### MNodeList/json"));
-         _find.getNodeList(hiU.REVERSE)
-              .forEach(S->ps.println(hiMongo.json(S)));
+         _find.forThis(Fi->ps.println("#### MNodeList/json"));
+         _find.getDocumentList(hiU.REVERSE)
+              .forEach(Rd->ps.println(hiMongo.json(Rd)));
 
+         //if(true)throw new hiException("WAO!");
 
-         _find.forThis(R->ps.println("#### MNodeList/mongo.str"));
-         _find.getNodeList(hiU.REVERSE)
-              .forEach(S->ps.println(hiMongo.str(S)));
+         _find.forThis(Fi->ps.println("#### MNodeList/mongo.str"));
+         _find.getDocumentList(hiU.REVERSE)
+              .forEach(Rd->ps.println(hiMongo.str(Rd)));
 
          ps.println("========= USE hiMongo.parse()");
 
@@ -77,10 +78,32 @@ public class Test {
                                 .find(_f_node)
                                 .sort(_s_node)
                                 .limit(3);
-         _curs2.forThis(R->ps.println("#### MsonList"));
+         _curs2.forThis(Fi->ps.println("#### MsonList"));
          _curs2.getMsonList(hiU.REVERSE)
-              .forEach(S->ps.println(S));
+              .forEach(Rm->ps.println(Rm));
 
+         ps.println("========== multi forEach");
+         db.get("coll_01")
+           .find("{}","{_id:0}")
+           .limit(2)
+//           .forThis(Fi->System.out.println("json"))
+//           .forEachJson(Rj->System.out.println(Rj))
+           .forThis(Fi->System.out.println("mson"))
+           .forEachMson(Rm->System.out.println(Rm))
+/*
+           .forThis(Fi->System.out.println("single-quote json"))
+           .forThis(Fi->Fi.engineJ().str_format().str_option(hiU.WITH_SINGLE_QUOTE))
+           .forEachJson(Rj->System.out.println(Rj))
+
+           .forThis(Fi->System.out.println("double-quote mson"))
+           .str_option(hiU.WITH_TYPE)
+           .str_disable_option(hiU.WITH_SINGLE_QUOTE)
+           .forEachMson(Rm->System.out.println(Rm))
+*/
+           .forThis(Fi->System.out.println("WITH showRecordId"))
+           .forThis(Fi->Fi.getIterable().showRecordId(true))
+           .forEachMson(Rm->System.out.println(Rm));
+         //ps.println("WAO!");
          }
       catch(Exception _ex){
          _ex.printStackTrace(System.err);

@@ -20,12 +20,13 @@ public class Test {
       try{
          hiMongo.DB db=hiMongo.use("sampleDB");
          System.out.println("--- befor creteIndex");
-         db.get("商品").getIndexList().forEach(D->System.out.println(D));
+         db.get("商品").getIndexList().forEach(Do->System.out.println(Do));
          db.get("商品").createIndex("{商品id:1}","{unique:true,expireAfterDays:730}");
          System.out.println("--- after creteIndex");
-         db.get("商品").getIndexList().forEach(D->System.out.println(D));
+         db.get("商品").getIndexList().forEach(Do->System.out.println(Do));
 
-         db.get("店舗商品").aggregate("["+
+         db.get("店舗商品")
+           .aggregate("["+
                "{$match:{$or:["+
                     "{'店舗名':'東京'},"+
                     "{'店舗名':'福岡'}"+
@@ -44,14 +45,14 @@ public class Test {
                    "'数量':1}},"+
                 "{$unwind:'$from商品'}"+
                "]")
-            .forThis(A->ps.println("----- foreach MNode -----"))
-            .forEachNode(R->ps.println(R))
-            .forThis(A->ps.println("----- toClass -----"))
-            .forEachClass(A_Rec.class,
-                     R->ps.println(hiU.str(R)))
-            .forThis(A->ps.println("----- getMsonList -----"))
-            .getMsonList().forEach(R->ps.println(R))
-            ;
+           .forThis(Ag->ps.println("----- foreach MNode -----"))
+           .forEach(Rd->ps.println(Rd))
+           .forThis(Ag->ps.println("----- toClass -----"))
+           .forEach(A_Rec.class,
+                    Rc->ps.println(hiU.str(Rc)))
+           .forThis(Ag->ps.println("----- getMsonList -----"))
+           .getMsonList().forEach(Rm->ps.println(Rm))
+           ;
          }
       catch(Exception _ex){
          _ex.printStackTrace(System.err);

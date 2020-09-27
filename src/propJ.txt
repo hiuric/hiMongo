@@ -1,0 +1,53 @@
+// ソースコード上のjavadoc部の特殊文字をエスケープする
+${HTML_TAGS}=a|b|br|code|caption|center|div|input|ol|li|p|pre|span|table|ul|tr|td|blockquote|i|hr
+${JDOC_TAGS}=param|see|return|link|throws|exception|literal
+param = {
+   in=/\*\*[\s\S]*?\*/
+   param={
+      out=<!--[\s\S]*?-->
+      param=[
+        { // REFo{ref [text..]}
+           regex=REFo\{(\w+)\s*(.*?)\}
+           replace=<a class=A1 href="#o${1}">${2|1}</a>
+           }
+        { // REF{ref,text}
+           regex=REF\{(?<ref>\S+?)\s+(?<text>.*?)\}
+           replace=<a class=A1 href="../../otsu/hiNote/${ref}"><code>${text}</code></a>
+           }
+/*
+        { // <table>に<caption>&emsp;</caption>を付加する
+           regex=<table[^>]*>(?!\s*<caption)
+           replace=${0}<caption>&emsp;</caption>
+           }
+*/
+        {  // javadocの特殊パラメタ以外の@
+           regex=@(?!(${JDOC_TAGS}))
+           replace={@literal @}
+           }
+        { // &を&amp;に置き換える
+           regex=&(?!([a-zA-Z]{2,6};))
+           replace=&amp;
+           }
+        { // '<' と '>'の処理
+           out=@param\s.*
+           param={
+              out={
+                 regex=</?(${HTML_TAGS})(?=\W)[^>]*>
+                 ignore_case
+                 }
+              param=[
+                 {
+                    regex=<
+                    replace=&lt;
+                    }
+                 {
+                    regex=>
+                    replace=&gt;
+                    }
+                 ]
+              }
+           }
+        ]
+     }
+  }
+

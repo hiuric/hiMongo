@@ -134,21 +134,6 @@ public class Test {
          _ex.printStackTrace(System.err);
          System.exit(1);
          }
-      /* Bsonは使える所と使えない所がある。Documentはどこでも使える。
-         従ってBsonは使うべきではない。
-         filterをBsonで受ける機能は実装しない
-      try(hiMongo.DB db=hiMongo.use("db01")){
-         System.out.println("\n======== use Bson to hiMongo");
-         Bson filter   // Documentではない！
-         =Filters.and(
-            Filters.eq("type","A"),
-            Filters.lt("value",5)
-            );
-         db.get("coll_01")
-           .find(filter,"{_id:0}")
-           .forEach(R->System.out.println(R));
-         }
-      */
       System.exit(0);
       }
    }

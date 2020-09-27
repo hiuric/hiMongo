@@ -6,5 +6,5 @@ db.coll_01.                             // collection 'coll_01'選択
    sort({_id:-1}).                      // _idで逆向きにソート
    limit(3).                            // 個数制限
    toArray().reverse().                 // 反転したリスト取得
-   forEach(S=>print(JSON.stringify(S)));// レコード表示
+   forEach(Rd=>print(JSON.stringify(Rd)));// レコード表示
 EOT

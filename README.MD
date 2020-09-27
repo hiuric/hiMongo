@@ -68,7 +68,7 @@ Javaは8以上が必要です。
 |   |-- index.html
 |   ...
 |-- lib        使用ライブラリおよびhiMongoライブラリ
-|   |-- hiMongo_0_06.jar
+|   |-- hiMongo_0_07.jar
 |   |-- hiNote_3_09.jar
 |   `-- mongo-java-driver-3.12.5.jar
 |-- sampleSet  サンプルセット

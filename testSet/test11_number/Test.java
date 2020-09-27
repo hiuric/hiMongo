@@ -179,12 +179,12 @@ public class Test {
          System.out.println("==== find JSON");
          try(hiMongo.DB db=hiMongo.use("db02")){
             db.get("coll_04").find("{}")
-              .forEachJson(R->System.out.println(R));
+              .forEachJson(Rj->System.out.println(Rj));
             }
          System.out.println("==== find MSON");
          try(hiMongo.DB db=hiMongo.use("db02")){
             db.get("coll_04").find("{}")
-              .forEachMson(R->System.out.println(R));
+              .forEachMson(Rm->System.out.println(Rm));
             }
          //========== PART2
          System.out.println("\n\n============= PART2");
@@ -214,7 +214,7 @@ public class Test {
               .with_hson(true)
               .insertOne(_text)
               .find("{}","{_id:0}")
-              .forEach(B->System.out.println(hiU.str(B,hiU.WITH_INDENT|hiU.WITH_TYPE|hiU.NO_LIMIT)));
+              .forEach(Rd->System.out.println(hiU.str(Rd,hiU.WITH_INDENT|hiU.WITH_TYPE|hiU.NO_LIMIT)));
             }
 
          //========== PART4
@@ -273,7 +273,7 @@ public class Test {
               .with_hson(false)   // bson/mson解析　12345678901234567890解析不能
               .insertOne(_text)
               .find("{}","{_id:0}")
-              .forEach(B->System.out.println(hiU.str(B,hiU.WITH_INDENT|hiU.WITH_TYPE|hiU.NO_LIMIT)));
+              .forEach(Rd->System.out.println(hiU.str(Rd,hiU.WITH_INDENT|hiU.WITH_TYPE|hiU.NO_LIMIT)));
             }
          catch(Exception _ex){
             System.out.println("excepted exception "+_ex);
@@ -288,7 +288,7 @@ public class Test {
               .with_hson(false)   // bson/mson解析　12345678901234567890解析不能
               .insertOne(_text2)
               .find("{}","{_id:0}")
-              .forEach(B->System.out.println(hiU.str(B,hiU.WITH_INDENT|hiU.WITH_TYPE|hiU.NO_LIMIT)));
+              .forEach(Rd->System.out.println(hiU.str(Rd,hiU.WITH_INDENT|hiU.WITH_TYPE|hiU.NO_LIMIT)));
 
             System.out.println("-- byte");
             byteArray _byteArray=db.get("coll_06")
@@ -335,12 +335,6 @@ public class Test {
          catch(Exception _ex){
             System.out.println("excepted exception "+_ex);
             }
-
-/*
-
-         Document _doc3=new Document(_valSet);
-         System.out.println("\ndoc="+hiU.str(_doc3,hiU.WITH_INDENT|hiU.WITH_TYPE|hiU.NO_LIMIT));
-*/
          }
       catch(Exception _ex){
          _ex.printStackTrace(System.err);

@@ -26,10 +26,10 @@ public class Test {
            .find("{}","{_id:0}")
            //.forThis(T->ps.println("---- str ---"))
            //.forEach(Record.class,R->ps.println(hiMongo.str(R,hiU.WITH_TYPE|hiU.WITH_INDENT)))
-           .forThis(T->ps.println("\n---- mson ---"))
-           .forEachClass(Record.class,R->ps.println(hiMongo.mson(R,hiU.WITH_TYPE|hiU.WITH_INDENT)))
-           .forThis(T->ps.println("\n---- json ---"))
-           .forEachClass(Record.class,R->ps.println(hiMongo.json(R,hiU.WITH_TYPE|hiU.WITH_INDENT)));
+           .forThis(Fi->ps.println("\n---- mson ---"))
+           .forEachClass(Record.class,Rc->ps.println(hiMongo.mson(Rc,hiU.WITH_TYPE|hiU.WITH_INDENT)))
+           .forThis(Fi->ps.println("\n---- json ---"))
+           .forEachClass(Record.class,Rc->ps.println(hiMongo.json(Rc,hiU.WITH_TYPE|hiU.WITH_INDENT)));
          }
       catch(Exception _ex){
          _ex.printStackTrace(System.err);

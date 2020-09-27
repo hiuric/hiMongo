@@ -29,6 +29,6 @@ public class Test {
       coll.insertOne(_rec);
       //
       coll.find()
-          .forEachMson(M->System.out.println(M));
+          .forEachMson(Rm->System.out.println(Rm));
       }
    }

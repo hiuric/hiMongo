@@ -39,40 +39,40 @@ public class Test {
             .sort("{_id:-1}")                    // _idで逆向きにソート
             .limit(3)                            // 個数制限
             .getJsonList(hiU.REVERSE)            // 反転したリスト取得
-            .forEach(S->System.out.println(S))   // レコード表示
+            .forEach(Rj->System.out.println(Rj))   // レコード表示
             ;
          hiMongo.Finder _find=db.get("coll_01")
                                 .find("{type:'A'}")
                                 .sort("{_id:-1}")
                                 .limit(3);
-         _find.forThis(R->ps.println("#### MsonList"));
+         _find.forThis(Fi->ps.println("#### MsonList"));
          _find.getMsonList(hiU.REVERSE)
-              .forEach(S->ps.println(S));
+              .forEach(Rm->ps.println(Rm));
 
-         _find.forThis(R->ps.println("#### ClassList"));
+         _find.forThis(Fi->ps.println("#### ClassList"));
          _find.getClassList(Record.class,hiU.REVERSE)
-              .forEach(S->ps.println(hiU.str(S,hiU.WITH_TYPE)));
+              .forEach(Rc->ps.println(hiU.str(Rc,hiU.WITH_TYPE)));
 
-         _find.forThis(R->ps.println("#### MNodeList"));
-         _find.getNodeList(hiU.REVERSE)
-              .forEach(S->ps.println(S));
+         _find.forThis(Fi->ps.println("#### MNodeList"));
+         _find.getList(hiU.REVERSE)         // getDocumentListと同じ
+              .forEach(Rd->ps.println(Rd));
 
-         _find.forThis(R->ps.println("#### MNodeList/hiU.str(WITH_TYPE)"));
-         _find.getNodeList(hiU.REVERSE)
-              .forEach(S->ps.println(hiU.str(hiMongo.parseNode(S).asNode(),hiU.WITH_TYPE)));
+         _find.forThis(Fi->ps.println("#### MNodeList/hiU.str(WITH_TYPE)"));
+         _find.getDocumentList(hiU.REVERSE)
+              .forEach(Rd->ps.println(hiU.str(hiMongo.parseNode(Rd).asNode(),hiU.WITH_TYPE)));
 
-         _find.forThis(R->ps.println("#### MNodeList/mson"));
-         _find.getNodeList(hiU.REVERSE)
-              .forEach(S->ps.println(hiMongo.mson(S)));
+         _find.forThis(Fi->ps.println("#### MNodeList/mson"));
+         _find.getList(hiU.REVERSE)
+              .forEach(Rd->ps.println(hiMongo.mson(Rd)));
 
-         _find.forThis(R->ps.println("#### MNodeList/json"));
-         _find.getNodeList(hiU.REVERSE)
-              .forEach(S->ps.println(hiMongo.json(S)));
+         _find.forThis(Fi->ps.println("#### MNodeList/json"));
+         _find.getDocumentList(hiU.REVERSE)
+              .forEach(Rd->ps.println(hiMongo.json(Rd)));
 
 
-         _find.forThis(R->ps.println("#### MNodeList/mongo.str"));
-         _find.getNodeList(hiU.REVERSE)
-              .forEach(S->ps.println(hiMongo.str(S)));
+         _find.forThis(Fi->ps.println("#### MNodeList/mongo.str"));
+         _find.getList(hiU.REVERSE)
+              .forEach(Rd->ps.println(hiMongo.str(Rd)));
 
          ps.println("========= USE hiMongo.parse()");
 
@@ -82,24 +82,26 @@ public class Test {
                                 .find(_f_node)
                                 .sort(_s_node)
                                 .limit(3);
-         _find2.forThis(R->ps.println("#### MsonList"));
+         _find2.forThis(Fi->ps.println("#### MsonList"));
          _find2.getMsonList(hiU.REVERSE)
-              .forEach(S->ps.println(S));
+              .forEach(Rm->ps.println(Rm));
 
 
          ps.println("========= local USE {}");
          hiMongo.DB db2=hiMongo.connect("{}").use("db01");
          db2.get("coll_01")
             .find("{type:'A'}")
-            .sort("{_id:-1}").limit(3).getMsonList(hiU.REVERSE)
-            .forEach(S->ps.println(S));
+            .sort("{_id:-1}").limit(3)
+            .getMsonList(hiU.REVERSE)
+            .forEach(Rm->ps.println(Rm));
          ps.println("========= local USE {} node");
          Object _empty=hiMongo.parse("{}").asNode();
          hiMongo.DB db3=hiMongo.connect("{}").use("db01");
          db3.get("coll_01")
             .find("{type:'A'}")
-            .sort("{_id:-1}").limit(3).getMsonList(hiU.REVERSE)
-            .forEach(S->ps.println(S));
+            .sort("{_id:-1}").limit(3)
+            .getMsonList(hiU.REVERSE)
+            .forEach(Rm->ps.println(Rm));
          }
       catch(Exception _ex){
          _ex.printStackTrace(System.err);

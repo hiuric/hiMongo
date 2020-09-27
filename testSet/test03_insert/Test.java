@@ -35,10 +35,10 @@ public class Test {
                      ,"{type:'D',value:4.56,date:ISODate('2020-08-17T07:07:40.000Z')}");
          System.out.println("NORMAL-JSON");
          _coll.find("{}","{_id:0}").getJsonList()
-              .forEach(S->System.out.println(S));
+              .forEach(Rj->System.out.println(Rj));
          System.out.println("MONGO-JSON");
          _coll.find("{}","{_id:0}").getMsonList()
-              .forEach(S->System.out.println(S));
+              .forEach(Rm->System.out.println(Rm));
          System.out.println("");
          System.out.println("COUNT="+_coll.count());
          System.out.println("COUNT B OR C ="+_coll.count("{$or:[{type:'B'},{type:'C'}]}"));
@@ -55,13 +55,13 @@ public class Test {
          db.get("composer")
            .find("{}","{_id:0}")
            //.str_option(hiU.WITH_TYPE|hiU.WITH_INDENT)
-           .forEachMson(M->System.out.println(M));
+           .forEachMson(Rm->System.out.println(Rm));
          System.out.println("--- 19世紀生まれ");
          db.get("composer")
            .find("{$and:[{'lifeTime.0':{$gte:1801}},{'lifeTime.0':{$lte:1900}}]},{_id:0}","{_id:0}")
            .sort("{'lifeTime.0':1}")
            .getMsonList()
-           .forEach(M->System.out.println(M));
+           .forEach(Rm->System.out.println(Rm));
 
 
          db.get("composer2").drop()
@@ -71,13 +71,13 @@ public class Test {
          db.get("composer2")
            .find("{}","{_id:0}")
            //.str_option(hiU.WITH_TYPE|hiU.WITH_INDENT)
-           .forEachMson(M->System.out.println(M));
+           .forEachMson(Rm->System.out.println(Rm));
          System.out.println("--- 19世紀生まれ");
          db.get("composer2")
            .find("{$and:[{'lifeTime.0':{$gte:1801}},{'lifeTime.0':{$lte:1900}}]},{_id:0}","{_id:0}")
            .sort("{'lifeTime.0':1}")
            .getMsonList()
-           .forEach(M->System.out.println(M));
+           .forEach(Rm->System.out.println(Rm));
 
 
          db.get("composer3").drop()
@@ -87,13 +87,13 @@ public class Test {
          db.get("composer3")
            .find("{}","{_id:0}")
            //.str_option(hiU.WITH_TYPE|hiU.WITH_INDENT)
-           .forEachMson(M->System.out.println(M));
+           .forEachMson(Rm->System.out.println(Rm));
          System.out.println("--- 19世紀生まれ");
          db.get("composer3")
            .find("{$and:[{'lifeTime.0':{$gte:1801}},{'lifeTime.0':{$lte:1900}}]},{_id:0}","{_id:0}")
            .sort("{'lifeTime.0':1}")
            .getMsonList()
-           .forEach(M->System.out.println(M));
+           .forEach(Rm->System.out.println(Rm));
          }
       catch(Exception _ex){
          _ex.printStackTrace(System.err);
@@ -102,11 +102,3 @@ public class Test {
       System.exit(0);
       }
    }
-
-/*
-db.composer.find({'lifeTime.0':{$gte:1800}},{_id:0})
-db.composer.find({'lifeTime.0':{$lt:1900}},{_id:0})
-db.composer.find({'lifeTime.0':{$and:[{$ge:1800},{$lt:1900}]}})
-db.composer.find({$and:[{'lifeTime.0':{$gte:1800}},{'lifeTime.0':{$lt:1900}}]},{_id:0}).sort({'lifeTime.0':1})
-*/
-

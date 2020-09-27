@@ -13,6 +13,6 @@ public class Test {
          col.insertOne("{type:'A',value:"+(_n+1)+"}");
          }
       col.find("{}","{_id:0}")
-         .forEachMson(M->System.out.println(M));
+         .forEachMson(Rm->System.out.println(Rm));
       }
    }

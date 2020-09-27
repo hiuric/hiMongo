@@ -1,0 +1,28 @@
+  param = [
+     {
+        regex  = <p\s+class\s*=\s*"DispSwitch"\s+id\s*=\s*"s:(\w+)".*>(.*)</p>
+        replace=<[[
+<div id="${1}_1">
+<p><input type="button" value="${2}を表示する" style="WIDTH:17em"
+   onClick="document.getElementById('${1}_2').style.display='block';
+            document.getElementById('${1}_1').style.display='none'"></p>
+</div>
+<div id="${1}_2" style="display:none">
+<p><input type="button" value="${2}を隠す" style="WIDTH:17em"
+   onClick="document.getElementById('${1}_2').style.display='none';
+            document.getElementById('${1}_1').style.display='block'"></p>
+]]>
+
+        }
+     {
+        regex  = <p\s+class\s*=\s*"DispSwitch"\s+id\s*=\s*"e:(\w+)".*>(.*)</p>
+        replace= <[[
+<p><input type="button" value="${2}を隠す△" style="WIDTH:17em"
+   onClick="document.getElementById('${1}_2').style.display='none';
+            document.getElementById('${1}_1').style.display='block';
+            document.location='#${1}_1'"></p>
+</div>
+]]>
+        }
+     ]
+

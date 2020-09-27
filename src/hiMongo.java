@@ -25,8 +25,10 @@ import org.bson.BsonRegularExpression;
 
 /**
 mongoDBアクセス機.
-
-<pre class=quote10 style="background-color:black;color:#eeffff">
+<!--
+JDOCに関する注意点：<,>はconv -with propJ.txtでエスケープしますので&lt;化は不要です。
+-->
+<pre id="top" class=quote10 style="background-color:black;color:#eeffff">
 
  // JAVAプログラム
  hiMongo.DB db=hiMongo.use("db01");   // database   選択
@@ -35,19 +37,30 @@ mongoDBアクセス機.
    .sort("{_id:-1}")                  // _idで逆向きにソート
    .limit(3)                          // 個数制限
    .getJsonList(hiU.REVERSE)          // 反転したリスト取得
-   .forEach(S->System.out.println(S));// レコード表示
+   .forEach(Rd->System.out.println(Rd));// レコード表示
 
 </pre>
+
 <p>
 hiMongoはドキュメント指向のDataBaseであるmongoDBにアクセスするjavaライブラリです。<br>
 hiMongoはmongo-java-driverのラッパーです。
 </p>
+<hr>
 <ul>
-<li><a class=A1 href="#api">JavaでmongoDB;hiMongo-APIの基本</a></li>
+<li><a class=A1 href="#hiMongo_base">JavaでmongoDB;hiMongo基本</a>
+   <ul>
+   <li><a class=A1 href="#mongoDB">mongoDBとは</a>
+   <li><a class=A1 href="#api_find">hiMongo-APIの基本;レコード取得</a>
+   <li><a class=A1 href="#api_insert">hiMongo-APIの基本;レコード挿入</a>
+   <li><a class=A1 href="#api_cascade">hiMongo-APIの基本;カスケード式</a>
+   </ul>
+</li>
 <li><a class=A1 href="#find">find(検索)の引数と結果</a>
    <ul>
-   <li><a class=A1 href="#class">利用者定義クラス・インスタンスを得る</a>
-   <li><a class=A1 href="#probe">汎用データ探索機hiJSON.Probeで受け取る</a>
+   <li><a class=A1 href="#getDocument">Documentで取得</a>
+   <li><a class=A1 href="#getClass">利用者定義クラス・インスタンスとして取得</a>
+   <li><a class=A1 href="#getProbe">汎用データ探索機hiJSON.Probeで取得</a>
+   <li><a class=A1 href="#getJsonMson">JSON文字列、拡張JSON文字列で取得</a>
    </ul>
 </li>
 <li><a class=A1 href="#insert">insert/update/replace/delete/drop</a>
@@ -65,8 +78,8 @@ hiMongoはmongo-java-driverのラッパーです。
 </li>
 <li><a class=A1 href="#AG">aggregate(集計）</a>
    <ul>
-   <li><a class=A1 href="#aggre">単純集計</a></li>
-   <li><a class=A1 href="#lookup">lookupによるフィールド結合</a></li>
+   <li><a class=A1 href="#aggre">単純集計($match,$group)</a></li>
+   <li><a class=A1 href="#lookup">$lookupによるフィールド結合</a></li>
    </ul>
 </li>
 <li><a class=A1 href="#mson">mongoDB拡張JSON(mson)記述</a>
@@ -83,12 +96,13 @@ hiMongoはmongo-java-driverのラッパーです。
 <li><a class=A1 href="#node">node(Object,Document)の取り扱い</a></li>
 <li><a class=A1 href="#build">build</a></li>
 <li><a class=A1 href="#log">log</a></li>
-<li><a class=A1 href="#interface">API</a></li>
+<li><a class=A1 href="#version">変更履歴</a></li>
+<li><a class=A1 href="#API">API</a></li>
 </ul>
 <p>
 
-
-<table style="line-height:90%" class=t0>
+<hr>
+<table style="line-height:100%" class=t0>
 <tr><td colspan=2>用語:</td></tr>
 <tr><td>mson</td><td>: mongoDB用の拡張JSON記述;ObjectId(...),ISODate(...)あり</td><tr>
 <tr><td>json</td><td>: 標準JSON記述</td><tr>
@@ -124,8 +138,183 @@ hiJSON
 <td></tr>
 </table>
 </p>
-<p class=B1 id="api">
-&emsp;JavaでmongoDB;hiMongo-APIの基本
+<hr>
+
+<a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
+<p class=B1 id="hiMongo_base">
+&emsp;JavaでmongoDB;hiMongoの基本
+</p>
+<p class=B1_2 id="mongoDB">
+&emsp;mongoDBとは
+</p>
+<div id="divMongoDB_1">
+<p><input type="button" value="説明を表示する" style="WIDTH:12em"
+   onClick="document.getElementById('divMongoDB_2').style.display='block';
+            document.getElementById('divMongoDB_1').style.display='none'"></p>
+</div>
+<div id="divMongoDB_2" style="display:none">
+<p><input type="button" value="説明を隠す" style="WIDTH:12em"
+   onClick="document.getElementById('divMongoDB_2').style.display='none';
+            document.getElementById('divMongoDB_1').style.display='block'"></p>
+<p>
+mongoDBはドキュメント指向DBです。SQLで扱うテーブル指向のリレーショナルDBとは異なるアプローチを採っています。
+</p>
+<p class=c>
+&emsp;データモデル、階層
+</p>
+<p>
+mongoDBでは次のようにデータがモデル化されます。
+</p>
+<pre class=prog10>
+データベース(名前付き)
+|
++-- コレクション(名前付き)
+    |
+    +-- レコード        概念上JSON文字列で表現される。
+        |                  {"フィールド名":値、"フィールド名":値・・・}
+        |
+        +-- フィールド(名前付き)  jsonの一要素　中にさらにjson構造を含んでも良い
+                                  名前と値で構成される
+                                  "_id"という名称のデフォルトのフィールドがある
+                                  "_id"値は通常重複が無い形で自動生成される
+</pre>
+<p>
+レコードの形式を限定するスキーマはなく、内容はJSON形式に表せるものであれば何でも構いません。<br>
+レコードには名前は付きません。フィールド値を指定して検索できます。<br>
+mongoDBではレコードをDocumentと呼びますが、ここではコレクションに含まれる単位をレコードと呼びます。
+</p>
+<p>
+コレクションはレコードの集合です。通常はコレクション中のレコードは同じ形式を与えます。ただし、そのような制限がある訳ではありません。
+</p>
+<p>
+次のような形となります。
+</p>
+<pre class=prog10>
+データベース "db01"
++-- コレクション "coll_A"
+|   +-- {value1:'A' ,value2:1.57 ,value3:true <span class=gray>,_id:'????'</span>}
+|   +-- {value1:'C' ,value2:3.78 ,value3:false<span class=gray>,_id:'????'</span>}
+|   +-- {value1:'XX',value2:0    ,value3:true <span class=gray>,_id:'????'</span>}
+|   +-- {value1:'Y' ,value2:2e326,value3:true <span class=gray>,_id:'????'</span>}
++-- コレクション "coll_X"
+    +-- {name:'佐藤',age:50,趣味:'ゴルフ'  <span class=gray>,_id:'????'</span>}
+    +-- {name:'田中',age:25,趣味:'音楽鑑賞'<span class=gray>,_id:'????'</span>}
+    +-- {name:'鈴木',age:30,趣味:'読書'    <span class=gray>,_id:'????'</span>}
+（_idは利用者が意識して挿入したものではありません）
+</pre>
+<p>
+データ表現はJSONを基本とし、引用符などを取り扱いやすいものにしてあります。
+</p>
+
+<p class=c>
+&emsp;レコード検索と挿入
+</p>
+<p>
+レコードの取得には
+</p>
+<ul>
+<li>検索条件</li>
+<li>取得するフィールド</li>
+</ul>
+<p>
+をJSON形式で指定します。
+</p>
+<pre class=prog10>
+    .find("{val_n:'A'}","{_id:0,val_n:1,val_01:1}")
+    //     検索条件      取得するフィールド
+</pre>
+<p>
+条件はJSON形式です。
+</p>
+<pre class=prog10>
+   { フィールド名:値 }
+</pre>
+<p>
+の形です。
+</p>
+<p>
+値は単純値の他、大小や正規表現条件を付加することが出来ます。
+(<a class=A1 href="#compare">フィールド値の大小判断</a>参照)
+</p>
+<pre class=prog10>
+  { val_01        : { $gt : 100} }
+  // フィル―ド名 : 値（100より大きい)
+  //                大なり: 数値
+</pre>
+<p>
+論理積(and)論理和(or)で複数の条件を組み合わせることも出来ます。
+(<a class=A1 href="#logic_ope">条件の組み合わせ</a>参照)
+</p>
+<pre class=prog10>
+   { $and : [ // 配列で要素並びを設定する
+        { val_n : 'A' },        // val_nフィールドの値が'A'
+        { val_01 : {$gt : 100} }// かつval_01フィールドの値が100以上
+        ]}
+</pre>
+<p>
+取得するフィールドはフィールド名に値１または０で取得、取得しないを示します。
+</p>
+<pre class=prog10>
+   { _id:0,val_01:0 } // _idフィールドとval_01フィールド以外を取得する。
+</pre>
+<p>
+_idフィールドと他フィールドの扱いは異なっています。
+<a class=A1 href="#get_fileld">取得フィールド</a>を参照してください。
+</p>
+<p>
+レコードの追加にはレコード情報のJSON形式を与えます。
+</p>
+<pre class=prog10>
+   .insertOne("{name:'佐藤',age:50,趣味:'ゴルフ'}");
+</pre>
+<p>
+_idフィールドは自動で付加されます。
+</p>
+
+<p class=c>
+&emsp;システム構成；サーバとクライアント
+</p>
+<p>
+mongoDBはサーバとクライアント構成をとります。
+</p>
+<p>
+サーバはクライアントプログラムと同じ装置でもリモート装置でも構いません。
+</p>
+<p>
+クライアント側は用意されているドライバを用いアプリケーションプログラムを作成しアクセスする他、mongo-shellとよぶCUIプログラム(mongo)で端末から対話式にアクセスすることも出来ます。<br>
+本ライブラリはクライアントプログラムを作成するためのものです。
+</p>
+
+
+
+<p class=c>
+&emsp;制限
+</p>
+<p>
+mongoDBは精密なスキーマ設計を行うことなく、簡便にDBを構築できます。
+</p>
+<p>
+ある程度複雑な検索を行うことが出来ます。<br>
+現実的DB応用の広い範囲で利用できると考えられますし、リレーショナル・データベースに比べ高速であるため巨大な通信バッファのような応用も出来ます。
+</p>
+<p>
+ただしコレクション間の連携処理は弱く、サブクエリといったものも用意されていません。<br>
+必要な場合プログラムによる手続きによって実現することになります。
+</p>
+<p>
+また、トランザクション機能を持たないことも注意すべき点です。
+</p>
+
+<p><input type="button" value="説明を隠す△" style="WIDTH:12em"
+   onClick="document.getElementById('divMongoDB_2').style.display='none';
+            document.getElementById('divMongoDB_1').style.display='block';
+            document.location='#divMongoDB_1'"></p>
+</div>
+
+
+
+<p class=B1_2 id="api_find">
+&emsp;JavaでmongoDB;hiMongo-APIの基本;レコード取得
 </p>
 <p>
 次のプログラムはJava用のmongoDBライブラリhiMongoの使用例です。
@@ -138,7 +327,7 @@ hiJSON
    {@link hi.hiMongo.Finder#sort(Object) .sort("{_id:-1}")}                  // _idで逆向きにソート
    {@link hi.hiMongo.Finder#limit(int) .limit(3)}                          // 個数制限
    {@link hi.hiMongo.Accessor#getJsonList(long) .getJsonList(hiU.REVERSE)}          // 反転したリスト取得
-   {@link java.lang.Iterable#forEach .forEach(S->System.out.println(S))};// レコード表示
+   {@link java.lang.Iterable#forEach .forEach(Rj->System.out.println(Rj))};// レコード表示
 </pre>
 <p>
 mongoDBのCUIであるmongo-shellの次の手続きに相当します。
@@ -151,7 +340,7 @@ mongoDBのCUIであるmongo-shellの次の手続きに相当します。
     sort({_id:-1}).                      // _idで逆向きにソート
     limit(3).                            // 個数制限
     toArray().reverse().                 // 反転したリスト取得
-    forEach(S=>print(JSON.stringify(S)));// 要素表示
+    forEach(Rd=>print(JSON.stringify(Rd)));// 要素表示
 </pre>
 <p>
 typeフィールドが'A'であるレコードの最新３個を取得しています。
@@ -178,12 +367,12 @@ public class Test {
    public static void main(String[] args_){
       hiMongo.DB db=hiMongo.use("db01");  // database   'db01'選択
       db.get("coll_01")                     // collection 選択
-         .find("{type:'A'}","{_id:0}")      // typeが'A'のレコード,
-         .sort("{_id:-1}")                  // _idで逆向きにソート
-         .limit(3)                          // 個数制限
-         .getMsonList(hiU.REVERSE)          // 反転したリスト取得
-         .forEach(S->System.out.println(S)) // レコード表
-         ;
+        .find("{type:'A'}","{_id:0}")      // typeが'A'のレコード,
+        .sort("{_id:-1}")                  // _idで逆向きにソート
+        .limit(3)                          // 個数制限
+        .getMsonList(hiU.REVERSE)          // 反転したリスト取得
+        .forEach(Rm->System.out.println(Rm)) // レコード表示
+        ;
       }
    }
 ＊＊＊＊＊＊　dbデータ
@@ -209,7 +398,155 @@ OK
             document.location='#div_1'"></p>
 </div>
 <p>
-条件やレコード内容などの主要パラメタはmson(mongoDBの拡張JSON)で与えます。
+本文書に掲載するプログラムおよびプログラムの断片は次の習慣に沿って書かれています。
+</p>
+<div id="divCoding_1">
+<p><input type="button" value="説明を表示する" style="WIDTH:12em"
+   onClick="document.getElementById('divCoding_2').style.display='block';
+            document.getElementById('divCoding_1').style.display='none'"></p>
+</div>
+<div id="divCoding_2" style="display:none">
+<p><input type="button" value="説明を隠す" style="WIDTH:12em"
+   onClick="document.getElementById('divCoding_2').style.display='none';
+            document.getElementById('divCoding_1').style.display='block'"></p>
+
+<p class=c>
+&emsp;変数名;dbは例外
+</p>
+<p>
+変数名は次の様に付けられます。
+</p>
+<table class=t0>
+<tr>
+<td style="width:8em">ローカル変数</td><td style="width:7em">先頭に_</td><td><pre class=prog10>MyRecord _rec=null;</pre></td>
+</tr>
+<tr>
+<td>メソッド引数</td><td>最後に_</td><td><pre class=prog10>void func(String&emsp;arg_){...}</pre></td>
+</tr>
+<tr>
+<td>クラス変数</td><td>_は付けない</td><td><pre class=prog10>class MyClass{String type,double value,Date date}</pre></td>
+</tr>
+</table>
+<p>
+例外："db"は例外的にローカル変数でも_を付加しません。ほぼ予約語に近い扱いとします。
+</p>
+<pre class=prog10>
+    hiMongo.DB <span class=red>db</span>=hiMongo.use("db01");
+</pre>
+
+<p class=c>
+&emsp;ラムダ式引数(hiMongoで扱う範囲のみ)
+</p>
+<p>
+ラムダ式の引数名は大文字+小文字の2文字とします。<br>
+データの表すものと型により次のように定めます。
+</p>
+<table class=t0>
+<tr>
+<td style="width:13em">レコードのDocument表現</td><td style="width:3em">Rd</td><td>forEachDocument(Rd->System.out.println(Rd))</td>
+</tr>
+<tr>
+<td>レコードのClass表現&emsp;</td><td>Rc&emsp;</td><td>forEachClass(MyRecord.class,Rc->System.out.println(Rc.value))</td>
+</tr>
+<tr>
+<td>レコードのProbe表現&emsp;</td><td>Rp&emsp;</td><td>forEachProbe(Rp->System.out.println(Rp.to("value").get())</td>
+</tr>
+<tr>
+<td>レコードのJson表現&emsp;</td><td>Rj&emsp;</td><td>forEachJson(Rj->System.out.println(Rj))</td>
+</tr>
+<tr>
+<td>レコードのMson表現&emsp;</td><td>Rm&emsp;</td><td>forEachMson(Rm->System.out.println(Rm))</td>
+</tr>
+<tr>
+<td>Collection&emsp;</td><td>Co&emsp;</td><td>forThis(Co->System.out.println(Co.count())</td>
+</tr>
+<tr>
+<td>Finder&emsp;</td><td>Fi&emsp;</td><td>forThis(Fi->Fi.getIterable().showRecordId(true))</td>
+</tr>
+<tr>
+<td>Aggregetor&emsp;</td><td>Ag&emsp;</td><td>forThis(Ag->System.out.println("some message"))</td>
+</tr>
+<tr>
+<td>その他のDocumet&emsp;</td><td>Do&emsp;</td><td>getIndexList().forEach(Do->System.out.println(Do))</td>
+</tr>
+</table>
+
+<p class=c>
+&emsp;カスケード式のインデント
+</p>
+<p>
+カスケード式では.を垂直にならべ、最後に.と同じ位置に終端子;を置きます。<br>
+連続数が少ない場合は終端子は最終項の行端に置いても構いません。
+</p>
+<pre class=quote10>
+      hiMongo.DB db=hiMongo.use("db01");
+      db.get("coll_01")
+        .find("{type:'A'}","{_id:0}")
+        .sort("{_id:-1}")
+        .limit(3)
+        .getMsonList(hiU.REVERSE)
+        .forEach(Rm->System.out.println(Rm)) // ;はここに置いても良い
+        ;
+        ^ 縦に揃える
+</pre>
+<p>
+代入がある場合は変数と行を変え=を先頭に置きます。クラス変数アクセスは行を分けません。
+</p>
+<pre class=quote10>
+      hiMongo.DB db=hiMongo.use("db01");
+      long _last_date
+      =db.get("coll_01")
+         .find("{type:'A'}","{_id:0,date:1}")
+         .sort("{_id:-1}").limit(1)
+         .getClassList(WithDate.class)
+         .get(0).date.getTime(); //クラス変数にアクセスする場合は行は分けない
+</pre>
+
+<p class=c>
+&emsp;ブレイスとインデント
+</p>
+<p>
+開始ブレイス{が有ると次の行を１インデント下げ、終了ブレイス}があると次の行を１インデント戻します。<br>
+1インデントは３個の空白です。タブは厳禁です。<br>
+この単純なルールによりif-elseやtry-catchなどの組が見やすくなります。
+</p>
+<pre class=quote10>
+   if(...) {
+      //...
+      //...
+      }
+   else {
+      //...
+      //...
+      }
+   try{
+      //...
+      //..
+      }
+   catch(Exception _ex){
+      //...
+      }
+</pre>
+
+<p class=c>
+&emsp;他
+</p>
+<p>
+データのインデント、関数引数部のインデントなどは特に定めません。
+</p>
+
+
+
+
+<p><input type="button" value="説明を隠す△" style="WIDTH:12em"
+   onClick="document.getElementById('divCoding_2').style.display='none';
+            document.getElementById('divCoding_1').style.display='block';
+            document.location='#divCoding_1'"></p>
+</div>
+
+
+<p class=B1_2 id="api_insert">
+&emsp;APIの基本；レコード挿入
 </p>
 <p>
 レコードの挿入では次の様にレコード内容を拡張JSON(mson)で与えます。
@@ -231,33 +568,60 @@ db.coll_01.
    insertOne({type:'A',value:21,date:<b>new Date</b>(1597648050000)});
 </pre>
 </p>
-
+<p class=B1_2 id="api_cascade">
+&emsp;APIの基本；カスケード式
+</p>
 <p>
 次のようなAPIが用意されており、冒頭のようなカスケード式で呼び出すことも各型の変数で結果を受けて改めて呼び出すことも出来ます
 </p>
 <pre class=quote10>
-hiMongo#<span class=red>use</span>                    => DB
-   DB#<span class=red>get</span>                      => Collection
-      Collection#<span class=red>find</span>          => Finder
-         Finder#<span class=red>sort</span>           => Finder
-         Finder#<span class=red>limit</span>          => Finder
-         Finder#<span class=red>skip</span>           => Finder
-         Finder#<span class=red>forEachXXX</span>     => Finder
-         Finder#<span class=blue>getXXXList</span>     => ArrayList<XXX>
-      Collection#<span class=red>aggregate</span>     => Aggregator
-         Aggregator#<span class=red>forEachXXX</span> => Aggregator
-         Aggregator#<span class=blue>getXXXList</span> => ArrayList<XXX>
-      Collection#<span class=red>insertOne</span>     => Collection
-      Collection#<span class=red>insertMany</span>    => Collection
-      Collection#<span class=red>updateOne</span>     => Collection
-      Collection#<span class=red>updateMany</span>    => Collection
-      Collection#<span class=red>replaceOne</span>    => Collection
-      Collection#<span class=red>deleteOne</span>     => Collection
-      Collection#<span class=red>deleteMany</span>    => Collection
+hiMongo#use                    => DB
+   DB#get                      => Collection
+      Collection#find          => Finder
+         Finder#sort           => Finder
+         Finder#limit          => Finder
+         Finder#skip           => Finder
+         Finder#forEachXXX     => Finder
+         Finder#getXXXList     => ArrayList<XXX>
+      Collection#aggregate     => Aggregator
+         Aggregator#forEachXXX => Aggregator
+         Aggregator#getXXXList => ArrayList<XXX>
+      Collection#insertOne     => Collection
+      Collection#insertMany    => Collection
+      Collection#updateOne     => Collection
+      Collection#updateMany    => Collection
+      Collection#replaceOne    => Collection
+      Collection#deleteOne     => Collection
+      Collection#deleteMany    => Collection
+</pre>
+<p>
+各型のインスタンスで受けて操作する場合は次のような形です。
+</p>
+<pre class=quote10>
+hiMongo.DB         db  = hiMongo.use("db01");
+hiMongo.Collection _coll= db.get("coll_01");
+_coll.find("{}","{_id:0}");
+_coll.sort("{_id:-1}");
+_coll.limit(3);
+ArrayList&lr;String> _recs=coll.getJsonList(hiU.REVERT);
+for(Document _rec:_recs)System.out.println(_rec);
+</pre>
+<p>
+カスケード式では次の様になります。
+</p>
+<pre class=quote10>
+hiMongo.DB db = hiMongo.use("db01");
+db.get("coll_01")                     // DBのget()
+  .find("{}","{_id:0}")               // Collectionのfind()
+  .sort("{_id:-1}")                   // Finderのsort()
+  .limit(3)                           // Finderのlimit()
+  .getJsonList(hiU.REVERT)            // Finder(Accessor)のgetJsonList()
+  .forEach(Rj->System.out.println(Rj)); // ArrayListのforEach()
+// use()から続けることも可能ですが、習慣上DBにはdbという変数を割り当てます。
 </pre>
 
 
-
+<a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
 <p class=B1 id=find>
 &emsp;find(検索)の引数と結果
 </p>
@@ -285,7 +649,7 @@ hiMongo#<span class=red>use</span>                    => DB
 <td>フィールド値の単純一致</td>
 <td>find("{name:'A'}")</td>
 </tr>
-<tr>
+<tr id="compare">
 <td>フィールド値の大小判断</td>
 <td>find("{value:{$gt:100}}")
 <pre class=quot8>
@@ -301,13 +665,14 @@ hiMongo#<span class=red>use</span>                    => DB
 </pre>
 </td>
 </tr>
-<tr>
+<tr id="logic_ope">
 <td>条件の組み合わせ</td>
 <td>find("{$and:[{name:'A'},{value:{$gt:100}}]}")
 <pre class=quot8>
 形式:
 {$and:[{条件},{条件},...]}
 {$or:[{条件},{条件},...]}
+{$not:{条件}}
 </pre>
 
 </td>
@@ -324,7 +689,7 @@ find("{name:/(ba|ab)}") nameがbaまたはabを含む
 </p>
 
 
-<p class=c>
+<p class=c id="get_field">
 &emsp;取得フィールド
 </p>
 <p>
@@ -374,12 +739,10 @@ find("{}","{_id:0,A:0,C:1}") // エラー
 </tr>
 
 <tr>
-<td>{@link org.bson.Document}</td><td>{@link hi.hiMongo.Accessor#getNodeList(long) getNodeList}</td>
+<td>{@link org.bson.Document}</td><td>{@link hi.hiMongo.Accessor#getDocumentList(long) getDocumentList}</td>
 <td>
-mongoDBの原始的なデータノードです。<br>
-基本的にはJSONに対応するObjectのツリーですが、StringやMapなどの基本タイプの他{@link org.bson.types.ObjectId}クラス,{@link java.util.Date}クラスを持ちます。
-toJson()メソッドでJSON文字列を得ることができますが、日本語はutfコードに文字化けすることがあります。<br>
-ObjectIdは{"@oid":"....."}、Dateは{"@date":unixエポック}の形で得られます。
+mongoDBのデータノードです。<br>
+基本的にはJSONに対応するObjectのツリーです。{@link org.bson.Document}は{@link java.util.Map Map<String,Object>}型の辞書です。Stringや数値などの基本タイプの他{@link org.bson.types.ObjectId}クラス,{@link java.util.Date}クラスを持ちます。
 </td>
 </tr>
 
@@ -394,7 +757,9 @@ ObjectIdは{"@oid":"....."}、Dateは{"@date":unixエポック}の形で得ら�
 <tr>
 <td>{@link otsu.hiNote.hiJSON.Probe hiJSON.Probe}</td><td>{@link hi.hiMongo.Accessor#getProbeList getProbeList}</td>
 <td>
-データノードを探索機です。
+データノードの探索機です。<br>
+探索対象となるノード自体は{@link hi.hiMongo.Accessor#getDocumentList(long) getDocumentList()}で得られるものと同じ{@link org.bson.Document}とその構成要素（文字列やリスト、数値など）です。<br>
+{@link org.bson.Document}はMap<String,Object>であり{@link otsu.hiNote.hiJSON.Probe hiJSON.Probe}では辞書として扱われます。
 </td>
 </tr>
 
@@ -426,12 +791,35 @@ getXxxList()にhiU.REVERSEを付けると逆並びとなります。
 {@link hi.hiMongo.Finder}が持つforEachXXX()メソッドを用いればリストを構築することなく、各要素毎得ることが出来ます。
 </p>
 
-
-<p class=B2_2 id="class">
-&emsp;利用者定義クラス・インスタンスを得る
+<p class=B2_2 id="getDocument">
+&emsp;{@link org.bson.Document Document}で取得
 </p>
 <p>
-{@link hi.hiMongo.Collection#find(Object,Object) find}の結果を{@link hi.hiMongo.Accessor#getClassList(Class,long) getClassList}を用い利用者定義のクラス・インスタンスのリストとして得ることが出来ます。
+{@link hi.hiMongo.Collection#find(Object,Object) find}の結果を{@link hi.hiMongo.Accessor#getDocumentList(long) getDocumentList()}を用い検索結果を{@link org.bson.Document Document}のリストとして得ることが出来ます。<br>
+引数としてhiU.REVERSEを付けると逆順のリストが得られます。
+</p>
+<pre class=quote10>
+hiMongo.DB db=hiMongo.use("db01");
+ArrayList<Document> _dlist
+=db.get("coll_01")
+   .find("{}","{_id:0}")
+   .getDocumentList();
+</pre>
+<p>
+{@link hi.hiMongo.Finder#forEachDocument(hiU.ConsumerEx) forEachDocument(Documentを引数とするラムダ式)}用いるとリストを構成することなく一要素毎に処理することが出来ます。
+</p>
+<pre class=quote10>
+hiMongo.DB db=hiMongo.use("db01");
+db.get("coll_01")
+  .find("{}","{_id:0}")
+  .forEachDocument(Rd->System.out.println(Rd.toJson()));
+</pre>
+
+<p class=B2_2 id="getClass">
+&emsp;利用者定義クラス・インスタンスとして取得
+</p>
+<p>
+{@link hi.hiMongo.Collection#find(Object,Object) find}の結果を{@link hi.hiMongo.Accessor#getClassList(Class,long) getClassList()}を用い検索結果を利用者定義のクラス・インスタンスのリストとして得ることが出来ます。
 </p>
 <pre class=quote10>
 <span class=red>class MyRecord</span> {   // レコード内容
@@ -441,7 +829,7 @@ getXxxList()にhiU.REVERSEを付けると逆並びとなります。
    }
 -----
 double _start_date=取得開始レコードのunixエポック
-ArrayList&lt;<span class=red>MyRecord</span>> _recs
+ArrayList<<span class=red>MyRecord</span>> _recs
 =db.get("coll_01")
    .find("{$and:["+
             "{type:'A'},"+
@@ -492,7 +880,7 @@ public class Test {
       // 最後のレコードの30秒前からの'A'レコード取得
       long _start_date= _last_date-30000; // 30秒前
       System.out.println("last="+_last_date+" start="+_start_date);
-      ArrayList&lt;Record> _recs
+      ArrayList<Record> _recs
       =db.get("coll_01")
          .find("{$and:["+
                      "{type:'A'},"+
@@ -552,18 +940,108 @@ OK
             document.location='#divClass_1'"></p>
 </div>
 
+<p>
+参考:サブ・クエリー風の手続きコードも書けます。
+</p>
+<div id="divSubQuery_1">
+<p><input type="button" value="参考コードを表示する" style="WIDTH:12em"
+   onClick="document.getElementById('divSubQuery_2').style.display='block';
+            document.getElementById('divSubQuery_1').style.display='none'"></p>
+</div>
+<div id="divSubQuery_2" style="display:none">
+<p><input type="button" value="参考コードを隠す" style="WIDTH:12em"
+   onClick="document.getElementById('divSubQuery_2').style.display='none';
+            document.getElementById('divSubQuery_1').style.display='block'"></p>
+<pre class=quote8>
+import hi.hiMongo;
+import otsu.hiNote.*;
+import java.util.*;
+public class Test {
+   static class WithDate { // dateだけを得るクラス
+      Date date;
+      }
+   static class Record {   // レコード内容
+      String type;
+      double value;
+      Date   date;
+      }
+   public static void main(String[] args_){
+      hiMongo.DB db=hiMongo.use("db01");
+      ArrayList<Record> _recs
+      =db.get("coll_01")
+         .find("{$and:["+
+                     "{type:'A'},"+
+                     "{date:{$gte:{$date:"+
+              <span class=green>(
+              db.get("coll_01")
+                .find("{type:'A'}","{_id:0,date:1}")
+                .sort("{_id:-1}").limit(1)
+                .getClassList(WithDate.class)
+                .get(0).date.getTime()-30000
+              )</span>
+                                          +"}}}"+
+                      "]}",
+               "{_id:0}")
+         .getClassList(Record.class);
+      System.out.println("records="+hiU.str(_recs,hiU.WITH_INDENT));
 
-<p class=B1_2 id=probe>
-&emsp;汎用データ探索機{@link otsu.hiNote.hiJSON.Probe hiJSON.Probe}で受け取る
+      // 最大、最少、平均を求める
+      double _min  = Double.MAX_VALUE;
+      double _max  = Double.MIN_VALUE;
+      double _total= 0;
+      for(Record _rec:_recs){
+         double _val=_rec.value;
+         _min    = Math.min(_min,_val);
+         _max    = Math.max(_max,_val);
+         _total += _val;
+         }
+      double _avg= _total/_recs.size();
+      System.out.printf("min=%.2f max=%.2f avg=%.2f\n",_min,_max,_avg);
+      }
+   }
+// この例では同一Collectionの２つのインスタンスをget()して用いていますが、
+// 一個のインスタンスで異なるfind()を多重に行っても構いません。それぞれ
+// 別のFinderとなるからです。
+</pre>
+<p><input type="button" value="参考コードを隠す△" style="WIDTH:12em"
+   onClick="document.getElementById('divSubQuery_2').style.display='none';
+            document.getElementById('divSubQuery_1').style.display='block';
+            document.location='#divSubQuery_1'"></p>
+</div>
+<p>
+要素の過不足がチェックされますので、チェックをオフにする必要がある場合はgetClassList()の前にチェックをオフにする指定を入れます。<br>
+{@link hi.hiMongo.Finder#without_option(long)}を用います。指定するフラグは<a class=A1 href="http://www.otsu.co.jp/OtsuLibrary/jdoc/otsu/hiNote/hiJSON.html#option">hiJSONのパーズオプション</a>を参照してください
+</p>
+<pre class=quote10>
+ArrayList<MyClass> _recs=
+db.get("coll_01")
+  .find("{}","{_id:0}")
+  .without_option(hiU.CHECK_UNKNOWN_FIELD // クラスにないフィールドを無視する
+                 |hiU.CHECK_UNSET_FIELD)  // セットされないフィールドをエラーとしない
+  .getClassList();
+</pre>
+<p>
+{@link hi.hiMongo.Finder#forEachClass(Class,hiU.ConsumerEx) forEachClass(class,クラスインスタンスを引数とするラムダ式)}を用いるとリストを構成することなく一要素毎に処理することが出来ます。
+</p>
+<pre class=quote10>
+hiMongo.DB db=hiMongo.use("db01");
+db.get("coll_01")
+  .find("{}","{_id:0}")
+  .forEachClass(MyClass.class,Rc->System.out.println(Rc.value));
+</pre>
+
+<p class=B1_2 id=getProbe>
+&emsp;汎用データ探索機{@link otsu.hiNote.hiJSON.Probe hiJSON.Probe}で取得
 </p>
 <p>
-{@link hi.hiMongo.Accessor#getProbeList(long) getProbeList()}を用いれば、
-型を特定せず、{@link otsu.hiNote.hiJSON.Probe hiJSON.Probe}で受け取り、辞書アクセス、配列アクセスにより値を得ることができます。<br>
+{@link hi.hiMongo.Collection#find(Object,Object) find}の結果を{@link hi.hiMongo.Accessor#getProbeList(long) getProbeList()}を用い検索結果を{@link otsu.hiNote.hiJSON.Probe hiJSON.Probe}のリストで受け取ることが出来ます。<br>
+{@link otsu.hiNote.hiJSON.Probe hiJSON.Probe}は汎用ノードの探索機で辞書(Map<String,Object>).リスト(List<Object>),文字列,数値などで構成されるツリーを探査するメソッドを持ちます。<br>
+{@link org.bson.Document}は辞書/Map<String,Object>ですのでProbeの探索対象となります。<br>
 要素へのアクセスは文字列による名前での指定となります。
 </p>
 <pre class=quote10>
 double _start_date=取得開始レコードのunixエポック
-ArrayList&lt;hiJSON.Node> _recs
+ArrayList<hiJSON.Node> _recs
 =db.get("coll_01")
    .find("{$and:["+
             "{type:'A'},"+
@@ -598,10 +1076,11 @@ public class Test {
          .sort("{_id:-1}").limit(1)
          .getProbeList()
          .get(0).at("date").get(D->((Date)D).getTime());
+
       // 最後のレコードの30秒前からの'A'レコード取得
       long _start_date= _last_date-30000; // 30秒前
       System.out.println("last="+_last_date+" start="+_start_date);
-      ArrayList&lt;hiJSON.Probe> _recs
+      ArrayList<hiJSON.Probe> _recs
               =db.get("coll_01")
                  .find("{$and:["+
                            "{type:'A'},"+
@@ -609,6 +1088,7 @@ public class Test {
                             "]}",
                         "{_id:0}")
                  .getProbeList();
+
       // 最大、最少、平均を求める
       double _min  = Double.MAX_VALUE;
       double _max  = Double.MIN_VALUE;
@@ -644,7 +1124,43 @@ OK
             document.getElementById('divProbe_1').style.display='block';
             document.location='#divProbe_1'"></p>
 </div>
+<p>
+{@link hi.hiMongo.Finder#forEachProbe(hiU.ConsumerEx) forEachProbe(Probeを引数とするラムダ式)}を用いるとリストを構成することなく一要素毎に処理することが出来ます。
+</p>
+<pre class=quote10>
+hiMongo.DB db=hiMongo.use("db01");
+db.get("coll_01")
+  .find("{}","{_id:0}")
+  .forEachProbe(Rp->System.out.println(Rp.getDouble("value")));
+</pre>
 
+<p class=B2_2 id="getJsonMson">
+&emsp;JSON文字列、拡張JSON文字列で取得
+</p>
+<p>
+{@link hi.hiMongo.Collection#find(Object,Object) find}の結果を{@link hi.hiMongo.Accessor#getJsonList(long) getJsonList()}を用いれば純粋なJSON文字列リスト、
+{@link hi.hiMongo.Accessor#getMsonList(long) getMsonList()}を用いれば拡張JSON文字列のリストとして得ることが出来ます。
+</p>
+<pre class=prog10>
+hiMongo.DB db=hiMongo.use("db01");
+ArrayList<String> _jsons
+=db.get("coll_01")
+  .find("{}","{_id:0}")
+  .getJsonList();
+</pre>
+<p>
+{@link hi.hiMongo.Finder#forEachJson(hiU.ConsumerEx) forEachJson(Json文字列を引数とするラムダ式)},{@link hi.hiMongo.Finder#forEachMson(hiU.ConsumerEx) forEachMson(Mson文字列を引数とするラムダ式)}を用いるとリストを構成することなく一要素毎に処理することが出来ます。
+</p>
+<pre class=quote10>
+hiMongo.DB db=hiMongo.use("db01");
+db.get("coll_01")
+  .find("{}","{_id:0}")
+  .forEachJson(Rj->System.out.println(Rj));
+</pre>
+
+
+
+<a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
 <p class=B1 id="insert">
 &emsp;insert/update/replace/delete/drop
 </p>
@@ -655,7 +1171,7 @@ OK
 &emsp;insert,drop(条件無)
 </p>
 <p>
-{@link hi.hiMongo.Collection#insertOne(Object...) insertOne()}の引数は１レコードの拡張JSON形式で、{@link hi.hiMongo.Collection#insertMany(Object...) insertMany()}の引数はJSONのList型です。<br>
+{@link hi.hiMongo.Collection#insertOne(Object...) insertOne()}の引数は１レコードの拡張JSON形式で、{@link hi.hiMongo.Collection#insertMany(Object...) insertMany()}の引数は拡張JSONのList型です。<br>
 それらを記述したテキストファイル、あるいはそれらの解析されたノードツリーも許されます。<br>
 条件文は付きません。
 </p>
@@ -693,13 +1209,13 @@ db.get("coll_01")
 {@link hi.hiMongo.Collection#deleteMany(Object) deleteMany()}では合致するレコードが全て削除されます。
 </p>
 <pre class=quote10>
-hiMongo.DB         db =hiMongo.use("db01");
-hiMongo.Collection col=db.get("coll_01");
+hiMongo.DB         db   =hiMongo.use("db01");
+hiMongo.Collection _coll=db.get("coll_01");
 // --- deleteOne
-coll.deleteOne("{type:'B'}");
+_coll.deleteOne("{type:'B'}");
 
 // --- deleteMany
-coll.deleteMany("{$and:[{type:'A'},{value:{$lt:8}}]}");
+_coll.deleteMany("{$and:[{type:'A'},{value:{$lt:8}}]}");
 </pre>
 <p>
 {@link hi.hiMongo.Collection#updateOne(Object,Object) updateOne()},{@link hi.hiMongo.Collection#updateMany(Object,Object) updateMany()}は{$set:{フィールド名:値}}でフィールドの値の変更を指定します。<br>
@@ -710,12 +1226,12 @@ coll.deleteMany("{$and:[{type:'A'},{value:{$lt:8}}]}");
 
 <pre class=quote10>
 // --- updateOne
-coll.updateOne("{$and:[{type:'B'},{value:{$gt:5}}]}",
-               "{$set:{value:4.32}}");
+_coll.updateOne("{$and:[{type:'B'},{value:{$gt:5}}]}",
+                "{$set:{value:4.32}}");
 
 // --- updateMany
-coll.updateMany("{$and:[{type:'A'},{value:{$lt:5}}]}",
-                "{$set:{value:3.21}}");
+_coll.updateMany("{$and:[{type:'A'},{value:{$lt:5}}]}",
+                 "{$set:{value:3.21}}");
 </pre>
 <p>
 {@link hi.hiMongo.Collection#replaceOne(Object,Object) replaceOne()}はレコード全体の置き換えになります。<br>
@@ -723,8 +1239,8 @@ coll.updateMany("{$and:[{type:'A'},{value:{$lt:5}}]}",
 </p>
 <pre class=quote10>
 // --- replaceOne
-coll.replaceOne("{$and:[{type:'A'},{value:{$lt:5}}]}",
-                "{type:'B',value:6543,date:"+hiMongo.date()+"}");
+_coll.replaceOne("{$and:[{type:'A'},{value:{$lt:5}}]}",
+                 "{type:'B',value:6543,date:"+hiMongo.date()+"}");
 
 </pre>
 
@@ -753,30 +1269,30 @@ public class Test {
            ",{type:'B',value:2001,date:"+hiMongo.date()+"}"+
            ",{type:'A',value:7.89,date:"+hiMongo.date()+"}"+
            ",{type:'A',value:0.12,date:"+hiMongo.date()+"}]");
-      _coll.find("{}","{_id:0}").forEach(R->System.out.println(R));
+      _coll.find("{}","{_id:0}").forEach(Rd->System.out.println(Rd));
 
       System.out.println("--- updateOne");
       _coll.updateOne("{$and:[{type:'B'},{value:{$gt:5}}]}",
                       "{$set:{value:4.32}}");
-      _coll.find("{}","{_id:0,date:0}").forEach(R->System.out.println(R));
+      _coll.find("{}","{_id:0,date:0}").forEach(Rd->System.out.println(Rd));
 
       System.out.println("--- updateMany");
       _coll.updateMany("{$and:[{type:'A'},{value:{$lt:5}}]}",
                       "{$set:{value:3.21}}");
-      _coll.find("{}","{_id:0,date:0}").forEach(R->System.out.println(R));
+      _coll.find("{}","{_id:0,date:0}").forEach(Rd->System.out.println(Rd));
 
       System.out.println("--- replaceOne");
       _coll.replaceOne("{$and:[{type:'A'},{value:{$lt:5}}]}",
                       "{type:'B',value:6543,date:"+hiMongo.date()+"}");
-      _coll.find("{}","{_id:0,date:0}").forEach(R->System.out.println(R));
+      _coll.find("{}","{_id:0,date:0}").forEach(Rd->System.out.println(Rd));
 
       System.out.println("--- deleteOne");
       _coll.deleteOne("{type:'B'}");
-      _coll.find("{}","{_id:0,date:0}").forEach(R->System.out.println(R));
+      _coll.find("{}","{_id:0,date:0}").forEach(Rd->System.out.println(Rd));
 
       System.out.println("--- deleteMany");
       _coll.deleteMany("{$and:[{type:'A'},{value:{$lt:8}}]}");
-      _coll.find("{}","{_id:0,date:0}").forEach(R->System.out.println(R));
+      _coll.find("{}","{_id:0,date:0}").forEach(Rd->System.out.println(Rd));
       }
    }
 ＊＊＊＊＊＊　ビルド実行結果
@@ -835,13 +1351,13 @@ OK
    Date     date;
    }
 -----
-hiMongo.DB db = hiMongo.use("db01");
-<span class=red>MyReord    rec= new MyRecord();</span>
+hiMongo.DB db =  hiMongo.use("db01");
+<span class=red>MyReord    _rec= new MyRecord();</span>
 _rec.type = "D";
 _rec.value= 12.3;
 _rec.date = new Date();
 db.get("coll_01")
-  .insertOne(<span class=red>rec</span>);
+  .insertOne(<span class=red>_rec</span>);
 </pre>
 <p>
 Listにすれば{@link hi.hiMongo.Collection#insertMany(Object...) insertMeny()}も可能です。
@@ -871,8 +1387,8 @@ public class Test {
       hiMongo.Collection coll
       =db.get("coll_01").drop();
       //
-      ArrayList&lt;MyRecord> _recs= new ArrayList&lt;>();
-      for(int _n=0;_n&lt;4;++_n){
+      ArrayList<MyRecord> _recs= new ArrayList<>();
+      for(int _n=0;_n<4;++_n){
          MyRecord _rec= new MyRecord();
          _rec.type = "C";
          _rec.value= _n*10;
@@ -888,7 +1404,7 @@ public class Test {
       coll.insertOne(_rec);
       //
       coll.find()
-          .forEachMson(M->System.out.println(M));
+          .forEachMson(Rm->System.out.println(Rm));
       }
    }
 ＠＠＠＠　実行結果
@@ -911,8 +1427,8 @@ OK
 </p>
 
 
-
-<p class=B1 id=cap_index>
+<a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
+<p class=B1 id="cap_index">
 &emsp;cap指定（最大容量)、index設定
 </p>
 
@@ -965,7 +1481,7 @@ public class Test {
          col.insertOne("{type:'A',value:"+(_n+1)+"}");
          }
       col.find("{}","{_id:0}")
-         .forEachMson(M->System.out.println(M));
+         .forEachMson(Rm->System.out.println(Rm));
       }
    }
 ＊＊＊＊＊＊　ビルド実行結果
@@ -999,11 +1515,11 @@ OK
 <pre class=quote10>
 hiMongo.DB db=hiMongo.use("sampleDB");
 <span class=gray>System.out.println("--- befor creteIndex");</span>
-db.get("商品").getIndexList().forEach(D->System.out.println(D));
+db.get("商品").getIndexList().forEach(Do->System.out.println(Do));
 db.get("商品").createIndex("{商品id:1}","{unique:true}");
 db.get("商品").createIndex("{商品id:1}","{unique:true,expireAfterDays:730}");
 <span class=gray>System.out.println("--- after creteIndex");</span>
-db.get("商品").getIndexList().forEach(D->System.out.println(D));
+db.get("商品").getIndexList().forEach(Do->System.out.println(Do));
 ＠＠＠出力
 --- befor creteIndex
 Document{{v=2, key=Document{{_id=1}}, name=_id_, ns=sampleDB.商品}}
@@ -1016,16 +1532,48 @@ Document{{v=2, unique=true, key=Document{{商品id=1}}, name=商品id_1
 フルコードは<a class=A1 href="#lookup">「aggregate(集計）lookupによるフィールド結合」</a>にあります。
 </p>
 
+<a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
 <p class=B1 id=AG>
 &emsp;aggregate(集計）
 </p>
-
-<p class=B1_2 id=aggre>
-&emsp;単純集計
-</p>
 <p>
 {@link hi.hiMongo.Collection#aggregate(Object) aggregate()}を用いれば集計を得ることができます。<br>
-結果は利用者クラスで受け取ることができます。
+結果の取得は{@link hi.hiMongo.Collection#find(Object,Object) find()}と同様で次のものが用意されています。
+</p>
+<table class=t0>
+<tr>
+<td>Documentで受け取る</td>
+<td>{@link hi.hiMongo.Accessor#getDocumentList() getDocumentList()} リストで受ける<br>
+    {@link hi.hiMongo.Aggregrator#forEachDocument(hiU.ConsumerEx) forEachDocument(Documentを引数とするラムダ式)}</td>
+</tr>
+<tr>
+<td>利用者クラスインタンスで受け取る</td>
+<td>{@link hi.hiMongo.Accessor#getClassList(Class) getClassList(Class)} リストで受ける<br>
+    {@link hi.hiMongo.Aggregrator#forEachClass(Class,hiU.ConsumerEx) forEachClass(Class,利用者クラスインスタンスを引数とするラムダ式)}</td>
+</tr>
+<tr>
+<td>ノード探査機で受け取る</td>
+<td>{@link hi.hiMongo.Accessor#getProbeList() getProbeList()} リストで受ける<br>
+    {@link hi.hiMongo.Aggregrator#forEachProbe(hiU.ConsumerEx) forEachProbe(Probeを引数とするラムダ式)}</td>
+</tr>
+<tr>
+<td>JSON文字列で受け取る</td>
+<td>{@link hi.hiMongo.Accessor#getJsonList() getJsonList()} リストで受ける<br>
+    {@link hi.hiMongo.Aggregrator#forEachJson(hiU.ConsumerEx) forEachJson(Json文字列を引数とするラムダ式)}</td>
+</tr>
+<tr>
+<td>拡張JSON文字列MSONで受け取る</td>
+<td>{@link hi.hiMongo.Accessor#getMsonList() getMsonList()} リストで受ける<br>
+    {@link hi.hiMongo.Aggregrator#forEachMson(hiU.ConsumerEx) forEachJson(Mson文字列を引数とするラムダ式)}</td>
+</tr>
+</table>
+
+
+<p class=B1_2 id=aggre>
+&emsp;単純集計($match,$group)
+</p>
+<p>
+$mactchと$groupで単純集計を得ることが出来ます。
 </p>
 <pre class=quote10>
 <span class=red>class Arec</span> {
@@ -1154,10 +1702,10 @@ OK
 
 
 <p class=B1_2 id="lookup">
-&emsp;lookupによるフィールド結合
+&emsp;$lookupによるフィールド結合
 </p>
 <p>
-aggregateの$lookupを用いれば異なるコレクションのレコード・フィールドを結合することができます。<br>
+$lookupを用いれば異なるコレクションのレコード・フィールドを結合することができます。<br>
 結合されたデータは利用者定義の型のリストで受け取ることができます。
 </p>
 <pre class=quote10>
@@ -1171,7 +1719,7 @@ class A_Rec {
       }
    }
 ---
-ArrayList&lt;A_Rec> _recs
+ArrayList<A_Rec> _recs
 =db.get("店舗商品")
    .aggregate("["+
       "{$match:{$or:["+
@@ -1254,10 +1802,10 @@ public class Test {
       }
    public static void main(String[] args_){
       hiMongo.DB db=hiMongo.use("sampleDB");
-      db.get("商品").getIndexList().forEach(D->System.out.println(D));
+      db.get("商品").getIndexList().forEach(Do->System.out.println(Do));
       db.get("商品").createIndex("{商品id:1}","{unique:true,expireAfterDays:730}");
-      db.get("商品").getIndexList().forEach(D->System.out.println(D));
-      ArrayList&lt;A_Rec> _recs=
+      db.get("商品").getIndexList().forEach(Do->System.out.println(Do));
+      ArrayList<A_Rec> _recs=
       db.get("店舗商品").aggregate("["+
             "{$match:{$or:["+
                  "{'店舗名':'東京'},"+
@@ -1328,7 +1876,7 @@ OK
 
 
 
-
+<a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
 <p class=B1 id="mson">
 &emsp;mongoDB拡張JSON(mson)記述
 </p>
@@ -1726,7 +2274,7 @@ db.get("composer").drop()
 </pre>
 
 
-
+<a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
 <p class=B1 id="remote">
 &emsp;remote接続
 </p>
@@ -1819,11 +2367,12 @@ DB db=hiMongo.connect(_info)
 db.get("coll_01").find()...
 </pre>
 
+<a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
 <p class=B1 id="driver">
 &emsp;driver-APIを使う
 </p>
 <p>
-hiMongoの各クラスが持つmongodb-java-driverの要素にアクセスすることが出来ます。
+hiMongoの各クラスが持つmongo-java-driverの要素にアクセスすることが出来ます。
 </p>
 <table class=t>
 <tr><td>driverのクラス/インターフェース</td><td>hiMongo要素</td></tr>
@@ -1847,7 +2396,7 @@ hiMongoの各クラスが持つmongodb-java-driverの要素にアクセスする
 
 <tr>
 <td>
-{@link com.mongodb.client.MongoCollection MongoCollection&lt;TDocument&gt;}
+{@link com.mongodb.client.MongoCollection MongoCollection<TDocument&gt;}
 </td>
 <td>
 {@link hiMongo.Collection#mongoCollection}
@@ -1856,44 +2405,45 @@ hiMongoの各クラスが持つmongodb-java-driverの要素にアクセスする
 
 <tr>
 <td>
-{@link com.mongodb.client.FindIterable FindIterable&lt;TResult&gt;}
+{@link com.mongodb.client.FindIterable FindIterable<TResult&gt;}
 </td>
 <td>
-{@link hi.hiMongo.Finder#getIterator()}
+{@link hi.hiMongo.Finder#getIterable()}
 </td>
 </tr>
 
 <tr>
 <td>
-{@link com.mongodb.client.AggregateIterable AggregateIterable&lt;TResult&gt;}
+{@link com.mongodb.client.AggregateIterable AggregateIterable<TResult&gt;}
 </td>
 <td>
-{@link hi.hiMongo.Aggregrator#getIterator()}
+{@link hi.hiMongo.Aggregrator#getIterable()}
 </td>
 </tr>
 
 </table>
 
 <p class=c id=createIndex>
-&emsp;例：FindIterable&lt;TResult&gt;.showRecordId
+&emsp;例：FindIterable<TResult&gt;.showRecordId
 </p>
 <p>
 カスケードAPIの流れの中に組み込むにはforThisを用います。forThisはthisをラムダ式に与えて処理後、thisを返しますので、カスケードAPIを連続させることが出来ます。
 </p>
 <p>
-例えば次の様にして{@link com.mongodb.client.FindIterable#showRecordId(boolean) FindIterable&lt;TResult&gt;#showRecordId()}を流れの中で呼び出し、さらに流れを繋ぐことができます。
+例えば次の様にして{@link com.mongodb.client.FindIterable#showRecordId(boolean) FindIterable<TResult&gt;#showRecordId()}を流れの中で呼び出し、さらに流れを繋ぐことができます。
 </p>
 <pre class=quote10>
 <span class=gray>db.get("coll_01")
   .find("{type:'A'}")
   .sort("{_id:-1}")
   .limit(3)</span>
-  <b>.forThis(T->T.getIterator().showRecordId(true))</b>
-  <span class=gray>.forEachJson(J->System.out.println(J));</span>
+  <b>.forThis(Fi->Fi.getIterable().showRecordId(true))</b>
+  <span class=gray>.forEachJson(Rj->System.out.println(Rj));</span>
 </pre>
 
+<a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
 <p class=B1 id="node">
-&emsp;node(Object,Document)の取り扱いx
+&emsp;node(Object,Document)の取り扱い
 </p>
 <div id="divNode_1">
 <p><input type="button" value="説明を表示する" style="WIDTH:10em"
@@ -1922,7 +2472,7 @@ Document.parse(xxx)またはhiMongo.parse(xxx).asNode()で得ることも出来�
 HashMap<String,Object> filter=new HashMap<>();
 filter.put("type","A");
 hiMongo.use("db01").get("coll_01").find(filter)
-       .forEach(D->System.out.prinln(D));
+       .forEach(Rd->System.out.prinln(Rd));
 </pre>
 <p>
 少し複雑な条件だとHashMapで書くのは困難になります。{@link org.bson.Document Document}のappendを用いれば一応記述は可能です。<br>
@@ -1944,7 +2494,7 @@ Document filter
             )
       );
 hiMongo.use("db01").get("coll_01").find(filter)
-       .forEach(D->System.out.prinln(D));
+       .forEach(Rd->System.out.prinln(Rd));
 </pre>
 <p>
 これでも記述としては煩雑過ぎるのでmongo-java-driverには、JSONのノードの形からは完全に逸脱した
@@ -1962,7 +2512,7 @@ Bson filter   // Documentではない！
     );
 </pre>
 <p>
-Documentは受け付けるけどBsonは受け付けないなどmongo-json-driverのAPIに混乱が見られますので、hiMongoでは受け付けないようにしています。
+Bsonデータはそのままdriverに引き渡されます。hiMongoでは動作検証は行っていません。
 </p>
 <p>
 Documentと(Filtersが返す)Bsonの内部形式は次の様になっています。
@@ -2000,7 +2550,7 @@ driverのAPIでBsonを受け付けるものはDocumentを受け付けますの�
             document.location='#divNode_1'"></p>
 </div>
 
-
+<a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
 <p class=B1 id="build">
 &emsp;build
 </p>
@@ -2018,7 +2568,7 @@ hiMongoを動かすには次のjarをリンクする必要があります。(バ
 </p>
 <table class=t0>
 <tr>
-<td>hiMongo_0_06.jar</td>
+<td>hiMongo_0_07.jar</td>
 <td>:  hiMongo本体</td>
 </tr>
 <tr>
@@ -2038,7 +2588,7 @@ hiMongoを動かすには次のjarをリンクする必要があります。(バ
 # 注意！ 改行=LF
 MAIN=Test
 LIB_DIR=../lib
-hiMongoLIB=hiMongo_0_06.jar
+hiMongoLIB=hiMongo_0_07.jar
 hiNoteLIB=hiNote_3_09.jar
 mongoLIB=mongo-java-driver-3.12.5.jar
 LIBS=".:${LIB_DIR}/${hiNoteLIB}:${LIB_DIR}/${mongoLIB}:${LIB_DIR}/${hiMongoLIB}
@@ -2055,7 +2605,7 @@ java -cp ${LIBS} ${MAIN}
 
 
 
-
+<a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
 <p class=B1 id="log">
 &emsp;log
 </p>
@@ -2069,13 +2619,7 @@ java -cp ${LIBS} ${MAIN}
    onClick="document.getElementById('divLog_2').style.display='none';
             document.getElementById('divLog_1').style.display='block'"></p>
 <p>
-ライブラリが出すライブラリの為のログはライブラリの利用者にとって極めて邪魔なものです。
-</p>
-<p>
-mongoDBはDBのopen/closeに関するログをコンソールに出します。
-</p>
-<p>
-この停止法はまだ分かっていません。
+mongo-java-driver-3.12が標準エラーに出すlogの止め方は不明です。
 </p>
 <p><input type="button" value="説明を隠す△" style="WIDTH:10em"
    onClick="document.getElementById('divLog_2').style.display='none';
@@ -2083,6 +2627,7 @@ mongoDBはDBのopen/closeに関するログをコンソールに出します。
             document.location='#divLog_1'"></p>
 </div>
 
+<a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
 <p class=B1 id="version">
 &emsp;変更履歴
 </p>
@@ -2100,15 +2645,38 @@ mongoDBはDBのopen/closeに関するログをコンソールに出します。
 <li>insertなどの引数として利用者クラスを受けれるようにした</li>
 <li>CollenctionにcreateIndex追加</li>
 <li>BigDecimal,Decimal128のjson出力を数値とした。入力は関数形,辞書形とも可</li>
-<li>closeの方針を変更；Clientのcloseを呼ばない様にサンプルプログラムを変更</li>
+<li>closeの方針を変更；Clientのcloseを呼ばない様にサンプルプログラムを変更(ライブラリ自体に変更はない)</li>
 <li>javadocのmongo-java-driver参照を3.7から3.12に変更</li>
 <li>一部Documentに代わりBsonを引数として受けるようにした（ただし積極的公開ではない）</li>
 </ul>
 
-<p class=B2 id="interface"></p>
+<p class=c>
+&emsp;0.07
+</p>
+<ul>
+<li>混乱を防ぐためにメソッド名を型名準拠に変更.
+   <ul>
+   <li>getNodeListをgetDocumentListに変更</li>
+   <li>getIteratorをgetIterableに変更</li>
+   </ul>
+</li>
+<li>形式を揃えるため別名メソッド追加.
+   <ul>
+   <li>getList()/getDocumentList()の別名</li>
+   <li>getList(Class)/getClassList(Class)の別名</li>
+   <li>forEachDocument()/forEach()の別名</li>
+   <li>forEachClass(Class)/forEach(Class)の別名</li>
+   </ul>
+</li>
+<li>サンプルでのラムダ引数の命名法を統一</li>
+<li>JAVADOC記述を修正/強化</li>
+</ul>
+
+<a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
+<p class=B2 id="API">&emsp;ＡＰＩ</p>
  */
 public class hiMongo {
-   final static boolean D=false;// デバグフラグ（開発時用）
+   final static boolean D=true;// デバグフラグ（開発時用）
    //===========================================
    // 解析/表示エンジン設定
    //===========================================
@@ -2164,11 +2732,13 @@ public class hiMongo {
       // を作用させる
       }
    /**
-    * Mongoのログを止める(未).
-    */ // hiMongo
+    * mongo-java-driverのログを止める（未）.
+    *<!-- hiMongo -->
+    */
    public final static void nolog(){}
    /**
-    * mongoDBのログを止める（未）.
+    * mongo-java-driverのログを止める（未）.
+    *<!-- hiMongo -->
     */
    public static void nolog(Class<?> class_){}
    /**
@@ -2184,6 +2754,7 @@ public class hiMongo {
     *を用いれば、それぞれの場所での指定となります。
     *</p>
     *@param use_hson_ true:hsonを用いる、false:hsonを用いない
+    *<!-- hiMongo -->
     */
    public static void with_hson(boolean use_hson_){
       use_hson=use_hson_;
@@ -2193,29 +2764,59 @@ public class hiMongo {
     *<p>
     *本メソッドの後ろにパーズ形式を指定することでパーズが実行されます。
     *</p>
-    *<pre class=prog10>
+    *<pre class=quote10>
     *  String  _json_text="....";
     *  MyClass _data= hiMongo.parseText(_json_text).asClass(MyClass.class);
     *</pre>
+    *<p>
+    *{@link org.bson.Document Document}を得るには次のようにします。
+    *</p>
+    *<pre class=quote10>
+    *  String    _json_text="....";
+    *  Document _doc= new Document(hiMongo.parseText(_json_text).asMap());
+    *</pre>
     *@param text_ テキスト
     *@return 解析エンジン
-    */ // hiMongo
+    *<!-- hiMongo -->
+    */
    public static hiJSON.Engine parseText(String text_){
       return mson_engine.clone().parseText(text_);
       } 
    /**
     * パーズするテキストを指定.
+    *<p>
+    *本メソッドの後ろにパーズ形式を指定することでパーズが実行されます。
+    *</p>
+    *<p>
+    *{@link org.bson.Document Document}を得るには次のようにします。
+    *</p>
+    *<pre class=quote10>
+    *  String    _json_text="....";
+    *  Document _doc= new Document(hiMongo.parse(_json_text).asMap());
+    *</pre>
     *@param text_ テキスト
     *@return 解析エンジン
-    */ // hiMongo
+    *<!-- hiMongo -->
+    */
    public static hiJSON.Engine parse(String text_){
       return mson_engine.clone().parseText(text_);
       }
    /**
     * パーズするFileを指定.
+    *<p>
+    *本メソッドの後ろにパーズ形式を指定することでパーズが実行されます。
+    *</p>
+    *<p>
+    *{@link org.bson.Document Document}を得るには次のようにします。
+    *</p>
+    *<pre class=quote10>
+    *  File     _file= new file("./data.json");
+    *  Document _doc = new Document(hiMongo.parse(_file).asMap());
+    *</pre>
     *@param textFile_ テキストファイル
     *@return 解析エンジン
-    */ // hiMongo
+    *<!-- hiMongo -->
+    */
    public static hiJSON.Engine parse(File textFile_){
       return mson_engine.clone().parse(hiFile.readTextAll(textFile_));
       }
@@ -2225,93 +2826,124 @@ public class hiMongo {
     *本メソッドの後ろにパーズ形式を指定することでパーズが実行されます。<br>
     *他のツール(org.bson.Documentなど）で解析された結果のObjectもパーズできます。
     *</p>
-    *<pre class=prog10>
+    *<pre class=quote10>
     *  String   _json_text="....";
     *  Document _doc = Document.parse(_json_text);
     *  MyClass  _data= hiMongo.parseNode(_doc).asClass(MyClass.class);
     *</pre>
     *@param obj_ ノードツリーObject
     *@return 解析エンジン
-    */ // hiMongo
+    *<!-- hiMongo -->
+    */
    public static hiJSON.Engine parseNode(Object obj_){
       return mson_engine.clone().parseNode(obj_);
       }
    /**
-    * パーズするテキストファイルを指定.
+    * パーズするテキストファイルをファイル名で指定.
     *<p>
     *本メソッドの後ろにパーズ形式を指定することでパーズが実行されます。
     *</p>
-    *<pre class=prog10>
-    *  String  _json_file="./json.txt";
+    *<pre class=quote10>
+    *  String  _json_file="./data.json";
     *  MyClass _data= hiMongo.parseFile(_json_file).asClass(MyClass.class);
+    *</pre>
+    *<p>
+    *{@link org.bson.Document Document}を得るには次のようにします。
+    *</p>
+    *<pre class=quote10>
+    *  String  _json_file="./data.json";
+    *  Document _doc = new Document(hiMongo.parseFile(_file).asMap());
     *</pre>
     *@param fileName_ テキストファイル名
     *@return 解析エンジン
-    */ // hiMongo
+    *<!-- hiMongo -->
+    */
    public static hiJSON.Engine parseFile(String fileName_){
       return mson_engine.clone().parseFile(fileName_);
       }
    /**
-    * mongo拡張JSON表記を得る.
-    *nodeツリー上にObjectID,Dateクラスインスタンスが有る場合ObjectId(),ISODate()の形で表示します。
+    * データ構造表示.
+    *<p>
+    *データ構造表示をします。JSON形式ではありません。
+    *</p>
     *@param obj_ nodeオブジェクト
     *@return 拡張JSON表記
-    */ // hiMongo
+    *<!-- hiMongo -->
+    */
    public static String str(Object obj_){
       return hiU.str(obj_);
       }
    /**
-    * mongo拡張JSON表記を得る.
-    *nodeツリー上にObjectID,Dateクラスインスタンスが有る場合ObjectId(),ISODate()の形で表示します。
+    * データ構造表示.
+    *<p>
+    *データ構造表示をします。JSON形式ではありません。
+    *</p>
     *@param obj_ nodeオブジェクト
-    *@param option_ 表示オプション (hiU.WITH_INDENTなど)
+    *@param option_ 表示オプション (hiU.WITH_INDENTなど{@link otsu.hiNote.hiFieldFormat#option hiFieldFormatオプション}参照)
     *@return 拡張JSON表記
-    */ // hiMongo
+    *<!-- hiMongo -->
+    */
    public static String str(Object obj_,long option_){
       return hiU.str(obj_,option_);
       }
    /**
     * mongo拡張JSON表記を得る.
+    *<p>
     *nodeツリー上にObjectID,Dateクラスインスタンスが有る場合ObjectId(),ISODate()の形で表示します。
+    *</p>
     *@param obj_ nodeオブジェクト
     *@return 拡張JSON表記
-    */ // hiMongo
+    *<!-- hiMongo -->
+    */
    public static String mson(Object obj_){
       return mson_engine.str(obj_);
       }
    /**
     * mongo拡張JSON表記を得る.
+    *<p>
     *nodeツリー上にObjectID,Dateクラスインスタンスが有る場合ObjectId(),ISODate()の形で表示します。
+    *</p>
     *@param obj_ nodeオブジェクト
-    *@param option_ 表示オプション (hiU.WITH_INDENTなど)
+    *@param option_ 表示オプション (hiU.WITH_INDENTなど{@link otsu.hiNote.hiFieldFormat#option hiFieldFormatオプション}参照)
     *@return 拡張JSON表記
-    */ // hiMongo
+    *<!-- hiMongo -->
+    */
    public static String mson(Object obj_,long option_){
       return mson_engine.str(obj_,option_);
       }
    /**
     * 標準JSON表記を得る.
-    *nodeツリー上にObjectID,Dateクラスインスタンスが有る場合{"$oid":"..."},{"$date":unixEpoch}で表示されます
+    *<p>
+    *nodeツリー上にObjectID,Dateクラスインスタンスが有る場合{"$oid":"..."},{"$date":unixEpoch}で表示されます。
+    *</p>
     *@param obj_ nodeオブジェクト
     *@return 拡張JSON表記
-    */ // hiMongo
+    *<!-- hiMongo -->
+    */
    public static String json(Object obj_){
       return json_engine.str(obj_);
       }
    /**
     * 標準JSON表記を得る.
-    *nodeツリー上にObjectID,Dateクラスインスタンスが有る場合{"$oid":"..."},{"$date":unixEpoch}で表示されます
+    *<p>
+    *nodeツリー上にObjectID,Dateクラスインスタンスが有る場合{"$oid":"..."},{"$date":unixEpoch}で表示されます。
+    *</p>
     *@param obj_ nodeオブジェクト
+    *@param option_ 表示オプション (hiU.WITH_INDENTなど{@link otsu.hiNote.hiFieldFormat#option hiFieldFormatオプション}参照)
     *@return 拡張JSON表記
-    */ // hiMongo
+    *<!-- hiMongo -->
+    */
    public static String json(Object obj_,long option_){
       return json_engine.str(obj_,option_);
       }
    /**
     * JSON解析/表示エンジンのクローンを取得.
+    *<p>
     *mongoDB用設定が追加されたJSON解析/表示エンジンを取得します。
+    *</p>
     *@return エンジン
-    */ // hiMongo
+    *<!-- hiMongo -->
+    */
    public static hiJSON.Engine engine(){
       return mson_engine.clone();
       }
@@ -2325,7 +2957,8 @@ public class hiMongo {
     * EX. {$date:1597648051506}
     *</pre>
     *@return 拡張JSON表記
-    */ // hiMongo
+    *<!-- hiMongo -->
+    */
    public static String date(){
       return "{$date:"+new Date().getTime()+"}";
       }
@@ -2336,12 +2969,12 @@ public class hiMongo {
          if( _objs.isEmpty() ) return (List<Bson>)data_;
          if( _objs.get(0) instanceof Bson ) return (List<Bson>)data_;
          }
-      List<Document>      _docList=parseAsDocumentList(data_,engine_);
-      ArrayList<Bson> _ret =new ArrayList<Bson>();
-      _ret.addAll(_docList);
-      return _ret;
+      return new ArrayList<Bson>(parseAsDocumentList(data_,engine_));
       }
-   //org.bson.Documentを用いて[...]形式をパーズする.
+   /**
+    * org.bson.Documentを用いて[...]形式をパーズする.
+    *<!-- hiMongo -->
+    */
    @SuppressWarnings("unchecked")
    private static List<Document> parseAsDocumentList(Object data_,hiJSON.Engine engine_){
        ArrayList<Document> _ret=new ArrayList<>();
@@ -2363,8 +2996,7 @@ public class hiMongo {
          }
       try{
          if( engine_!=null ){
-            List<Object> _objs=engine_.parseText((String)data_)
-                                      .asNodeList();
+            List<Object> _objs=engine_.parseText((String)data_).asNodeList();
             for(Object _obj:_objs){
                _ret.add(new Document((Map<String,Object>)_obj));
                }
@@ -2376,8 +3008,10 @@ public class hiMongo {
          throw new hiException("illegal document class "+_ex.getMessage()+"  "+data_.getClass().getName());
          }
       }
-   // StringまたはMapオブジェクトからDocumentを得る
-   // hiMongo
+   /**
+    * StringまたはMapオブジェクトからDocumentを得る.
+    *<!-- hiMongo -->
+    */
    @SuppressWarnings("unchecked")
    private static Document objToDoc(Object data_,hiJSON.Engine engine_){
       if( data_ instanceof Document ) return (Document)data_;
@@ -2420,9 +3054,10 @@ public class hiMongo {
          throw new hiException("illegal document class "+_ex.getMessage()+"  "+data_.getClass().getName());
          }
       }
-   // StringまたはMapオブジェクトから作成されるDocumentを
-   // 指定名の要素として持つDocumentを得る
-   // hiMongo
+   /**
+    * StringまたはMapオブジェクトから作成されるDocumentを指定名の要素として持つDocumentを得る.
+    *<!-- hiMongo -->
+    */
    @SuppressWarnings("unchecked")
    private static Document namedObjToDoc(String name_,Object data_,hiJSON.Engine engine_){
       if( data_ instanceof Map ){
@@ -2442,44 +3077,61 @@ public class hiMongo {
       throw new hiException("illegal document class "+data_.getClass().getName());
       }
    /**
-    * レコードアクセス機(Finder,Aggregatorのベース)
+    * レコードアクセス機(Finder,Aggregatorのベース).
     *<p>
     *{@link hi.hiMongo.Finder},{@link hi.hiMongo.Aggregrator}のベースです。<br>
-    *この階層を生成することは有りません。
+    *この階層を直接生成することは有りません。
     *</p>
+    *<!-- Accessor -->
     */
    public static class Accessor{
-      MongoIterable<Document> records;
-      //
-      hiJSON.Engine                  msonEngine;
-      hiJSON.Engine                  jsonEngine;
-      Collection                     collection;
+      MongoIterable<Document> records; // Finder,AggregatorでgetIterableで公開
+      hiJSON.Engine           msonEngine;
+      hiJSON.Engine           jsonEngine;
+      Collection              collection;
       Accessor(Collection collection_){
          collection= collection_;
          }
       /**
        * Collectionに戻る.
        *@return コレクション
-       */ // Accessor
+       *<!-- Accessor -->
+       */
        public Collection back(){
          return collection;
          }
       /**
-       * JSON用の表示エンジンを取得.
+       * JSON用の表示エンジンを取得(clone).
        *@return json用表示エンジン
-       */ // Accessor
+       *<!-- Accessor -->
+       */
       final public hiJSON.Engine engineJ(){
          if( this.jsonEngine== null ){
             this.jsonEngine=hiMongo.json_engine.clone();
             }
          return this.jsonEngine;
          }
-
       /**
-       * 現状の解析/表示エンジンを得る(cloneではない)
+       * この層の解析/mson表示エンジンを取得.
+       *<p>
+       *一時的にエンジンの設定を変更するために使用します。<br>
+       *カスケードAPIを連続させるため、通常はforThisのラムダ式内で使います。
+       *</p>
+       *@return 基本の解析/表示エンジン
+       *<!-- Accessor -->
+       */
+      public hiJSON.Engine engine(){
+         if( this.msonEngine== null ){
+            this.msonEngine=hiMongo.mson_engine.clone();
+            }
+         return this.msonEngine;
+         }
+      /**
+       * 現状の解析/表示エンジンを得る(cloneではない).
        *<p>変更を加えてはなりません</p>
        *@return 解析/表示エンジン
-       */ // Accessor
+       *<!-- Accessor -->
+       */
       final public hiJSON.Engine cur_engine(){
          if( this.msonEngine== null ){
             return collection.cur_engine();
@@ -2487,10 +3139,11 @@ public class hiMongo {
          return this.msonEngine;
          }
       /**
-       * 現状の解析/表示エンジンを得る(cloneではない)
+       * 現状の解析/表示エンジンを得る(cloneではない).
        *<p>変更を加えてはなりません</p>
        *@return json用表示エンジン
-       */ // Accessor
+       *<!-- Accessor -->
+       */
       final public hiJSON.Engine cur_engineJ(){
          if( this.jsonEngine== null ){
             return collection.cur_engineJ();
@@ -2499,67 +3152,95 @@ public class hiMongo {
          }
       /**
        * パーズ用エンジンを得る.
-       *定義はCollectionにあります。
+       *<p>定義はCollectionにあります。</p>
        *@return nullの場合はDocument
-       */ // Accessor
+       *<!-- Accessor -->
+       */
       final public hiJSON.Engine parse_engine(){
          return collection.parse_engine();
          }
 
       /**
-       * 解析済みnodeを再解釈する
+       * 解析済みnodeを再解釈する.
        *@param node_ ノードツリー
        *@return 解析エンジン
-       */     // Accessor
+       *<!-- Accessor -->
+       */
       protected hiJSON.Engine parseNode(Object node_){
          if( msonEngine==null ) return hiMongo.mson_engine.parseNode(node_);
          return msonEngine.parseNode(node_);
          }
       /**
-       * 解析済みnodeを再解釈する
-       *@param node_ ノードツリー
-       *@return 解析エンジン
-       */     // Accessor
+       * Documentからクラスを得る.
+       *Object node?
+       *@param class_ クラス
+       *@param node_ ノード
+       *@return クラス
+       *<!-- Accessor -->
+       */
       protected <T> T toClass(Class<T> class_,Document node_){
          return parseNode(node_).asClass(class_);
          }
-      // Accessor
+      /**
+       * DocumentからProbeを得る.
+       *Object node?
+       *@param node_ ノード
+       *@return Probe
+       *<!-- Accessor -->
+       */
       protected hiJSON.Probe toProbe(Document node_){
          return hiJSON.probe(parseNode(node_).asNode());
          }
-      // Accessor
+      /**
+       * オブジェクトからMsonを得る.
+       *@param node_ ノード
+       *@return Mson
+       *<!-- Accessor -->
+       */
       protected String mson(Object obj_){
          if( msonEngine==null ) return hiMongo.mson_engine.str(obj_);
-         return msonEngine.str(obj_);
+         String _ret=msonEngine.str(obj_);
+         msonEngine.str_format().str_param_field("on_flags",0);      // 一時的対応
+         msonEngine.str_format().str_param_field("disabled_flags",0);// 一時的対応
+         return _ret;
          }
-      // Accessor
+      /**
+       * オブジェクトからJsonを得る.
+       *@param node_ ノード
+       *@return Json
+       *<!-- Accessor -->
+       */
       protected String json(Object obj_){
          if( jsonEngine==null ) return hiMongo.json_engine.str(obj_);
          return jsonEngine.str(obj_);
          }
-      // Accessor
+      /**
+       * オブジェクトから構造文字列を得る.
+       *@param node_ ノード
+       *@return 構造文字列
+       *<!-- Accessor -->
+       */
       protected String str(Object obj_){
          return hiU.str(obj_);
          }
 
-      //============= JSON API
       /**
        *JSON文字列のリストの形でレコード取得.
        *@param option_ hi.REVERSE:逆向き
        *@return リスト
-       */ // Accessor
+       *<!-- Accessor -->
+       */
       public ArrayList<String> getJsonList(long option_){
          ArrayList<String>     _ret   = new ArrayList<>();
-         for(Document _record:records){ 
-            _ret.add(json(_record));
-            }
+         for(Document _record:records) _ret.add(json(_record));
          if( (option_&hiU.REVERSE)!=0 ) Collections.reverse(_ret);
          return _ret;
          }
       /**
        *JSON文字列のリストの形でレコード取得
        *@return リスト
-       */   // Accessor
+       *<!-- Accessor -->
+       */
       public ArrayList<String> getJsonList(){
          return getJsonList(0);
          }
@@ -2568,19 +3249,19 @@ public class hiMongo {
        *JSON文字列のリストの形でレコード取得.
        *@param option_ hiU.REVERSE:逆向き
        *@return リスト
-       */   // Accessor
+       *<!-- Accessor -->
+       */
       public ArrayList<String> getMsonList(long option_){
          ArrayList<String>         _ret   = new ArrayList<>();
-         for(Document _record:records){ 
-            _ret.add(mson(_record));
-            }
+         for(Document _record:records) _ret.add(mson(_record));
          if( (option_&hiU.REVERSE)!=0 ) Collections.reverse(_ret);
          return _ret;
          }
       /**
        *MSON文字列のリストの形でレコード取得
        *@return リスト
-       */  // Accessor
+       *<!-- Accessor -->
+       */
       public ArrayList<String> getMsonList(){
          return getMsonList(0);
          }
@@ -2588,36 +3269,34 @@ public class hiMongo {
        *hiJSON.Probeのリストの形でレコード取得.
        *@param option_ hiU.REVERSE:逆向き
        *@return リスト
-       */  // Accessor
+       *<!-- Accessor -->
+       */
       public ArrayList<hiJSON.Probe> getProbeList(long option_){
          ArrayList<hiJSON.Probe>     _ret   = new ArrayList<>();
-         for(Document _record:records){ 
-            _ret.add(toProbe(_record));
-            }
+         for(Document _record:records) _ret.add(toProbe(_record));
          if( (option_&hiU.REVERSE)!=0 ) Collections.reverse(_ret);
          return _ret;
          }
       /**
        *hiJSON.Probeのリストの形でレコード取得.
        *@return リスト
-       */  // Accessor
+       *<!-- Accessor -->
+       */
       public ArrayList<hiJSON.Probe> getProbeList(){
          return getProbeList(0);
          }
-      // Accessor
       /**
        *指定クラスのリストの形でレコード取得.
        *@param class_ クラス
        *@param option_ hiU.REVERSE:逆向き
        *@return レコードリスト
-       */  // Accessor
+       *<!-- Accessor -->
+       */
       public <T> ArrayList<T>  getClassList(Class<T> class_
                                            ,long option_
                                            ){
          ArrayList<T>    _ret   = new ArrayList<>();
-         for(Document _record:records){ 
-            _ret.add(toClass(class_,_record));
-            }
+         for(Document _record:records) _ret.add(toClass(class_,_record));
          if( (option_&hiU.REVERSE)!=0 ) Collections.reverse(_ret);
          return _ret;
          }
@@ -2625,63 +3304,108 @@ public class hiMongo {
        *指定クラスのリストの形でレコード取得.
        *@param class_ クラス
        *@return レコードリスト
-       */  // Accessor
+       *<!-- Accessor -->
+       */
       public <T> ArrayList<T> getClassList(Class<T> class_){
          return getClassList(class_,0);
          }
       /**
-       * nodeオブジェクト(bson-Document)のリストの形でレコード取得.
+       *{@link #getClassList(Class,long)}の別名.
+       *<!-- Accessor -->
+       */
+      final public <T> ArrayList<T>  getList(Class<T> class_
+                                           ,long option_
+                                           ){
+         return getClassList(class_,option_);
+         }
+      /**
+       *{@link #getClassList(Class)}の別名.
+       *<!-- Accessor -->
+       */
+      public <T> ArrayList<T> getList(Class<T> class_){
+         return getClassList(class_,0);
+         }
+      /**
+       * Documentのリストの形でレコード取得.
        *@param option_ hiU.REVERSE:逆向き
        *@return リスト
-       */ 
-      // Accessor
-      public ArrayList<Document> getNodeList(long option_){
+       *<!-- Accessor -->
+       */
+      public ArrayList<Document> getDocumentList(long option_){
          ArrayList<Document> _ret = new ArrayList<>();
          records.into(_ret);
          if( (option_&hiU.REVERSE)!=0 ) Collections.reverse(_ret);
          return _ret;
          }
       /**
-       * nodeオブジェクト(bson-Document)のリストの形でレコード取得.
+       * Documentのリストの形でレコード取得.
        *@return リスト
-       */ // Accessor
-      public ArrayList<Document> getNodeList(){
-         return getNodeList(0);
+       *<!-- Accessor -->
+       */
+      public ArrayList<Document> getDocumentList(){
+         return getDocumentList(0);
          }
-      // Accessor
-      protected Accessor super_forEachNode(hiU.ConsumerEx<Document,Exception> func_){
+      /**
+       *{@link #getDocumentList(long)}の別名.
+       *<!-- Accessor -->
+       */
+      public final ArrayList<Document> getList(long option_){
+         return getDocumentList(option_);
+         }
+      /**
+       *{@link #getDocumentList()}の別名.
+       *<!-- Accessor -->
+       */
+      public ArrayList<Document> getList(){
+         return getDocumentList(0);
+         }
+      /**
+       *forEachDocumentのベース実装.
+       *カスケードAPIの為派生クラスにpublic APIを置いてある
+       *<!-- Accessor -->
+       */
+      protected Accessor super_forEachDocument(hiU.ConsumerEx<Document,Exception> func_){
          for(Document _record:records) hiU.rap(func_,_record);
          return this;
          }
-      // Accessor
+      /**
+       *forEachJsonのベース実装.
+       *カスケードAPIの為派生クラスにpublic APIを置いてある
+       *<!-- Accessor -->
+       */
       protected Accessor super_forEachJson(hiU.ConsumerEx<String,Exception> func_){
-         for(Document _record:records){ 
-            hiU.rap(func_,json(_record));
-            }
+         for(Document _record:records) hiU.rap(func_,json(_record));
          return this;
          }
-      // Accessor
+      /**
+       *forEachMsonのベース実装.
+       *カスケードAPIの為派生クラスにpublic APIを置いてある
+       *<!-- Accessor -->
+       */
       protected Accessor super_forEachMson(hiU.ConsumerEx<String,Exception> func_){
-         for(Document _record:records){ 
-            hiU.rap(func_,mson(_record));
-            }
+         for(Document _record:records) hiU.rap(func_,mson(_record));
          return this;
          }
-      // Accessor
+      /**
+       *forEachProbeのベース実装.
+       *カスケードAPIの為派生クラスにpublic APIを置いてある
+       *<!-- Accessor -->
+       */
       protected Accessor super_forEachProbe(hiU.ConsumerEx<hiJSON.Probe,Exception> func_){
-         for(Document _record:records){ 
-            hiU.rap(func_,toProbe(_record));
-            }
+         for(Document _record:records) hiU.rap(func_,toProbe(_record));
          return this;
          }
-      // Accessor
-      protected <T> Accessor super_forEachClass(Class<T> class_
-                                ,hiU.ConsumerEx<T,Exception> func_){
-         for(Document _record:records){ 
-            hiU.rap(func_,toClass(class_,_record));
-            }
+      /**
+       *forEachClassのベース実装.
+       *カスケードAPIの為派生クラスにpublic APIを置いてある
+       *<!-- Accessor -->
+       */
+      protected <T> Accessor super_forEachClass(Class<T>                    class_
+                                               ,hiU.ConsumerEx<T,Exception> func_){
+         for(Document _record:records) hiU.rap(func_,toClass(class_,_record));
          return this;
          }
+
       }
    /**
     * DB内レコード範囲設定、リスト取得機構.
@@ -2689,79 +3413,80 @@ public class hiMongo {
     *{@link hi.hiMongo.Collection#find(Object,Object)}で得られます。
     *</p>
     *<pre class=quote10>
-    *hiMongo.finder find=hiMongo.use("db01").get("coll_01").find("{}","_id:0");
+    *hiMongo.finder _find=hiMongo.use("db01")
+    *                            .get("coll_01")
+    *                            .find("{}","_id:0");
     *</pre>
     *<p>
     *通常はこのインスタンスを明示することはなく{@link hi.hiMongo.Collection#find(Object,Object)}の後カスケード式にメソッドを呼び出します。
     *</p>
     *<pre class=quote10>
-    *hiMongo.use("db01").get("coll_01").find("{}","{_id:0}")
-    *                                  .sort("{_id:-1}") // Finderのメソッド
-    *                                  .limit(100)       // Finderのメソッド
-    *                                  .forEach(......); // Finderのメソッド
+    *hiMongo.use("db01")                         // DBが得られる
+    *       .get("coll_01")                      //   Collectionが得られる
+    *       .find("{}","{_id:0}")                //     Finderが得られる
+    *       .sort("{_id:-1}")                    //       Finderのメソッド
+    *       .limit(100)                          //       Finderのメソッド
+    *       .forEach(Rd->System.out.println(Rd));//       Finderのメソッド
     *</pre>
+    *<!-- Finder -->
     */
    public static class Finder extends Accessor{
       Finder(Collection collection_){
          super(collection_);
          }
       /**
-       * この層の解析/表示エンジンを取得.
+       * イテラブル取得.
        *<p>
-       *一時的にエンジンの設定を変更するために使用します。<br>
-       *カスケードAPIを連続させるため、通常はforThisのラムダ式内で使います。
-       *</p>
-       *<pre class=prog10>
-       *    long _last_date_Y
-       *    =db.get("coll_01")
-       *       .find("{type:'A'}","{_id:0,date:1}")
-       *       .sort("{_id:-1}")
-       *       .forThis(T->T.engine().without_option(hiU.CHECK_UNKNOWN_FIELD))
-       *       .limit(1).getClassList(WithDate_X.class).get(0)
-       *       .date.getTime();
-       *</pre>
-       *@return 基本の解析/表示エンジン
-       */ // Finder
-      public hiJSON.Engine engine(){
-         if( this.msonEngine== null ){
-            this.msonEngine=hiMongo.mson_engine.clone();
-            }
-         return this.msonEngine;
-         }
-      /**
-       * イテレータ取得.
-       *<p>
-       *{@link com.mongodb.client.FindIterable}を取得します。
+       *{@link com.mongodb.client.FindIterable FindIterable<Document>}を取得します。
        *</p>
        *<p>
        *hiMongoが標準では用意していない機能を使うことができます。<br>
        *通常はforThisのラムダ式内で使います。
        *</p>
 <pre class=prog10>
-hiMongo.find()
-       .forThis(T->T.getIterator().showRecordId(true))
-       .getMsonList();
+hiMongo.use("db01")
+       .get("coll_01")
+       .find()
+       .forThis(Fi->Fi.getIterable().showRecordId(true))
+       .forEach(Rd->System.out.println(Rd));
 </pre>
-       *@return イテレータ
+       *@return 管理しているFindIterable<Document>
+       *<!-- Finder -->
        */
-      public FindIterable<Document> getIterator(){
+      public FindIterable<Document> getIterable(){
          return (FindIterable<Document>)records;
          }
       /**
-       * 表示オプションon設定.
+       * Mson表示オプションon設定.
        *<p>
+       *{@link hi.hiMongo.Accessor#getMsonList(long) getMsonList()}で得る表示のオプションを変更します。<br>
+       *デフォルトのオプションはhiU.JSON_STYLEとhiU.WITH_SINGLE_QUOTEです。<br>
        *オプション値は{@link otsu.hiNote.hiFieldFormat#option hiFieldFormatオプション}を参照して下さい。
        *</p>
+       *<p>
+       *{@link hi.hiMongo.Accessor#getJsonList(long) getJsonList()}用のデフォルトオプション値はhiU.JSON_STYLEのみです。<br>
+       *getJsonList()で得る表示の変更は{@link #forThis()}と{4link hi.hiMongo.Accessor#engineJ() engineJ()}を用い次の様に行います。
+       *</p>
+       *<pre class=quote10>
+       * // Jsonの表示オプション変更
+       *db.get("coll_01")
+       *  .find("{}","{_id:0"})
+       *  .forThis(Fi->Fi.engineJ().str_format().str_option(hiU.WITH_SINGLE_QUOTE))
+       *  .forEachJson(Rj->System.out.println(Rj));
+       *</pre>
        *@param option_ オプション
        *@return this
-       */ // Finder  Accessorに入れないのは戻り値がFinderであるため
-      public Finder str_option(long option_){
+       *<!-- Finder -->
+       */
+      private Finder str_option(long option_){
          engine().str_format().str_option(option_);
          return this;
          }
       /**
-       * 表示オプションoff設定.
+       * Mson表示オプションoff設定.
        *<p>
+       *getMsonListで得る表示のオプションを変更します。<br>
+       *デフォルトのオプションはhiU.JSON_STYLEとhiU.WITH_SINGLE_QUOTEです。<br
        *オプション値は{@link otsu.hiNote.hiFieldFormat#option hiFieldFormatオプション}を参照して下さい。
        *</p>
        *<pre class=prog10>
@@ -2770,19 +3495,23 @@ hiMongo.find()
        *</pre>
        *@param option_ オプション
        *@return this
-       */ // Finder  Accessorに入れないのは戻り値がFinderであるため
-      public Finder str_disable_option(long option_){
+       *<!-- Finder -->
+       */
+      private Finder str_disable_option(long option_){
          engine().str_format().str_disable_option(option_);
+         engine().str_format().str_param_field("on_flags",0);      // 一時的対応
+         //msonEngine.str_format().str_param_field("disabled_flags",0);// 一時的対応
          return this;
          }
       /**
        * パーズオプションon設定.
        *<p>
-       *オプション値は{@link otsu.hiNote.hiJSON hiJSON}のパーズオプション項目を参照して下さい。
+       *オプション値は<a class=A1 href="http://www.otsu.co.jp/OtsuLibrary/jdoc/otsu/hiNote/hiJSON.html#option">hiJSONのパーズオプション</a>を参照して下さい。
        *</p>
        *@param option_ オプション
        *@return this
-       */ // Finder  Accessorに入れないのは戻り値がFinderであるため
+       *<!-- Finder -->
+       */
       public Finder with_option(long option_){
          engine().with_option(option_);
          return this;
@@ -2790,7 +3519,7 @@ hiMongo.find()
       /**
        * パーズオプションoff設定.
        *<p>
-       *オプション値は{@link otsu.hiNote.hiJSON hiJSON}のパーズオプション項目を参照して下さい。
+       *オプション値は<a class=A1 href="http://www.otsu.co.jp/OtsuLibrary/jdoc/otsu/hiNote/hiJSON.html#option">hiJSONのパーズオプション</a>を参照して下さい。
        *</p>
        *<pre class=prog10>
        * 例えば次の指定をすればクラス割り当て時に過不足フィールドのチェックをしません
@@ -2799,7 +3528,8 @@ hiMongo.find()
        *</pre>
        *@param option_ オプション
        *@return this
-       */ // Finder  Accessorに入れないのは戻り値がFinderであるため
+       *<!-- Finder -->
+       */
       public Finder without_option(long option_){
          engine().without_option(option_);
          return this;
@@ -2807,11 +3537,13 @@ hiMongo.find()
       /**
        * ソート設定.
        *<p>
-       *ソート法をJSON文字列で指定します。ソートはgetXXX()でレコード情報を取得するときに行われます。
+       *ソート法をJSON文字列で指定します。<br>
+       *この段階でソートが行われるのではなく、最終的リスト取得またはforEachアクセス時に反映されます。
        *</p>
        *@param sort_condition_ ソート指定拡張JSON値
        *@return this
-       */ // Finder
+       *<!-- Finder -->
+       */
       public Finder sort(Object sort_condition_){
          ((FindIterable<Document>)records).sort(objToDoc(sort_condition_,parse_engine()));
          return this;
@@ -2819,10 +3551,12 @@ hiMongo.find()
       /**
        * 取得数設定.
        *<p>
-       *取得レコード数を設定します。getXXX()でレコード情報をするときに使用されます。<br>
-       *指定しない場合全レコードとなります。
+       *取得レコード数を設定します。<br>
+       *指定しない場合全レコードとなります。<br>
+       *この段階で指定数のレコードを得る訳ではなく、最終的リスト取得またはforEachアクセス時に反映されます。
        *</p>
-       */ // Finder
+       *<!-- Finder -->
+       */
       public Finder limit(int limit_){
          ((FindIterable<Document>)records).limit(limit_);
          return this;
@@ -2837,54 +3571,82 @@ hiMongo.find()
          return this;
          }
       /**
-       * Documentを引数とするラムダ式実行.
+       * 取得Documentを引数とするラムダ式実行.
        *<p>
-       *getNodeList()で一旦リストを作成しリストのforEachを用いることも可能ですが
+       *getDocumentList()で一旦リストを作成しリストのforEachを用いることも可能ですが
        *本メソッドを使用すると、リストを作成することなく、レコードに対し順にアクセスすることができます。
        *</p>
+<pre class=prog10>
+hiMongo.use("db01")
+       .get("coll_01")
+       .find("{type:'A'}","{_id:0}")
+       .forEachDocument(Rd->System.out.println(Rd));// Document-nodeのtoString()表示
+</pre>
        *@param func_ Documentを引数とするラムダ式
-       *@return this;
-       */ // Finder
-      public Finder forEachNode(hiU.ConsumerEx<Document,Exception> func_){
-         return (Finder)super_forEachNode(func_);
+       *@return this
+       *<!-- Finder -->
+       */
+      public Finder forEachDocument(hiU.ConsumerEx<Document,Exception> func_){
+         return (Finder)super_forEachDocument(func_);
          }
-      /** {@link #forEachNode(hiU.ConsumerEx) forEachNode(func_)}と同じ. */
+      /** {@link #forEachDocument(hiU.ConsumerEx) forEachDocument(func_)}の別名. */
       public Finder forEach(hiU.ConsumerEx<Document,Exception> func_){
-         return (Finder)super_forEachNode(func_);
+         return (Finder)super_forEachDocument(func_);
          }
       /**
        * Jsonを引数とするラムダ式実行.
        *<p>
-       *getNodeList()で一旦リストを作成しリストのforEachを用いることも可能ですが
+       *getJsonList()で一旦リストを作成しリストのforEachを用いることも可能ですが
        *本メソッドを使用すると、リストを作成することなく、レコードに対し順にアクセスすることができます。
        *</p>
-       *@param func_ Documentを引数とするラムダ式
-       *@return this;
-       */ // Finder
+<pre class=prog10>
+hiMongo.use("db01")
+       .get("coll_01")
+       .find("{type:'A'}","{_id:0}")
+       .forEachJson(Rj->System.out.println(Rj));// JSON表示
+</pre>
+       *@param func_ Json文字列を引数とするラムダ式
+       *@return this
+       *<!-- Finder -->
+       */
       public Finder forEachJson(hiU.ConsumerEx<String,Exception> func_){
          return (Finder)super_forEachJson(func_);
          }
       /**
        * Msonを引数とするラムダ式実行.
        *<p>
-       *getNodeList()で一旦リストを作成しリストのforEachを用いることも可能ですが
+       *getMsonList()で一旦リストを作成しリストのforEachを用いることも可能ですが
        *本メソッドを使用すると、リストを作成することなく、レコードに対し順にアクセスすることができます。
        *</p>
-       *@param func_ Documentを引数とするラムダ式
-       *@return this;
-       */ // Finder
+<pre class=prog10>
+hiMongo.use("db01")
+       .get("coll_01")
+       .find("{type:'A'}","{_id:0}")
+       .forEachMson(Rm->System.out.println(Rm));// MSON表示
+</pre>
+       *@param func_ 拡張JSON文字列を引数とするラムダ式
+       *@return this
+       *<!-- Finder -->
+       */
       public Finder forEachMson(hiU.ConsumerEx<String,Exception> func_){
          return (Finder)super_forEachMson(func_);
          }
       /**
-       * Probeを引数とするラムダ式実行.
+       * {@link otsu.hiNote.hiJSON.Probe hiJSON.Probe}を引数とするラムダ式実行.
        *<p>
-       *getNodeList()で一旦リストを作成しリストのforEachを用いることも可能ですが
+       *getProbeList()で一旦リストを作成しリストのforEachを用いることも可能ですが
        *本メソッドを使用すると、リストを作成することなく、レコードに対し順にアクセスすることができます。
        *</p>
-       *@param func_ Documentを引数とするラムダ式
-       *@return this;
-       */ // Finder
+<pre class=prog10>
+hiMongo.use("db01")
+       .get("coll_01")
+       .find("{type:'A'}","{_id:0}")
+       .forEachProbe(Rp->System.out.println(Rp.to("type").get());// Probeを用いたノードアクセス
+</pre>
+       *@param func_ Probeを引数とするラムダ式
+       *@return this
+       *<!-- Finder -->
+       */
       public Finder forEachProbe(hiU.ConsumerEx<hiJSON.Probe,Exception> func_){
          return (Finder)super_forEachProbe(func_);
          }
@@ -2894,21 +3656,56 @@ hiMongo.find()
        *getClassList()で一旦リストを作成しリストのforEachを用いることも可能ですが
        *本メソッドを使用すると、リストを作成することなく、レコードに対し順にアクセスすることができます。
        *</p>
+<pre class=prog10>
+class MyClass{String type;double value;Date date}
+----
+hiMongo.use("db01")
+       .get("coll_01")
+       .find("{type:'A'}","{_id:0}")
+       .forEachClass(MyClass.class,Rc->System.out.println(Rc.type);// クラスアクセス
+</pre>
        *@param func_ クラスインスタンスを引数とするラムダ式
        *@return this
-       */ // Finder
+       *<!-- Finder -->
+       */
       public <T> Finder forEachClass(Class<T> class_,hiU.ConsumerEx<T,Exception> func_){
          return (Finder)super_forEachClass(class_,func_);
          }
-
+      /** {@link #forEachClass(Class,hiU.ConsumerEx) forEachClass(func_)}と同じ. */
+      public <T> Finder forEach(Class<T>                    class_,
+                            hiU.ConsumerEx<T,Exception> func_){
+         return (Finder)super_forEachClass(class_,func_);
+         }
       /**
        * このFinderに対してラムダ式実行.
        *<p>
        *カスケード式の流れの中でFinderに対する操作を行います。
        *</p>
+       *<p>
+       *次の例ではprint文の実行、Iteratorの取得などを行いながらカスケード処理をしています。
+       *</p>
+<pre class=prog10>
+hiMongo.DB db= hiMongo.use("db01");
+db.get("coll_01")
+  .find("{}","{_id:0}")
+  .limit(2)
+  .forThis(Fi->System.out.println("NO showRecordId"))
+  .forEachMson(Rm->System.out.println(Rm))
+  .forThis(Fi->System.out.println("WITH showRecordId"))
+  .forThis(Fi->F.getIterable().showRecordId(true))
+  .forEachMson(Rm->System.out.println(Rm));
+＠＠＠ 結果
+NO showRecordId
+{'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+{'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
+WITH showRecordId
+{'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z'), '$recordId':1}
+{'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z'), '$recordId':2}
+</pre>
        *@param func_ Finderを引数とするラムダ式
-       *@return this;
-       */ // Finder
+       *@return this
+       *<!-- Finder -->
+       */
       public Finder forThis(hiU.ConsumerEx<Finder,Exception> func_){
          hiU.rap(func_,this);
          return this;
@@ -2919,22 +3716,25 @@ hiMongo.find()
     *<p>
     *{@link hi.hiMongo.Collection#aggregate(Object)}で得られます。
     *</p>
+    *<!-- Aggregrator -->
     */
    public static class Aggregrator extends Accessor{
       MongoCollection<Document> mongoCollection;
       List<Bson>      procs;
       /**
        * 指定のコレクション用の集計器.
-       */ // Aggregrator
+       *<!-- Aggregrator -->
+       */
       Aggregrator(Collection collection_){
          super(collection_);
          mongoCollection= collection.mongoCollection;
          }
       /**
-       * イテレータ取得
-       *@return イテレータ
-       */ // Aggregrator
-      public AggregateIterable<Document> getIterator(){
+       * イテラブル取得
+       *@return 管理しているAggregateIterable<Document> 
+       *<!-- Aggregrator -->
+       */
+      public AggregateIterable<Document> getIterable(){
          return (AggregateIterable<Document>)records;
          }
       /**
@@ -2944,8 +3744,9 @@ hiMongo.find()
        *</p>
        *@param option_ オプション
        *@return this
-       */ // Aggregrator  Accessorに入れないのは戻り値がAggregratorであるため
-      public Aggregrator str_option(long option_){
+       *<!-- Aggregrator -->
+       */
+      private Aggregrator str_option(long option_){
          engine().str_format().str_option(option_);
          return this;
          }
@@ -2960,19 +3761,21 @@ hiMongo.find()
        *</pre>
        *@param option_ オプション
        *@return this
-       */ // Aggregrator  Accessorに入れないのは戻り値がAggregratorであるため
-      public Aggregrator str_disable_option(long option_){
+       *<!-- Aggregrator -->
+       */
+      private Aggregrator str_disable_option(long option_){
          engine().str_format().str_disable_option(option_);
          return this;
          }
       /**
        * パーズオプションon設定.
        *<p>
-       *オプション値は{@link otsu.hiNote.hiJSON hiJSON}のパーズオプション項目を参照して下さい。
+       *オプション値は<a class=A1 href="http://www.otsu.co.jp/OtsuLibrary/jdoc/otsu/hiNote/hiJSON.html#option">hiJSONのパーズオプション</a>を参照してください。
        *</p>
        *@param option_ オプション
        *@return this
-       */ // Aggregrator  Accessorに入れないのは戻り値がAggregratorであるため
+       *<!-- Aggregrator -->
+       */
       public Aggregrator with_option(long option_){
          engine().with_option(option_);
          return this;
@@ -2980,7 +3783,7 @@ hiMongo.find()
       /**
        * パーズオプションoff設定.
        *<p>
-       *オプション値は{@link otsu.hiNote.hiJSON hiJSON}のパーズオプション項目を参照して下さい。
+       *オプション値は<a class=A1 href="http://www.otsu.co.jp/OtsuLibrary/jdoc/otsu/hiNote/hiJSON.html#option">hiJSONのパーズオプション</a>を参照してください。
        *</p>
        *<pre class=prog10>
        * 例えば次の指定をすればクラス割り当て時に過不足フィールドのチェックをしません
@@ -2989,79 +3792,99 @@ hiMongo.find()
        *</pre>
        *@param option_ オプション
        *@return this
-       */ // Aggregrator  Accessorに入れないのは戻り値がAggregratorであるため
+       *<!-- Aggregrator -->
+       */
       public Aggregrator without_option(long option_){
          engine().without_option(option_);
          return this;
          }
       /**
-       * match.
+       * match設定.
        *@param arg_ match引数
-       */ // Aggregrator
+       *@return this
+       *<!-- Aggregrator -->
+       */
       public Aggregrator match(Object arg_){
          procs.add(namedObjToDoc("$match",arg_,parse_engine()));
          records= mongoCollection.aggregate(procs);
          return this;
          }
       /**
-       * group.
+       * group設定.
        *@param arg_ group引数
-       */ // Aggregrator
+       *@return this
+       *<!-- Aggregrator -->
+       */
       public Aggregrator group(Object arg_){
          procs.add(namedObjToDoc("$group",arg_,parse_engine()));
          records= mongoCollection.aggregate(procs);
          return this;
          }
       /**
-       * lookup.
+       * lookup設定.
        *@param arg_ lookup引数
-       */ // Aggregrator
+       *@return this
+       *<!-- Aggregrator -->
+       */
       public Aggregrator lookup(Object arg_){
          procs.add(namedObjToDoc("$lookup",arg_,parse_engine()));
          records= mongoCollection.aggregate(procs);
          return this;
          }
       /**
-       * project.
+       * project設定.
        *@param arg_ project引数
-       */ // Aggregrator
+       *@return this
+       *<!-- Aggregrator -->
+       */
       public Aggregrator project(Object arg_){
          procs.add(namedObjToDoc("$project",arg_,parse_engine()));
          records= mongoCollection.aggregate(procs);
          return this;
          }
       /**
-       * unwind.
+       * unwind設定.
        *@param arg_ unwind引数
-       */ // Aggregrator
+       *@return this
+       *<!-- Aggregrator -->
+       */
       public Aggregrator unwind(Object arg_){
          procs.add(namedObjToDoc("$unwind",arg_,parse_engine()));
          records= mongoCollection.aggregate(procs);
          return this;
          }
       /**
-       * sort.
+       * sort設定.
        *@param arg_ sort引数
-       */ // Aggregrator
+       *@return this
+       *<!-- Aggregrator -->
+       */
       public Aggregrator sort(Object arg_){
          procs.add(namedObjToDoc("$sort",arg_,parse_engine()));
          records= mongoCollection.aggregate(procs);
          return this;
          }
       /**
-       * limit.
+       * limit設定.
        *@param limit_ limit数
-       */ // Aggregrator
+       *@return this
+       *<!-- Aggregrator -->
+       */
       public Aggregrator limit(int limit_){
          procs.add(Document.parse("{$limit:"+limit_+"}"));
          records= mongoCollection.aggregate(procs);
          return this;
          }
       /**
-       * 機能を追加する.
+       * 機能unitを追加する.
+       *<p>
+       *機能unitを追加します。機能は'$'も含めて指定します。(EX "$sort")
+       *</p>
        *@param proc_ 機能("$xxx")
        *@param arg_ 引数
-       */ // Aggregrator
+       *@return this
+       *<!-- Aggregrator -->
+       */
       public Aggregrator add_proc(String proc_,Object arg_){
          procs.add(namedObjToDoc(proc_,arg_,parse_engine()));
          records= mongoCollection.aggregate(procs);
@@ -3069,29 +3892,41 @@ hiMongo.find()
          }
       /**
        * リストを介することなく、結果を１個ずつラムダ式で得る.
-       *@param func_ ラムダ式
+       *@param func_ Document-nodeを引数とするラムダ式
        *@return this
-       */ // Aggregrator
-      public Aggregrator forEachNode(hiU.ConsumerEx<Document,Exception> func_){
-         return (Aggregrator)super_forEachNode(func_);
+       *<!-- Aggregrator -->
+       */
+      public Aggregrator forEachDocument(hiU.ConsumerEx<Document,Exception> func_){
+         return (Aggregrator)super_forEachDocument(func_);
          }
-      /** {@link #forEachNode(hiU.ConsumerEx) forEachNode(func_)}と同じ. */
+      /** {@link #forEachDocument(hiU.ConsumerEx) forEachDocument(func_)}の別名. */
       public Aggregrator forEach(hiU.ConsumerEx<Document,Exception> func_){
-         return (Aggregrator)super_forEachNode(func_);
+         return (Aggregrator)super_forEachDocument(func_);
          }
       /**
        * リストを介することなく、Json結果を１個ずつラムダ式で得る.
        *@param func_ ラムダ式
        *@return this
-       */ // Aggregrator
+       *<!-- Aggregrator -->
+       */
       public Aggregrator forEachJson(hiU.ConsumerEx<String,Exception> func_){
          return (Aggregrator)super_forEachJson(func_);
+         }
+      /**
+       * リストを介することなく、Mson結果を１個ずつラムダ式で得る.
+       *@param func_ ラムダ式
+       *@return this
+       *<!-- Aggregrator -->
+       */
+      public Aggregrator forEachMson(hiU.ConsumerEx<String,Exception> func_){
+         return (Aggregrator)super_forEachMson(func_);
          }
       /**
        * リストを介することなく、Probe結果を１個ずつラムダ式で得る.
        *@param func_ ラムダ式
        *@return this
-       */ // Aggregrator
+       *<!-- Aggregrator -->
+       */
       public Aggregrator forEachProbe(hiU.ConsumerEx<hiJSON.Probe,Exception> func_){
          return (Aggregrator)super_forEachProbe(func_);
          }
@@ -3100,16 +3935,23 @@ hiMongo.find()
        *@param <T> 利用者クラス
        *@param class_ 利用者クラス
        *@return this
-       */ // Aggregrator
+       *<!-- Aggregrator -->
+       */
       public <T> Aggregrator forEachClass(Class<T>                    class_,
-                                     hiU.ConsumerEx<T,Exception> func_){
+                                          hiU.ConsumerEx<T,Exception> func_){
+         return (Aggregrator)super_forEachClass(class_,func_);
+         }
+      /** {@link #forEachClass(Class,hiU.ConsumerEx) forEachClass(func_)}の別名. */
+      public <T> Aggregrator forEach(Class<T>                    class_,
+                                hiU.ConsumerEx<T,Exception> func_){
          return (Aggregrator)super_forEachClass(class_,func_);
          }
       /**
        * この集計器に対してラムダ式実行.
        *@param func_ Aggregratorを引数とするラムダ式
-       *@return this;
-       */ // Aggregrator
+       *@return this
+       *<!-- Aggregrator -->
+       */
       public Aggregrator forThis(hiU.ConsumerEx<Aggregrator,Exception> func_){
          hiU.rap(func_,this);
          return this;
@@ -3129,6 +3971,7 @@ hiMongo.find()
     *<p>
     *find,update,replase機能など持ちます。
     *</p>
+    *<!-- Collection -->
     */
    public static class Collection{
       DB            db;
@@ -3136,13 +3979,15 @@ hiMongo.find()
       hiJSON.Engine jsonEngine;
       boolean       use_hson;
       /**
-       * コレクション(collection).
-       * このデータを用いて細かな作業を行っても構いません(推奨はしない)
+       * driverレベルのcollection.
+       * このデータを用いてmongo-java-driverレベルの細かな作業が可能です
+       *<!-- Collection -->
        */
       public MongoCollection<Document> mongoCollection;
       /**
-       * 指定DBを設定する
-       */ // Collection
+       * 指定DBを設定する.
+       *<!-- Collection -->
+       */
       Collection(DB db_){
          db=db_;
          use_hson=hiMongo.use_hson;
@@ -3161,8 +4006,9 @@ hiMongo.find()
        *  .with_hson()
        *  .insertMany(json_text);
        *</pre>
-       *@return this;
-       */ // Collection
+       *@return this
+       *<!-- Collection -->
+       */
       public Collection with_hson(){
          use_hson=true;
          return this;
@@ -3176,7 +4022,8 @@ hiMongo.find()
        *</p>
        *@param use_hson_ true:hsonを用いる、false:hsonを用いない
        *@return this
-       */ // Collection
+       *<!-- Collection -->
+       */
       public Collection with_hson(boolean use_hson_){
          use_hson=use_hson_;
          return this;
@@ -3184,7 +4031,8 @@ hiMongo.find()
       /**
        * with_hsonパーズ用エンジン取得.
        *@return use_hsonの場合現状のエンジン、!use_hsonの場合null
-       */ // Collection
+       *<!-- Collection -->
+       */
       final hiJSON.Engine parse_engine(){
          if( use_hson ) return cur_engine();
          return null;
@@ -3192,7 +4040,8 @@ hiMongo.find()
       /**
        * 現状の解析/表示エンジンを得る(cloneではない)
        *@return 解析/表示エンジン
-       */ // Accessor
+       *<!-- Collection -->
+       */
       final public hiJSON.Engine cur_engine(){
          if( this.msonEngine== null ){
             return hiMongo.mson_engine;
@@ -3202,7 +4051,8 @@ hiMongo.find()
       /**
        * 現状のJSON表示エンジンを得る(cloneではない)
        *@return 解析/表示エンジン
-       */ // Accessor
+       *<!-- Collection -->
+       */
       final public hiJSON.Engine cur_engineJ(){
          if( this.jsonEngine== null ){
             return hiMongo.json_engine;
@@ -3211,16 +4061,19 @@ hiMongo.find()
          }
 
      /**
-       * DBに戻る
-       */// Collection
+       * DBに戻る.
+       *@return このコレクションが属するデータベース
+       *<!-- Collection -->
+       */
       DB back(){
          return db;
          }
       /**
        * この集計器に対してラムダ式実行.
        *@param func_ Collectionを引数とするラムダ式
-       *@return this;
-       */// Collection 
+       *@return this
+       *<!-- Collection -->
+       */
       public Collection forThis(hiU.ConsumerEx<Collection,Exception> func_){
          hiU.rap(func_,this);
          return this;
@@ -3228,7 +4081,7 @@ hiMongo.find()
       /**
        * 検索条件とフィールド指定のfind.
        *<p>
-       *このメソッドは条件設定を行います。実際の検索作業はFinderが行います
+       *このメソッドは条件設定を行います。実際の検索作業はforEachXXX(),getXXXList()時に行われます。
        *</p>
        *<p>
        *引数は文字列({@link java.lang.String}),テキストファイル({@link java.io.File})またはノードツリー(node-Object:{@link org.bson.Document}等)です。
@@ -3236,12 +4089,11 @@ hiMongo.find()
        *@param filterJ_ jsonで条件指定
        *@param memberJ_ jsonで取得フィールド指定
        *@return Finder
-       */ // Collection
+       *<!-- Collection -->
+       */
       @SuppressWarnings("unchecked")
       public hiMongo.Finder find(Object filterJ_,Object memberJ_){
-         if( filterJ_==null ) {
-            filterJ_="{}";
-            }
+         if( filterJ_==null ) filterJ_="{}";
          hiMongo.Finder _ret= new hiMongo.Finder(this);
          _ret.records = mongoCollection.find(objToBson(filterJ_,parse_engine()));
          if( memberJ_!=null ){
@@ -3252,28 +4104,29 @@ hiMongo.find()
       /**
        * 検索条件指定のfind.
        *<p>
-       *このメソッドは条件設定を行います。実際の検索作業はFinderが行います
+       *このメソッドは条件設定を行います。実際の検索作業はforEachXXX(),getXXXList()時に行われます。
        *</p>
        *<p>
        *引数は文字列({@link java.lang.String}),テキストファイル({@link java.io.File})またはノードツリー(node-Object:{@link org.bson.Document}等)です。
        *</p>
        *@param filterJ_ 条件指定
        *@return Finder
-       */ // Collection
+       *<!-- Collection -->
+       */
       public hiMongo.Finder find(Object filterJ_){
          return find(filterJ_,null);
          }
       /**
        * 全件検索のfind.
        *<p>
-       *このメソッドは条件設定を行います。実際の検索作業はFinderが行います
+       *このメソッドは条件設定を行います。実際の検索作業はforEachXXX(),getXXXList()時に行われます。
        *</p>
        *@return Finder
-       */ // Collection
+       *<!-- Collection -->
+       */
       public hiMongo.Finder find(){
          return find(null,null);
          }
-
       /**
        * 1レコード追加(mongoAPIのinsertOne使用).
        *<p>
@@ -3281,7 +4134,8 @@ hiMongo.find()
        *</p>
        *@param jsonTexts_ レコードを表すjson文字列。複数可
        *@return this
-       */ // Collection
+       *<!-- Collection -->
+       */
       public Collection insertOne(Object... jsonTexts_){
          for(Object _jsonText:jsonTexts_){
             mongoCollection.insertOne(objToDoc(_jsonText,parse_engine()));// Bsonは不可
@@ -3289,20 +4143,29 @@ hiMongo.find()
          return this;
          }
       /**
-       * コレクション上の全レコードを削除します.
+       * コレクションを削除します.
+       *<p>
+       * コレクションはDBから削除されますが連続してアクセスは可能です。<br>
+       * insertが発行されれば現状の名前のコレクションが新たに生成されレコードが挿入されます。
+       *</p>
+<pre class=quote10>
+hiMongo.use("db01")
+       .get("coll_01")
+       .drop()                             // コレクションが削除される
+       .insertOne("{type:'A',value:1000}");// コレクションが生成され、レコードが追加される
+</pre>
        *@return this
-       */ // Collection
+       *<!-- Collection -->
+       */
       public Collection drop(){
          mongoCollection.drop();
-         //db.collections.remove(name);
-         //   DBの辞書からは削除されるがアクセスは可能
-         //   DBに再びget()が発行されればDBの辞書に追加される
          return this;
          }
       /**
        * レコード数を得る.
        *@return レコード数
-       */ // Collection
+       *<!-- Collection -->
+       */
       public long count(){
          return mongoCollection.countDocuments();
          }
@@ -3318,7 +4181,8 @@ hiMongo.find()
        *</p>
        *@param filterJ_ 条件
        *@return レコード数
-       */ // Collection
+       *<!-- Collection -->
+       */
       public long count(Object filterJ_){
          return mongoCollection.countDocuments(objToBson(filterJ_,parse_engine()));// BSON!
          }
@@ -3326,8 +4190,8 @@ hiMongo.find()
        * リスト形式文字列で複数レコードを追加する.
        *<p>
        *レコードの単純並び形式の文字列でレコードを追加します。<br>
-       *記述はJSONの配列形式("[{...},{...}...]")と単純にレコードが並んだ形("{...}{...}...")の何れも受け付けます。<br>
-       *これはリスト形式になってしまっている記述に対処するためのもので、単に複数レコードを一気にinsertしたいのであれば、insert()に配列または複数引数を与えることでも実現できます。
+       *記述はJSONの配列形式("[{...},{...}...]")の形です。一個だけの記述("{...}")も許されます<br>
+       *nsertMany()に配列または複数引数を与えることも可能です。
        *</p>
        *<p>
        *レコードは拡張JSON、拡張JSONを内容とするテキストFile、拡張JSONの解析済みノードツリー、利用者クラスインスタンスのリストで指定します。<br>
@@ -3339,16 +4203,32 @@ hiMongo.find()
         ",{type:'A',value:4.56,date:ISODate('2020-08-17T07:07:10.000Z')}"+
         ",{type:'B',value:2001,date:ISODate('2020-08-17T07:07:20.000Z')}]";
    String _record2=
-        "[{type:'A',value:7.89,date:ISODate('2020-08-17T07:07:30.000Z')}"+
-        ",{type:'A',value:0.12,date:ISODate('2020-08-17T07:07:40.000Z')}]";
+        "{type:'A',value:7.89,date:ISODate('2020-08-17T07:07:30.000Z')}";
    hiMongo.DB          db   =hiMongo.use("db02");
    hiMongo.Collection  _coll=db.get("coll_01");
    _coll.insertMany(_records,_records2); // 複数の文字列をセット可能
    db.close();
 </pre>
+       *<p>
+       *{@link #with_hson()}を指定すれば、コメントが入ったり配列形式でない形でレコードが並んでいる記述のファイルを読むことも出来ます。
+<pre class=prog10>
+＝＝＝ ファイル data.hson
+  // 複数レコード記述が単純に並んでいる
+  {type:'A',value:12.3,date:ISODate('2020-08-17T07:07:00.000Z')}
+  {type:'A',value:/{@literal *}4.56{@literal *}/3.33,date:ISODate('2020-08-17T07:07:10.000Z')} // ブロックコメント
+  {type:'B',value:2001,date:ISODate('2020-08-17T07:07:20.000Z')} // コメント
+  {type:'A',value:7.89,date:ISODate('2020-08-17T07:07:30.000Z')}
+＝＝＝ プログラム
+   hiMongo.DB db= hiMongo.use("db01");
+   db.get("coll_01").drop()
+     .with_hson()
+     .insertMany(new File("data.hson"));
+</pre>
+       *</p>
        *@param jsonTexts_ json記述
        *@return this
-       */ // Collection
+       *<!-- Collection -->
+       */
       public Collection insertMany(Object... jsonTexts_){
          List<Document> _doc_list= new ArrayList<Document>();
          for(Object _jsonText:jsonTexts_){
@@ -3365,7 +4245,8 @@ hiMongo.find()
        *</p>
        *@param proc_ 集計手続き [{...},{...}...]
        *@return 集計器
-       */ // Collection
+       *<!-- Collection -->
+       */
       public Aggregrator aggregate(Object proc_){
          Aggregrator _ret=new Aggregrator(this);
          _ret.procs   = parseAsBsonList(proc_,parse_engine());// BSONのリスト
@@ -3375,10 +4256,13 @@ hiMongo.find()
 
       /**
        * aggregate(集計).
+       *<p>
        *集計手続き無で集計器を作成します。<br>
-       *集計手続きは集計器のmatch()メソッドなどで追加できます。
+       *集計手続きは集計器の{@link hi.hiMongo.Aggregrator#match(Object) match()メソッド}などで追加出来ます。
+       *</p>
        *@return 集計器
-       */ // Collection
+       *<!-- Collection -->
+       */
       public Aggregrator aggregate(){
          Aggregrator _ret=new Aggregrator(this);
          _ret.procs = new ArrayList<Bson>();
@@ -3400,7 +4284,8 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:4.56}]},
        *@param filterJ_ 条件
        *@param updateJ_ 置き換えフィールド指定
        *@return this
-       */ // Collection
+       *<!-- Collection -->
+       */
       public Collection updateOne(Object filterJ_,Object updateJ_){
          hiJSON.Engine _parse_engine=parse_engine();
          mongoCollection.updateOne(objToBson(filterJ_,_parse_engine)
@@ -3408,7 +4293,7 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:4.56}]},
          return this;
          }
       /**
-       * 条件にあうレコードを全てupdateする.
+       * 条件に合うレコードを全てupdateする.
        *<p>
        *引数は文字列({@link java.lang.String}),テキストファイル({@link java.io.File})またはノードツリー(node-Object:{@link org.bson.Document}等)です。
        *</p>
@@ -3425,7 +4310,8 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
        *@param filterJ_ 条件(String,File,node)
        *@param updateJ_ 置き換えフィールド指定(String,File,node)
        *@return this
-       */ // Collection
+       *<!-- Collection -->
+       */
       public Collection updateMany(Object filterJ_,Object updateJ_){
          hiJSON.Engine _parse_engine=parse_engine();
          mongoCollection.updateMany(objToBson(filterJ_,_parse_engine)
@@ -3443,7 +4329,8 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
        *@param filterJ_ 条件
        *@param recordJ_ 新規レコード内容
        *@return this
-       */ // Collection
+       *<!-- Collection -->
+       */
       public Collection replaceOne(Object filterJ_,Object recordJ_){
          hiJSON.Engine _parse_engine=parse_engine();
          mongoCollection.replaceOne(objToBson(filterJ_,_parse_engine) //フィルターはBSON可
@@ -3457,7 +4344,8 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
        *</p>
        *@param filterJ_ 条件
        *@return this
-       */ // Collection
+       *<!-- Collection -->
+       */
       public Collection deleteOne(Object filterJ_){
          mongoCollection.deleteOne(objToBson(filterJ_,parse_engine()));// BSON
          return this;
@@ -3469,7 +4357,8 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
        *</p>
        *@param filterJ_ 条件
        *@return this
-       */ // Collection
+       *<!-- Collection -->
+       */
       public Collection deleteMany(Object filterJ_){
          mongoCollection.deleteMany(objToBson(filterJ_,parse_engine()));//BSON
          return this;
@@ -3491,8 +4380,9 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
        *</p>
        *@param keyset_ フィールドと昇順降順指定のセット
        *@param option_ {}{unique:true}{expireAfter:秒数}
-       *@return this;
-       */ // Collection
+       *@return this
+       *<!-- Collection -->
+       */
       public Collection createIndex(Object keyset_,Object option_){
          try{
             Bson _keyset=objToBson(keyset_,parse_engine());
@@ -3515,7 +4405,7 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
                      if( _after.equals("expireAfter") ){
                         _options.expireAfter(_time,TimeUnit.SECONDS);
                         }
-                     if( _after.endsWith("Days") ){
+                     else if( _after.endsWith("Days") ){
                         _options.expireAfter(_time,TimeUnit.DAYS);
                         }
                      else if( _after.endsWith("Hours") ){
@@ -3544,23 +4434,26 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
       /**
        * Index設定.
        *@param keyset_ キーと昇順降順指定のセット
-       *@return this;
-       */ // Collection
+       *@return this
+       *<!-- Collection -->
+       */
       public Collection createIndex(Object keyset_){
          return createIndex(keyset_,null);
          }
       /**
-       * 全index消去
-       *@return this;
-       */ // Collection
+       * 全index消去.
+       *@return this
+       *<!-- Collection -->
+       */
       public Collection dropIndexes(){
          mongoCollection.dropIndexes();
          return this;
          }
       /**
        * index消去
-       *@return this;
-       */ // Collection
+       *@return this
+       *<!-- Collection -->
+       */
       public Collection dropIndex(String ... index_){
          for(String _index:index_){
              mongoCollection.dropIndex(_index);
@@ -3568,9 +4461,10 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
          return this;
          }
       /**
-       * index情報のリストを得る
+       * index情報のリストを得る.
        *@return リスト
-       */  // Collection
+       *<!-- Collection -->
+       */
       public ArrayList<Document> getIndexList(){
          ArrayList<Document> _ret = new ArrayList<>();
          mongoCollection.listIndexes().into(_ret);
@@ -3588,7 +4482,8 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
     *<p>
     *close()は用意されていますが通常は呼ぶ必要はありません。
     *</p>
-    */ // DB
+    *<!-- DB -->
+    */
    public static class DB implements Closeable{
       Client                                          client;
       public MongoDatabase                            mongoDatabase;
@@ -3596,7 +4491,8 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
        * client(DBサーバとの接続)とデータベース名で構築する.
        *@param client_ client_
        *@param dbName_ データベース名
-       */ // DB
+       *<!-- DB -->
+       */
       DB(hiMongo.Client client_,String dbName_){
          client= client_;
          mongoDatabase = client.mongoClient.getDatabase(dbName_);
@@ -3605,7 +4501,8 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
        * コレクションを得る.
        *@param collectionName_ コレクション名
        *@return コレクション
-       */ // DB
+       *<!-- DB -->
+       */
       public hiMongo.Collection get(String collectionName_){
          hiMongo.Collection _ret = new hiMongo.Collection(this);
          _ret.mongoCollection= mongoDatabase.getCollection(collectionName_);
@@ -3618,7 +4515,8 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
        *例えば起動時に初期化用としてDBを読み込むだけといった場合です。<br>
        *通常は呼ぶ必要はありません。
        *</p>
-       */ // DB
+       *<!-- DB -->
+       */
       public void close(){
          hiU.close(mongoDatabase);
          hiU.close(client);
@@ -3627,7 +4525,8 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
        * コレクション名一覧を得る.
        *@param sort_ ソートを行うか
        *@return コレクション名一覧
-       */ // DB
+       *<!-- DB -->
+       */
       public ArrayList<String> show_collections(boolean sort_){
          ArrayList<String> _ret= new ArrayList<>();
          MongoIterable<java.lang.String> _list  =mongoDatabase.listCollectionNames();
@@ -3640,7 +4539,8 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
       /**
        * DB内容を消去する.
        *@return this
-       */ // DB
+       *<!-- DB -->
+       */
       public DB drop(){
          mongoDatabase.drop();
          return this;
@@ -3648,7 +4548,8 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
       /**
        * コレクションが存在するか調べる.
        *@return true:存在する、false:存在しない
-       */ // DB
+       *<!-- DB -->
+       */
        public boolean exists(String collectionName_){
          MongoIterable<java.lang.String> _list  =mongoDatabase.listCollectionNames();
          for(String _name:_list){
@@ -3675,7 +4576,8 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
        *@param name_ コレクション名
        *@param capInfo_ キャップ指定
        *@return Collection
-       */ // DB
+       *<!-- DB -->
+       */
       public Collection createCappedCollection(String name_,String capInfo_){
          CapInfo _capInfo=hiJSON.parse(capInfo_).as(CapInfo.class);
          if( !_capInfo.force && exists(name_) ) return get(name_);
@@ -3687,10 +4589,13 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
                                          .maxDocuments(_capInfo.records));
          return get(name_);
          }
-      // Cap指定
+      /**
+       * Cap指定
+       *<!-- DB -->
+       */
       static class CapInfo{
-         long size;
-         long records;
+         long    size;
+         long    records;
          boolean force;
          }
       }
@@ -3702,14 +4607,16 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
     *<p>
     *close()は用意されていますが通常は呼ぶ必要はありません。。
     *</p>
-    */ // Client
+    *<!-- Client -->
+    */
    public static class Client implements Closeable{
       public MongoClient   mongoClient;
       // 単独生成禁止
       Client(){}
       /**
-       * デフォルトの接続(localhost.27017)
-       */ // Client
+       * デフォルトの接続(localhost.27017).
+       *<!-- Client -->
+       */
       hiMongo.Client connect(){
          mongoClient   = new MongoClient("localhost", 27017);
          return this;
@@ -3722,7 +4629,8 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
        *</p>
        *@param info_ リモート情報
        *@return 接続されたhiMongo.Client
-       */ // Client
+       *<!-- Client -->
+       */
       hiMongo.Client connect(hiMongo.RemoteInfo info_){
          if( info_==null ){
             mongoClient   = new MongoClient("localhost", 27017);
@@ -3745,7 +4653,8 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
        *例えば起動時に初期化用としてDBを読み込むだけといった場合です。<br>
        *通常は呼ぶ必要はありません。
        *</p>
-       */ // Client
+       *<!-- Client -->
+       */
       public void close(){
          hiU.close(mongoClient);
          }
@@ -3753,7 +4662,8 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
        * データベース名一覧を得る.
        *@param sort_ ソートを行うか
        *@return データベース名一覧
-       */ // Client
+       *<!-- Client -->
+       */
       public ArrayList<String> show_dbs(boolean sort_){
          ArrayList<String> _ret= new ArrayList<>();
          // MongoIterable#forEachはjava8ではconflictを起こす
@@ -3766,7 +4676,10 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
          }
       /**
        * databaseを得る.
-       */ // Client
+       *@param dbName_ データベース名
+       *@return データベース
+       *<!-- Client -->
+       */
       public DB use(String dbName_){
          DB     _ret= new DB(this,dbName_);
          return _ret;
@@ -3774,16 +4687,16 @@ db.coll_01.updateOne({$and:[{type:'A'},{value:{$lt:1.00}}]},
       }// end Client
    /**
     * デフォルト接続localhost.27017でデータベースを得る.
-    *<p>
-    *DBクラスはCloseableなので閉じたプログラム空間で使用する場合は次のような記述が推奨されます。
-    *</p>
     *<pre class=prog10>
-    *try(hiMongo.DB db=hiMongo.use("db01")){
-    *   // db手続き
-    *   }
+    *hiMongo.DB db= hiMongo.use("db01");
     *</pre>
+    *<p>
+    *hiMongoアプリでは習慣的にhiMongo.DBインスタンス名をdbとしています。
+    *</p>
+    *@param dbName_ データベース名
     *@return データベース
-    */ // hiMongo
+    *<!-- hiMongo -->
+    */
    public static hiMongo.DB use(String dbName_){
       Client _client=new Client().connect();
       return _client.use(dbName_);
@@ -3844,7 +4757,8 @@ db.get("coll_01").find()...
     *</pre>
     *@param remote_ JSONまたはnodeまたはhiMongo.RemoteInfo
     *@return サーバとの接続
-    */ // hiMongo
+    *<!-- hiMongo -->
+    */
    @SuppressWarnings("unchecked")
    public static hiMongo.Client connect(Object remote_){
       Client _ret= new Client();
@@ -3878,6 +4792,7 @@ db.get("coll_01").find()...
     * default接続でdb一覧を得る.
     *@param sort_ 文字ソートを行うか
     *@return db一覧
+    *<!-- hiMongo -->
     */
    public static ArrayList<String> show_dbs(boolean sort_){
       return new Client().connect().show_dbs(sort_);
@@ -3900,6 +4815,10 @@ DB db=hiMongo.connect(_info)
              .use("db01");
 db.get("coll_01").find()...
 </pre>
+<p>
+リモート側（サーバ側）での設定に関しては<a class=A1 href="hiMongo.html#remote">remote接続</a>を参照してください。
+</p>
+    *<!-- hiMongo -->
     */
    public static class RemoteInfo {
       /** ホスト名,ip-addr */

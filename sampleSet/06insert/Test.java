@@ -13,29 +13,29 @@ public class Test {
            ",{type:'B',value:2001,date:"+hiMongo.date()+"}"+
            ",{type:'A',value:7.89,date:"+hiMongo.date()+"}"+
            ",{type:'A',value:0.12,date:"+hiMongo.date()+"}]");
-      _coll.find("{}","{_id:0}").forEach(R->System.out.println(R));
+      _coll.find("{}","{_id:0}").forEach(Rd->System.out.println(Rd));
 
       System.out.println("--- updateOne");
       _coll.updateOne("{$and:[{type:'B'},{value:{$gt:5}}]}",
                       "{$set:{value:4.32}}");
-      _coll.find("{}","{_id:0,date:0}").forEach(R->System.out.println(R));
+      _coll.find("{}","{_id:0,date:0}").forEach(Rd->System.out.println(Rd));
 
       System.out.println("--- updateMany");
       _coll.updateMany("{$and:[{type:'A'},{value:{$lt:5}}]}",
                       "{$set:{value:3.21}}");
-      _coll.find("{}","{_id:0,date:0}").forEach(R->System.out.println(R));
+      _coll.find("{}","{_id:0,date:0}").forEach(Rd->System.out.println(Rd));
 
       System.out.println("--- replaceOne");
       _coll.replaceOne("{$and:[{type:'A'},{value:{$lt:5}}]}",
                       "{type:'B',value:6543,date:"+hiMongo.date()+"}");
-      _coll.find("{}","{_id:0,date:0}").forEach(R->System.out.println(R));
+      _coll.find("{}","{_id:0,date:0}").forEach(Rd->System.out.println(Rd));
 
       System.out.println("--- deleteOne");
       _coll.deleteOne("{type:'B'}");
-      _coll.find("{}","{_id:0,date:0}").forEach(R->System.out.println(R));
+      _coll.find("{}","{_id:0,date:0}").forEach(Rd->System.out.println(Rd));
 
       System.out.println("--- deleteMany");
       _coll.deleteMany("{$and:[{type:'A'},{value:{$lt:8}}]}");
-      _coll.find("{}","{_id:0,date:0}").forEach(R->System.out.println(R));
+      _coll.find("{}","{_id:0,date:0}").forEach(Rd->System.out.println(Rd));
       }
    }

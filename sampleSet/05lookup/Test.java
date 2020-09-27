@@ -13,9 +13,9 @@ public class Test {
       }
    public static void main(String[] args_){
       hiMongo.DB db=hiMongo.use("sampleDB");
-      db.get("商品").getIndexList().forEach(D->System.out.println(D));
+      db.get("商品").getIndexList().forEach(Do->System.out.println(Do));
       db.get("商品").createIndex("{商品id:1}","{unique:true,expireAfterDays:730}");
-      db.get("商品").getIndexList().forEach(D->System.out.println(D));
+      db.get("商品").getIndexList().forEach(Do->System.out.println(Do));
       ArrayList<A_Rec> _recs=
       db.get("店舗商品").aggregate("["+
             "{$match:{$or:["+

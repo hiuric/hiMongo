@@ -40,7 +40,7 @@ public class Test {
                      "max:{$max:'$value'},"+
                      "avg:{$avg:'$value'}}}"+
                 "]")
-            .forEachNode(R->ps.println(hiMongo.json(R)))
+            .forEachDocument(Rd->ps.println(hiMongo.json(Rd)))
             ;
          ps.println("#####################");
          db.get("coll_01")
@@ -53,7 +53,7 @@ public class Test {
                      "min:{$min:'$value'},"+
                      "max:{$max:'$value'},"+
                      "avg:{$avg:'$value'}}")
-            .forEachClass(Arec.class,R->ps.println(R))
+            .forEachClass(Arec.class,Rc->ps.println(Rc))
             ;
          //
 
@@ -73,7 +73,7 @@ public class Test {
             ).asNode();
         db.get("coll_01")
             .aggregate(_a_node)
-            .forEach(R->ps.println(hiMongo.json(R)))
+            .forEach(Rd->ps.println(hiMongo.json(Rd)))
             ;
 
          }
@@ -84,63 +84,3 @@ public class Test {
       System.exit(0);
       }
    }
-
-/*
-
-4.1899999999999995
-1 2345678901234567
-use db01
-var _last_date=db.coll_01.find({type:'A'},{_id:0,date:1}).
-                    sort({_id:-1}).
-                    limit(1).toArray()[0].date.getTime()
-var _start_date=_last_date-30000
-var _isodate=new Date(_start_date)
-db.coll_01.
-   find({date:{$gte:_isodate}})
-
-use db01
-
-db.coll_01.
-   find({$and:[{type:'A'},{date:{$gte:_isodate}}]})
-
-use db01
-var _last_date=db.coll_01.find({type:'A'},{_id:0,date:1}).
-                  sort({_id:-1}).
-                  limit(1).toArray()[0].date.getTime()
-var _start_date=_last_date-30000
-var _isodate=new Date(_start_date)
-var _result=db.coll_01.aggregate([
-   { $match:{type:'A'}},
-   { $match:{date:{$gte:_isodate}}},
-   { $group:{_id:"$type",min:{$min:"$value"},max:{$max:"$value"},avg:{$avg:"$value"}}}
-   ])
-
-   //{ $match:{$and:[{type:'A'},{date:{$gte:_isodate}}]},
-
-use db01
-var _last_date=db.coll_01.find({type:'A'},{_id:0,date:1}).
-                  sort({_id:-1}).
-                  limit(1).toArray()[0].date.getTime()
-var _start_date=_last_date-30000
-var _isodate=new Date(_start_date)
-db.coll_01.aggregate([
-   { $match:{type:'A'}},
-   { $group:{_id:"$type",min:{$min:"$value"},max:{$max:"$value"},avg:{$avg:"$value"}}}
-   ])
-
-db.coll_01.aggregate([
-  // { $match:{$and:[{type:'A'},{date:{$gte:_isodate}}]},
-   { $group:{_id:"$type",min:{$min:"$value"},max:{$max:"$value"},avg:{$avg:"$value"}}}
-   ])
-
-print(_last_date_B)
-_last_date_B.date.getTime()
-
-var _last=db.coll_01.find("{type:'A'}","{_id:0,date:1}")
-                    .sort("{_id:-1}")
-                    .limit(1)
-db.coll_01.aggregate([
-   { $match:{type:'A'} },
-   { $group:{_id:"$type",min:{$min:"$value"},max:{$max:"$value"},avg:{$avg:"$value"}}}
-   ])
-*/

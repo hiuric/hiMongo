@@ -8,22 +8,22 @@ public class Test {
       hiMongo.DB db=hiMongo.use("db02");
       db.get("composer")
         .find("{'famiryName': {'$regex': '^Ba', '$options': ''}}","{_id:0}")
-        .forEachJson(R->System.out.println(R))
+        .forEachJson(Rj->System.out.println(Rj))
         .back()
 
         .forThis(C->System.out.println("--- start with Ba --"))
         .find("{famiryName:/^Ba/}","{_id:0}")
-        .forEachJson(R->System.out.println(R))
+        .forEachJson(Rj->System.out.println(Rj))
         .back()
 
         .forThis(C->System.out.println("--- with ra or řá  --"))
         .find("{famiryName:/(ra|řá)/}","{_id:0}")
-        .forEachJson(R->System.out.println(R))
+        .forEachJson(Rj->System.out.println(Rj))
         .back()
 
         .forThis(C->System.out.println("--- end with sky --"))
         .find("{famiryName:/sky$/}","{_id:0}")
-        .forEachJson(R->System.out.println(R));
+        .forEachJson(Rj->System.out.println(Rj));
 
       Document _filt_01=Document.parse("{famiryName:/^Ba\"'/}");
       System.out.println(_filt_01.toString());

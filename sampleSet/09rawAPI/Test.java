@@ -22,6 +22,6 @@ public class Test {
       find.into(list);
       Collections.reverse(list);
       // ISODate()形式の出力法は不明です
-      list.forEach(D->System.out.println(D.toJson()));
+      list.forEach(Rd->System.out.println(Rd.toJson()));
       }
    }
