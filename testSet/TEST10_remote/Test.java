@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.bson.types.ObjectId;
 public class Test {
-   static PrintStream ps=System.out;
+   static PrintStream ps=hiU.out;
    final static SimpleDateFormat dateFormat
          = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
    static class Record {
@@ -26,7 +26,7 @@ public class Test {
    public static void main(String[] args_){
       if( "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
       String _remote="{"+
-                       "host:'192.168.1.139',"+
+                       "host:'"+args_[0]+"',"+
                        "port:27017,"+
                        "dbName:'testDB',"+
                        "user:'testUser',"+
@@ -39,7 +39,7 @@ public class Test {
             .sort("{_id:-1}")                    // _idで逆向きにソート
             .limit(3)                            // 個数制限
             .getJsonList(hiU.REVERSE)            // 反転したリスト取得
-            .forEach(Rj->System.out.println(Rj))   // レコード表示
+            .forEach(Rj->hiU.out.println(Rj))   // レコード表示
             ;
          hiMongo.Finder _find=db.get("coll_01")
                                 .find("{type:'A'}")

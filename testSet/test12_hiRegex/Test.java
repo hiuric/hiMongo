@@ -4,7 +4,7 @@ import java.util.*;
 import java.io.*;
 import java.math.*;
 public class Test {
-   static PrintStream ps=System.out;
+   static PrintStream ps=hiU.out;
    static class Record {
       String   type;
       BigDecimal value;

@@ -1,6 +1,4 @@
-#!/bin/bash
-mongo --quiet << 'EOT'
-use db02
+// use db02
 db.composer.drop()
 db.composer.insertMany([
     {famiryName:'Bach',
@@ -62,5 +60,3 @@ print("--- with ra or řá --")
 db.composer.find({famiryName:/(ra|řá)/},{_id:0})
 print("--- end with sky --")
 db.composer.find({famiryName:/sky$/},{_id:0})
-
-EOT

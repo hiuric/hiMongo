@@ -16,16 +16,13 @@ mongoLIB=${LIB_DIR}/${mongoJAR}
 #LOG_LIB=../libs_only_for_disable_log
 #SLF4J=${LOG_LIB}/slf4j-api-1.7.2.jar:${LOG_LIB}:slf4j-log4j12-1.5.6.jar:${LOG_LIB}/slf4j-simple-1.6.2.jar:${LOG_LIB}/logback-classic-1.2.3.jar:${LOG_LIB}/logback-core-1.2.3.jar
 export LIBS=".:${hiNoteLIB}:${mongoLIB}:${hiMongoLIB}:${SLF4J}"
-export JAVAC="javac -Xlint:unchecked -encoding utf-8 -cp ${LIBS} ${MAIN}.java"
-#export RUN="java -cp ${LIBS} ${MAIN} 2> mon.log | tee kekka.txt"
+export BUILD="javac -Xlint:unchecked -encoding utf-8 -cp ${LIBS} ${MAIN}.java"
 export CHECK_KEKKA="java -jar ${hiNoteLIB} diff kekka.txt ref_kekka.txt -ign // -omt _id=[^,]* -omt \"_id\"[^,]*"
 export CHECK_KEKKA2="java -jar ${hiNoteLIB} diff kekka.txt ref_kekka.txt -ign // -omt date.*"
 export CHECK_STATUS="if [ $? -eq 0 ];then echo OK;else echo SOME ERROR OCCURRED; fi"
-#export BUILD_AND_RUN="${JAVAC};${RUN};${CHECK_KEKKA}"
-#export BUILD_AND_RUN="${JAVAC};${RUN}"
-#export BUILD_AND_RUN2="${JAVAC};${RUN};${CHECK_KEKKA2}"
-export RUN="java -cp ${LIBS} ${MAIN} 2> mon.log > kekka.txt"
-export BUILD_AND_RUN="${JAVAC};${RUN}"
+export RUN="java -cp ${LIBS} ${MAIN} ${TEST_ARGS} 2> mon.log > kekka.txt"
+export BUILD_AND_RUN="${BUILD};${RUN}"
+export DISP="java -jar ${hiNoteLIB} conv -in kekka.txt"
 #
 export TEST_DIR=$(basename `pwd`)
 echo ----- ${TEST_DIR} -----

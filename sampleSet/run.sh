@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+# UTF-8 LF
 # 試験フォルダを巡り試験実行
 for f in *; do
     if [ -d "$f" ]; then

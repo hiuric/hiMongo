@@ -1,4 +1,5 @@
 #!/bin/bash
+#これはマニュアル記述用なので削除しない
 mongo --quiet << 'EOT'
 use db02
 db.coll_flds.drop()

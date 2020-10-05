@@ -12,17 +12,17 @@ public class Test {
                 "{date :{$gte:ISODate(\"2020-08-17T07:07:00.000Z\")}},"+
                 "{date2:{$gte:{$date:1597648021000}}}"+
               "]}";
-      System.out.println("-- org.bson.Document");
+      hiU.out.println("-- org.bson.Document");
       Document _doc=Document.parse(_filter);
-      System.out.println("doc        ="+_doc);
-      System.out.println("doc.toJson ="+_doc.toJson());
-      System.out.println("-- hi.hiMongo");
+      hiU.out.println("doc        ="+_doc);
+      hiU.out.println("doc.toJson ="+_doc.toJson());
+      hiU.out.println("-- hi.hiMongo");
       Object _node=hiMongo.parseText(_filter).asNode();
-      System.out.println("node/mson  ="+hiMongo.mson(_node));
-      System.out.println("node/json  ="+hiMongo.json(_node));
-      System.out.println("---------");
-      System.out.println("doc/Object ="+hiU.str(_doc,hiU.WITH_TYPE|hiU.WITH_INDENT));
-      System.out.println("node/Object="+hiU.str(_node,hiU.WITH_TYPE|hiU.WITH_INDENT));
+      hiU.out.println("node/mson  ="+hiMongo.mson(_node));
+      hiU.out.println("node/json  ="+hiMongo.json(_node));
+      hiU.out.println("---------");
+      hiU.out.println("doc/Object ="+hiU.str(_doc,hiU.WITH_TYPE|hiU.WITH_INDENT));
+      hiU.out.println("node/Object="+hiU.str(_node,hiU.WITH_TYPE|hiU.WITH_INDENT));
 
 
       }

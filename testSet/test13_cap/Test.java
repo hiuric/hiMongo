@@ -1,4 +1,5 @@
 import hi.hiMongo;
+import otsu.hiNote.*;
 public class Test {
    public static void main(String[] args_){
       try{ 
@@ -14,7 +15,7 @@ public class Test {
             col.insertOne("{type:'A',value:"+(_n+1)+"}");
             }
          col.find("{}","{_id:0}")
-            .forEachMson(Rm->System.out.println(Rm));
+            .forEachMson(Rm->hiU.out.println(Rm));
          }
       catch(Exception _ex){
          _ex.printStackTrace(System.err);

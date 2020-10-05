@@ -1,10 +1,8 @@
-#!/bin/bash
-mongo --quiet << 'EOT'
 //
 // mongoはスクリプトのファイル入力ができないので
 // この記述はmongo起動後コピペで実行すること 
 //
-use sampleDB
+//use sampleDB
 db.dropDatabase()
 // 商品はprimary keyとして_id:ObjectId()を用いる
 // public class 商品 {
@@ -56,4 +54,3 @@ db.店舗商品.find({},{_id:0})
 //
 db.商品.find({商品分類:'キッチン用品'})
 db.商品.find({商品分類:/用/})
-EOT

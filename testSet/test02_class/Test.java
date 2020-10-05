@@ -14,6 +14,13 @@ public class Test {
       Date date;
       int  NNN;
       }
+   static class Record2 {
+      String type;
+      double value;
+      Date   date;
+      @hiU.AltName("$recordId")
+      long   record_id;
+      }
    public static void main(String[] args_){
       if( "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
       try{
@@ -29,7 +36,7 @@ public class Test {
             .date.getTime();
          // 最後のレコードの30秒前からの'A'レコード取得
          long _start_date= _last_date-30000; // 30秒前
-         System.out.println("last="+_last_date+" start="+_start_date);
+         hiU.out.println("last="+_last_date+" start="+_start_date);
          ArrayList<Record> _recs
          =db.get("coll_01")
             .find("{$and:["+
@@ -49,7 +56,7 @@ public class Test {
             _total += _val;
             }
          double _avg= _total/_recs.size();
-         System.out.printf("min=%.2f max=%.2f avg=%.2f\n",_min,_max,_avg);
+         hiU.out.printf("min=%.2f max=%.2f avg=%.2f\n",_min,_max,_avg);
          //
          final double[] _vals=new double[3];
          _vals[0]=Double.MAX_VALUE;// 0:min
@@ -70,9 +77,9 @@ public class Test {
                        }
                     );
          _avg= _vals[2]/_recs.size();
-         System.out.printf("min=%.2f max=%.2f avg=%.2f\n",_vals[0],_vals[1],_avg);
+         hiU.out.printf("min=%.2f max=%.2f avg=%.2f\n",_vals[0],_vals[1],_avg);
          //========== 以下エラー系
-         System.out.println("======== 異常系 =========");
+         hiU.out.println("======== 異常系 =========");
          try{
            long _last_date_X
                  =db.get("coll_01")
@@ -80,12 +87,12 @@ public class Test {
                     .sort("{_id:-1}")
                     .limit(1).getClassList(WithDate_X.class).get(0)
                     .date.getTime();
-            System.out.println("_last_date_X "+_last_date_X);
+            hiU.out.println("_last_date_X "+_last_date_X);
             }
          catch(Exception _ex){
-            System.out.println("EXCEPTION TEST "+_ex.getMessage());
+            hiU.out.println("EXCEPTION TEST "+_ex.getMessage());
             }
-         System.out.println("======== 異常回避 =========");
+         hiU.out.println("======== 異常回避 =========");
          try{
            long _last_date_Y
            =db.get("coll_01")
@@ -95,12 +102,12 @@ public class Test {
               .without_option(hiU.CHECK_UNKNOWN_FIELD|hiU.CHECK_UNSET_FIELD)
               .limit(1).getClassList(WithDate_X.class).get(0)
               .date.getTime();
-            System.out.println("_last_date_Y "+_last_date_Y);
+            hiU.out.println("_last_date_Y "+_last_date_Y);
             }
          catch(Exception _ex){
-            System.out.println("EXCEPTION TEST "+_ex.getMessage());
+            hiU.out.println("EXCEPTION TEST "+_ex.getMessage());
             }
-         System.out.println("======== 異常系 =========");
+         hiU.out.println("======== 異常系 =========");
          try{
            long _last_date_X
            =db.get("coll_01")
@@ -108,12 +115,12 @@ public class Test {
               .sort("{_id:-1}")
               .limit(1).getClassList(WithDate_X.class).get(0)
               .date.getTime();
-            System.out.println("_last_date_X "+_last_date_X);
+            hiU.out.println("_last_date_X "+_last_date_X);
             }
          catch(Exception _ex){
-            System.out.println("EXCEPTION TEST "+_ex.getMessage());
+            hiU.out.println("EXCEPTION TEST "+_ex.getMessage());
             }
-         System.out.println("======== 異常回避 =========");
+         hiU.out.println("======== 異常回避 =========");
          try{
            long _last_date_Y
            =db.get("coll_01")
@@ -123,11 +130,18 @@ public class Test {
               .without_option(hiU.CHECK_UNKNOWN_FIELD|hiU.CHECK_UNSET_FIELD)
               .limit(1).getClassList(WithDate_X.class).get(0)
               .date.getTime();
-            System.out.println("_last_date_Y "+_last_date_Y);
+            hiU.out.println("_last_date_Y "+_last_date_Y);
             }
          catch(Exception _ex){
-            System.out.println("EXCEPTION TEST "+_ex.getMessage());
+            hiU.out.println("EXCEPTION TEST "+_ex.getMessage());
             }
+
+         hiU.out.println("======== 代替名 =========");
+         db.get("coll_01")
+            .find("{}","{_id:0}")
+            .forThis(Fi->Fi.getIterable().showRecordId(true))
+            .forEachDocument(Rd->hiU.out.println(Rd))
+            .forEachClass(Record2.class,Rc->hiU.out.println(hiU.str(Rc)));
          }
       catch(Exception _ex){
          _ex.printStackTrace(System.err);

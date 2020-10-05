@@ -3,6 +3,8 @@
 ＊　jdocの作成
 を行います。
 
+スクリプトは.shと.batの２形態が用意されています。
+
 ライブラリの指定、バージョンの指定などは
   ../configure/configure.sh
 で行っています。
@@ -61,8 +63,7 @@ java11のHTML5対応仕様のようです。(これに限らずHTML5によりweb
 $ ./A00_clean.sh
 で
 　.classファイル
-　../testSet,../sampleSet下のmon.log(mongoDBのデバグ出力）
-　../testSet下のkekka.txt
+　../testSet,../sampleSet下のmon.log,kekka.txt,*.class
 を消去します。
 
 
@@ -77,7 +78,7 @@ $ ./A08_wc.sh
 　コメントと空行を外したサイズ
 が出ます。
 
-ちなみに2020/09/27 version 0_07で
-オリジナル    :lines:5036      words:15086     chars:150859
-JAVADOC排除   :lines:1037      words:3540      chars:30685
-です。JAVADOCがコードのほぼ８割を占めています
+ちなみに2020/10/04 version 0_08で
+オリジナル    :lines:5295      words:16002     chars:158657
+JAVADOC排除   :lines:1045      words:3567      chars:30885
+です。JAVADOCがコードの８割を占めています

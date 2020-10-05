@@ -1,10 +1,8 @@
-#!/bin/bash
-mongo --quiet << 'EOT'
 //
 // mongoはスクリプトのファイル入力ができないので
 // この記述はmongo起動後コピペで実行すること 
 //
-use sampleDB
+// use sampleDB
 db.dropDatabase()
 // 商品はprimary keyとして_id:ObjectId()を用いる
 // public class 商品 {
@@ -17,7 +15,7 @@ db.dropDatabase()
 //    public  Map<String,Long>   登録日;
 //    }
 //  登録日は-９時間の時間差があることに注意
-//db.商品.createIndex({商品id:1},{unique:true})
+// db.商品.createIndex({商品id:1},{unique:true})
 db.商品.insertMany([
    {商品id:'0001',商品名:'Tシャツ'       ,商品分類:'衣服'        ,販売単価:1000,仕入単価:500 ,登録日:ISODate("2020-08-01T03:06:11.000Z")}
   ,{商品id:'0002',商品名:'穴あけパンチ'  ,商品分類:'事務用品'    ,販売単価:500 ,仕入単価:320 ,登録日:ISODate("2020-08-02T03:06:20.000Z")}
@@ -57,4 +55,3 @@ db.店舗商品.find({},{_id:0})
 //
 db.商品.find({商品分類:'キッチン用品'})
 db.商品.find({商品分類:/用/})
-EOT

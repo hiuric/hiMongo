@@ -16,6 +16,7 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.client.model.CreateCollectionOptions;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.IndexOptions;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -23,6 +24,10 @@ import org.bson.types.ObjectId;
 import org.bson.types.Decimal128;
 import org.bson.BsonRegularExpression;
 
+/*
+win8  java version "1.8.0_211"
+linux openjdk version "1.8.0_265"
+*/
 /**
 mongoDBアクセス機.
 <!--
@@ -63,10 +68,13 @@ hiMongoはmongo-java-driverのラッパーです。
    <li><a class=A1 href="#getJsonMson">JSON文字列、拡張JSON文字列で取得</a>
    </ul>
 </li>
-<li><a class=A1 href="#insert">insert/update/replace/delete/drop</a>
+<li><a class=A1 href="#insert_and_others">insert等のレコード処理</a>
    <ul>
-   <li><a class=A1 href="#insertOne">insert,drop(条件無)</a>
-   <li><a class=A1 href="#update">条件付き操作(update,replace,delete)</a>
+   <li><a class=A1 href="#col_insert">insert</a>
+   <li><a class=A1 href="#col_drop">drop</a>
+   <li><a class=A1 href="#col_delete">delete</a>
+   <li><a class=A1 href="#col_update">update</a>
+   <li><a class=A1 href="#col_replace">replace</a>
    <li><a class=A1 href="#class_insert">利用者定義クラス・インスタンスをinsertする</a>
    </ul>
 </li>
@@ -96,10 +104,10 @@ hiMongoはmongo-java-driverのラッパーです。
 <li><a class=A1 href="#node">node(Object,Document)の取り扱い</a></li>
 <li><a class=A1 href="#build">build</a></li>
 <li><a class=A1 href="#log">log</a></li>
-<li><a class=A1 href="#version">変更履歴</a></li>
+<li><a class=A1 href="#version">更新履歴</a></li>
 <li><a class=A1 href="#API">API</a></li>
 </ul>
-<p>
+
 
 <hr>
 <table style="line-height:100%" class=t0>
@@ -117,14 +125,10 @@ mongoDBではレコードの事を'ドキュメント'と呼ぶとされてい�
 <tr><td>bson</td><td>: msonのバイナリ表現(プログラム上およびDB上)<br>
 {@link org.bson.conversions.Bson Bson}クラスはJSON式の構造は採っておらず、hiMongoでは対象外としています。
 </td><tr>
+<!-- memo: a内のrel="noopener noreferrer"はjava8神経質jdocエラーとなる -->
 <tr><td>
 hiJSON
 </td><td>:hiMongoが使用している
-<a class=A1 target="_blank" rel="noopener noreferrer" href=
-"http://www.otsu.co.jp/OtsuLibrary/jdoc/index.html#"
-><i>Otsu</i>ラリブラリ
-</a>
-/
 <a class=A1 target="_blank" rel="noopener noreferrer" href=
 "http://www.otsu.co.jp/OtsuLibrary"
 ><i>Otsu</i>ラリブラリ(エントリ)
@@ -137,7 +141,6 @@ hiJSON
 に属するクラスです。
 <td></tr>
 </table>
-</p>
 <hr>
 
 <a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
@@ -295,6 +298,7 @@ mongoDBは精密なスキーマ設計を行うことなく、簡便にDBを構�
 </p>
 <p>
 ある程度複雑な検索を行うことが出来ます。<br>
+フィールド値をアトミックに増減させる機能も用意されています。<br>
 現実的DB応用の広い範囲で利用できると考えられますし、リレーショナル・データベースに比べ高速であるため巨大な通信バッファのような応用も出来ます。
 </p>
 <p>
@@ -303,6 +307,9 @@ mongoDBは精密なスキーマ設計を行うことなく、簡便にDBを構�
 </p>
 <p>
 また、トランザクション機能を持たないことも注意すべき点です。
+</p>
+<p>
+なお、最も気を付ける必要があるのが「名称を間違えると新たな要素の追加となる」という仕様です。フィールド値をupdateしたつもりが新なフィールドの追加となったといった障害が多発します。
 </p>
 
 <p><input type="button" value="説明を隠す△" style="WIDTH:12em"
@@ -635,7 +642,6 @@ db.get("coll_01")                     // DBのget()
 検索条件には次の様な記述が出来ます。
 </p>
 
-<p>
 <table class=t>
 <tr>
 <td>条件</td>
@@ -680,13 +686,12 @@ db.get("coll_01")                     // DBのget()
 <tr>
 <td>部分一致、正規表現</td>
 <td>
-find("{name:/et/}") nameがetを含む<br> 
+find("{name:/et/}")       nameがetを含む<br> 
 find("{name:/^T.*sky$/}") nameがTで始まりskyで終わる<br>
-find("{name:/(ba|ab)}") nameがbaまたはabを含む
+find("{name:/(ba|ab)/}")  nameがbaまたはabを含む
 </td>
 </tr>
 </table>
-</p>
 
 
 <p class=c id="get_field">
@@ -1161,88 +1166,11 @@ db.get("coll_01")
 
 
 <a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
-<p class=B1 id="insert">
-&emsp;insert/update/replace/delete/drop
+<p class=B1 id="insert_and_others">
+&emsp;insert等のレコード処理
 </p>
 <p>
-レコードのinsertOne,insertMany,updateOne,updateMany,replaceOne,deleteOne,deleteMany,dropなどの操作も用意されています。
-</p>
-<p class=B1_2 id="insertOne">
-&emsp;insert,drop(条件無)
-</p>
-<p>
-{@link hi.hiMongo.Collection#insertOne(Object...) insertOne()}の引数は１レコードの拡張JSON形式で、{@link hi.hiMongo.Collection#insertMany(Object...) insertMany()}の引数は拡張JSONのList型です。<br>
-それらを記述したテキストファイル、あるいはそれらの解析されたノードツリーも許されます。<br>
-条件文は付きません。
-</p>
-<p>
-次の様な使い方になります。{@link hi.hiMongo.DB#get(String) get("コレクション")}はその時点で存在しないコレクションに対して行っても構いません。なお{@link hi.hiMongo#date() hiMongo.date()}は現在時の標準JSON表現を得る関数です。
-</p>
-<pre class=quote10>
-hiMongo.DB db =hiMongo.use("db01");
-db.get("coll_01")
-  .insertOne(
-     " {type:'A',value:12.3,date:"+hiMongo.date()+"}");
-</pre>
-<p>
-{@link hi.hiMongo.Collection#drop() drop()}はレコードの削除のみならずコレクションそのものの削除ですが、{@link hi.hiMongo.Collection#insertOne(Object...) insertOne()},{@link hi.hiMongo.Collection#insertMany(Object...) insertMany()}を繋げると、元の名前のコレクションが再び作成され空の状態でのレコード追加となります。
-</p>
-<pre class=quote10>
-hiMongo.DB db =hiMongo.use("db01");
-db.get("coll_01")
-  .drop()
-  .insertMany("["+
-     " {type:'A',value:4.56,date:"+hiMongo.date()+"}"+
-     ",{type:'B',value:2001,date:"+hiMongo.date()+"}"+
-     ",{type:'A',value:7.89,date:"+hiMongo.date()+"}"+
-     ",{type:'A',value:0.12,date:"+hiMongo.date()+"}]");
-</pre>
-
-<p class=B1_2 id="update">
-&emsp;条件付き操作(delete,update,replace)
-</p>
-<p>
-{@link hi.hiMongo.Collection#deleteOne(Object) deleteOne()},{@link hi.hiMongo.Collection#deleteMany(Object) deleteMany()},{@link hi.hiMongo.Collection#updateOne(Object,Object) updateOne()},{@link hi.hiMongo.Collection#updateMany(Object,Object) updateMany()},{@link hi.hiMongo.Collection#replaceOne(Object,Object) replaceOne()}には対象となるレコードを選択する条件が付きます。
-</p>
-<p>
-{@link hi.hiMongo.Collection#deleteOne(Object) deleteOne()}では登録の古いレコードが検索され、合致した一個のみが削除されます。<br>
-{@link hi.hiMongo.Collection#deleteMany(Object) deleteMany()}では合致するレコードが全て削除されます。
-</p>
-<pre class=quote10>
-hiMongo.DB         db   =hiMongo.use("db01");
-hiMongo.Collection _coll=db.get("coll_01");
-// --- deleteOne
-_coll.deleteOne("{type:'B'}");
-
-// --- deleteMany
-_coll.deleteMany("{$and:[{type:'A'},{value:{$lt:8}}]}");
-</pre>
-<p>
-{@link hi.hiMongo.Collection#updateOne(Object,Object) updateOne()},{@link hi.hiMongo.Collection#updateMany(Object,Object) updateMany()}は{$set:{フィールド名:値}}でフィールドの値の変更を指定します。<br>
-複数フィールドの置き換えはフィールド名の値のセットをカンマで繋ぎます{$set:{フィールド1:値1,フィールド2:値2,...}<br>
-存在しないフィールド名を指定するとフィールドの追加となります。
-</p>
-
-
-<pre class=quote10>
-// --- updateOne
-_coll.updateOne("{$and:[{type:'B'},{value:{$gt:5}}]}",
-                "{$set:{value:4.32}}");
-
-// --- updateMany
-_coll.updateMany("{$and:[{type:'A'},{value:{$lt:5}}]}",
-                 "{$set:{value:3.21}}");
-</pre>
-<p>
-{@link hi.hiMongo.Collection#replaceOne(Object,Object) replaceOne()}はレコード全体の置き換えになります。<br>
-条件とレコード全体が引数となります。replaceMany()は有りません。
-</p>
-<pre class=quote10>
-// --- replaceOne
-_coll.replaceOne("{$and:[{type:'A'},{value:{$lt:5}}]}",
-                 "{type:'B',value:6543,date:"+hiMongo.date()+"}");
-
-</pre>
+コレクション内のレコードの操作として追加（insert)、削除(delete)、更新(update)、置き換え(replace)、コレクションごと全削除(drop)が用意されています。
 
 <div id="divInser_1">
 <p><input type="button" value="フルコードを表示する" style="WIDTH:12em"
@@ -1338,7 +1266,137 @@ OK
             document.location='#divInser_1'"></p>
 </div>
 
-<p class=B1_2 id=class_insert>
+<p>
+レコードインサートには利用者クラスを使う事もできます。
+</p>
+
+</p>
+<p class=B1_2 id="col_insert">
+&emsp;insert
+</p>
+<p>
+{@link hi.hiMongo.Collection#insertOne(Object...) insertOne()}の引数は１レコードの拡張JSON形式で、{@link hi.hiMongo.Collection#insertMany(Object...) insertMany()}の引数は拡張JSONのList型です。<br>
+それらを記述したテキストファイル、あるいはそれらの解析されたノードツリーも許されます。<br>
+条件文は付きません。
+</p>
+<p>
+次の様な使い方になります。{@link hi.hiMongo.DB#get(String) get("コレクション")}はその時点で存在しないコレクションに対して行っても構いません。なお{@link hi.hiMongo#date() hiMongo.date()}は現在時の標準JSON表現を得る関数です。
+</p>
+<pre class=quote10>
+hiMongo.DB db =hiMongo.use("db01");
+db.get("coll_01")
+  .insertOne(
+     " {type:'A',value:12.3,date:"+hiMongo.date()+"}");
+</pre>
+<p class=B1_2 id="col_drop">
+&emsp;drop
+</p>
+<p>
+{@link hi.hiMongo.Collection#drop() drop()}はレコードの削除のみならずコレクションそのものの削除ですが、{@link hi.hiMongo.Collection#insertOne(Object...) insertOne()},{@link hi.hiMongo.Collection#insertMany(Object...) insertMany()}を繋げると、元の名前のコレクションが再び作成され空の状態でのレコード追加となります。
+</p>
+<pre class=quote10>
+hiMongo.DB db =hiMongo.use("db01");
+db.get("coll_01")
+  .drop()
+  .insertMany("["+
+     " {type:'A',value:4.56,date:"+hiMongo.date()+"}"+
+     ",{type:'B',value:2001,date:"+hiMongo.date()+"}"+
+     ",{type:'A',value:7.89,date:"+hiMongo.date()+"}"+
+     ",{type:'A',value:0.12,date:"+hiMongo.date()+"}]");
+</pre>
+
+<p class=B1_2 id="col_delete">
+&emsp;delete
+</p>
+<p>
+{@link hi.hiMongo.Collection#deleteOne(Object) deleteOne()}では登録の古いレコードが検索され、合致した一個のみが削除されます。<br>
+{@link hi.hiMongo.Collection#deleteMany(Object) deleteMany()}では合致するレコードが全て削除されます。
+</p>
+<pre class=quote10>
+hiMongo.DB         db   =hiMongo.use("db01");
+hiMongo.Collection _coll=db.get("coll_01");
+// --- deleteOne
+_coll.deleteOne("{type:'B'}");
+
+// --- deleteMany
+_coll.deleteMany("{$and:[{type:'A'},{value:{$lt:8}}]}");
+</pre>
+
+<p class=B1_2 id="col_update">
+&emsp;update
+</p>
+<p>
+{@link hi.hiMongo.Collection#updateOne(Object,Object) updateOne()},{@link hi.hiMongo.Collection#updateMany(Object,Object) updateMany()}は{$set:{フィールド名:値}}でフィールドの値の変更を指定します。<br>
+複数フィールドの置き換えはフィールド名の値のセットをカンマで繋ぎます{$set:{フィールド1:値1,フィールド2:値2,...}<br>
+存在しないフィールド名を指定するとフィールドの追加となります。<br>
+単純な値の置き換えを行う$setの他に値の増減を行う$incなども用意されています。
+(<a class=A1 href=
+"https://docs.mongodb.com/manual/reference/operator/update/"
+>更新の演算子</a>参照)
+</p>
+<p>
+$setによる単純置き換え例(この例では3に置き換えている）
+</p>
+<pre class=quote10>
+---- before $set
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+---- program
+  .updateMany("{$and:[{type:'C'},{name:'X'}]}",
+              "{$set:{value:3}}")
+---- after $set
+{'type':'C', 'name':'X', 'value':3}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':3}
+</pre>
+<p>
+$incによる増減例(この例では+3している)
+</p>
+<pre class=quote10>
+---- before $inc
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+---- program
+  .updateMany("{$and:[{type:'C'},{name:'X'}]}",
+              "{$inc:{value:3}}")
+---- after $inc
+{'type':'C', 'name':'X', 'value':8}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':16}
+</pre>
+<p>
+条件に合致するレコードが無い場合は無処理です。
+</p>
+<p>
+指定フィールドが存在ない場合、フィールドが追加されてしまうことに注意が必要です。<br>
+指定フィールドが存在する場合のみupdateするには$existを用います。
+</p>
+<pre class=quote10>
+   final String <span class=green>_field_name</span>="value";
+   hiMongo.DB db=hiMongo.use("db01");
+   db.get("coll_01")
+     .updateMany("{$and:[{type:'C'},{name:'X'},{"+<span class=green>_field_name</span>+":{<span class=purple>$exists:true</span> }}]}",
+                 "{$set:{"+<span class=green>_field_name</span>+":3}}");
+</pre>
+<p class=B1_2 id="col_replace">
+&emsp;replace
+</p>
+<p>
+{@link hi.hiMongo.Collection#replaceOne(Object,Object) replaceOne()}はレコード全体の置き換えになります。<br>
+条件とレコード全体が引数となります。replaceMany()は有りません。
+</p>
+<pre class=quote10>
+// --- replaceOne
+_coll.replaceOne("{$and:[{type:'A'},{value:{$lt:5}}]}",
+                 "{type:'B',value:6543,date:"+hiMongo.date()+"}");
+
+</pre>
+
+
+
+<p class=B1_2 id="class_insert">
 &emsp;利用者定義クラス・インスタンスをinsertする
 </p>
 <p>
@@ -1432,7 +1490,7 @@ OK
 &emsp;cap指定（最大容量)、index設定
 </p>
 
-<p class=B1_2 id=cap>
+<p class=B1_2 id="cap">
 &emsp;キャップ（最大容量)指定
 </p>
 <p>
@@ -1500,7 +1558,7 @@ OK
             document.location='#divCap_1'"></p>
 </div>
 
-<p class=B1_2 id=index>
+<p class=B1_2 id="index">
 &emsp;インデックス指定,ユニーク性保証,生存時間制限
 </p>
 <p>
@@ -1533,7 +1591,7 @@ Document{{v=2, unique=true, key=Document{{商品id=1}}, name=商品id_1
 </p>
 
 <a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
-<p class=B1 id=AG>
+<p class=B1 id="AG">
 &emsp;aggregate(集計）
 </p>
 <p>
@@ -1569,7 +1627,7 @@ Document{{v=2, unique=true, key=Document{{商品id=1}}, name=商品id_1
 </table>
 
 
-<p class=B1_2 id=aggre>
+<p class=B1_2 id="aggre">
 &emsp;単純集計($match,$group)
 </p>
 <p>
@@ -1695,11 +1753,6 @@ OK
             document.getElementById('divAggre_1').style.display='block';
             document.location='#divAggre_1'"></p>
 </div>
-
-
-
-
-
 
 <p class=B1_2 id="lookup">
 &emsp;$lookupによるフィールド結合
@@ -1920,8 +1973,6 @@ mongo拡張JSON(mson:bsonパーザ)で気を付ける必要があるのが、{@l
 
 <p>
 <table class=t>
-<table class=t>
-
 <tr>
 <td>型</td>
 <td>bson(内部値)</td>
@@ -1996,9 +2047,8 @@ mongo-shellでは{...}系の入力はできません。指定名("$date"など)�
 <p>
 hiMongoでは次の扱いとなります。
 </p>
-<p>
-<table class=t>
 
+<table class=t>
 <tr>
 <td>型</td>
 <td>Object(内部値)</td>
@@ -2058,7 +2108,6 @@ NumberLong("...")可</td>
 
 </table>
 
-</table>
 </p>
 <p>
 hiMongoのパーザには桁数制限は有りません。hiMongoのパーズでは17桁までの整数はLong、仮数15桁まで指数15以下浮動小数はDouble、それ以外は{@link java.math.BigDecimal}となります。{@link java.math.BigDecimal}はbsonになる時点で{@link org.bson.types.Decimal128}となります。<br>
@@ -2423,8 +2472,8 @@ hiMongoの各クラスが持つmongo-java-driverの要素にアクセスする�
 
 </table>
 
-<p class=c id=createIndex>
-&emsp;例：FindIterable<TResult&gt;.showRecordId
+<p class=B1_2 id="showRecordId">
+&emsp;例：FindIterable<TResult>#showRecordId
 </p>
 <p>
 カスケードAPIの流れの中に組み込むにはforThisを用います。forThisはthisをラムダ式に与えて処理後、thisを返しますので、カスケードAPIを連続させることが出来ます。
@@ -2434,24 +2483,165 @@ hiMongoの各クラスが持つmongo-java-driverの要素にアクセスする�
 </p>
 <pre class=quote10>
 <span class=gray>db.get("coll_01")
-  .find("{type:'A'}")
+  .find("{}","{_id:0}")
   .sort("{_id:-1}")
   .limit(3)</span>
   <b>.forThis(Fi->Fi.getIterable().showRecordId(true))</b>
-  <span class=gray>.forEachJson(Rj->System.out.println(Rj));</span>
+  <span class=gray>.forEachDocument(Rd->System.out.println(Rd));</span>
 </pre>
+<p>
+showRecordId指定時は"$recordId"という特殊な名称のフィールドが表示されます。<br>
+利用者クラスに取り込むにはhiJSONの代替名機能(
+<a class=A1 target="_blank" rel="noopener noreferrer" href=
+"http://www.otsu.co.jp/OtsuLibrary/jdoc/otsu/hiNote/hiJSON.html#option_annot"
+>hiJSON#アノーテーション</a>参照
+)を用います。
+</p>
+<div id="divRecId_1">
+<p><input type="button" value="フルコードを表示する" style="WIDTH:12em"
+   onClick="document.getElementById('divRecId_2').style.display='block';
+            document.getElementById('divRecId_1').style.display='none'"></p>
+</div>
+<div id="divRecId_2" style="display:none">
+<p><input type="button" value="フルコードを隠す" style="WIDTH:12em"
+   onClick="document.getElementById('divRecId_2').style.display='none';
+            document.getElementById('divRecId_1').style.display='block'"></p>
+<p>
+@hiU.AltName(電文上の名前)アノーテーション(
+<a class=A1 target="_blank" rel="noopener noreferrer" href=
+"http://www.otsu.co.jp/OtsuLibrary/jdoc/otsu/hiNote/hiJSON.htm#option_annot"
+>hiJSON#アノーテーション</a>参照
+)を用いて、クラスの要素record_idにマッピングしています。
+</p>
+<pre class=quote8>
+import hi.hiMongo;
+import otsu.hiNote.*;
+import java.util.*;
+public class Test {
+   static class MyRecord { 
+      String type;
+      double value;
+      Date   date;
+      @hiU.AltName("$recordId")
+      long   record_id;
+      }
+   public static void main(String[] args_){
+      hiMongo.DB db=hiMongo.use("db01");
+      db.get("coll_01")
+        .find("{}","{_id:0}")
+        .limit(3)
+        .forThis(Fi->Fi.getIterable().showRecordId(true))
+        .forEachDocument(Rd->hiU.out.println(Rd))
+        .forEachClass(MyRecord.class,Rc->hiU.out.println(hiU.str(Rc)));
+      }
+   }
+＠＠＠ 実行結果
+Document{{type=A, value=12.3, date=Mon Aug 17 16:07:00 JST 2020, $recordId=1}}
+Document{{type=A, value=4.56, date=Mon Aug 17 16:07:10 JST 2020, $recordId=2}}
+Document{{type=B, value=2001.0, date=Mon Aug 17 16:07:20 JST 2020, $recordId=3}}
+{type="A", value=12.3, date=Mon Aug 17 16:07:00 JST 2020, record_id=1}
+{type="A", value=4.56, date=Mon Aug 17 16:07:10 JST 2020, record_id=2}
+{type="B", value=2001.0, date=Mon Aug 17 16:07:20 JST 2020, record_id=3}
+</pre>
+<p>
+Documentの表示では$recordIdとなっているフィールドが利用者クラスのrecord_idに割り当てられていることが分かります。<br>
+出力の名前も変更するには@hiU.PrintName(
+<a class=A1 target="_blank" rel="noopener noreferrer" href=
+"http://www.otsu.co.jp/OtsuLibrary/jdoc/otsu/hiNote/hiJSON.html#option_annot"
+>hiJSON#アノーテーション</a>参照
+)を同時に用います。
+</p>
+<p>
+なお、$recordIdは表示させる方法も表示も特殊であり、条件に使えるか等も現時点で良く把握できていないため、hiMongoのAPIに取り込む予定は今のところ有りません。
+</p>
+<p>
+ここでは必要なら利用者クラスに値を取り込むことが出来ることを示しました。
+</p>
+
+<p><input type="button" value="フルコードを隠す△" style="WIDTH:12em"
+   onClick="document.getElementById('divRecId_2').style.display='none';
+            document.getElementById('divRecId_1').style.display='block';
+            document.location='#divRecId_1'"></p>
+</div>
+
+<p class=B1_2 id="upsert">
+&emsp;例：MongoCollection<TDocument>#findOneAndUpdate(UPSERT)
+</p>
+<p>
+{@link com.mongodb.client.MongoCollection MongoCollection<TDocument>#findOneAndUpdate()}
+を用いてupdate時に指定レコードが存在しない場合新たに生成する指定をする例を示します。
+</p>
+
+<div id="divUpsert_1">
+<p><input type="button" value="フルコードを表示する" style="WIDTH:12em"
+   onClick="document.getElementById('divUpsert_2').style.display='block';
+            document.getElementById('divUpsert_1').style.display='none'"></p>
+</div>
+<div id="divUpsert_2" style="display:none">
+<p><input type="button" value="フルコードを隠す" style="WIDTH:12em"
+   onClick="document.getElementById('divUpsert_2').style.display='none';
+            document.getElementById('divUpsert_1').style.display='block'"></p>
+<pre class=quote8>
+import hi.hiMongo;
+import otsu.hiNote.*;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+public class Test {
+   public static void main(String[] args_){
+      hiMongo.DB db=hiMongo.use("db01");
+      db.get("coll_01")
+        .forThis(Fc->System.out.println("---- before $set"))
+        .find("{}","{_id:0}")
+        .forEachMson(Rm->System.out.println(Rm))
+        .back() // 表示に使用したFinderレベルからCollectionレベルに戻す
+        .forThis(Rc->
+           Rc.mongoCollection
+             .findOneAndUpdate(
+                   hiMongo.objToBson("{$and:[{type:'C'},{name:'Z'}]}",null),
+                   hiMongo.objToBson("{$set:{value:3}}",null),
+                   (new FindOneAndUpdateOptions()).upsert(true))
+           )
+        .forThis(Fc->System.out.println("---- after $set"))
+        .find("{}","{_id:0}")
+        .forEachMson(Rm->System.out.println(Rm));
+      }
+   }
+＠＠＠実行結果
+$ run.sh
+----- 12upsert -----
+---- before $set
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+---- after $set
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+{'name':'Z', 'type':'C', 'value':3}
+</pre>
+<p>
+初期段階で存在していなかったレコードが作られているのがわかります。
+</p>
+<p><input type="button" value="フルコードを隠す△" style="WIDTH:12em"
+   onClick="document.getElementById('divUpsert_2').style.display='none';
+            document.getElementById('divUpsert_1').style.display='block';
+            document.location='#divUpsert_1'"></p>
+</div>
+
+
+
+
 
 <a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
 <p class=B1 id="node">
 &emsp;node(Object,Document)の取り扱い
 </p>
 <div id="divNode_1">
-<p><input type="button" value="説明を表示する" style="WIDTH:10em"
+<p><input type="button" value="説明を表示する" style="WIDTH:12em"
    onClick="document.getElementById('divNode_2').style.display='block';
             document.getElementById('divNode_1').style.display='none'"></p>
 </div>
 <div id="divNode_2" style="display:none">
-<p><input type="button" value="説明を隠す" style="WIDTH:10em"
+<p><input type="button" value="説明を隠す" style="WIDTH:12em"
    onClick="document.getElementById('divNode_2').style.display='none';
             document.getElementById('divNode_1').style.display='block'"></p>
 <p>
@@ -2544,7 +2734,7 @@ driverのAPIでBsonを受け付けるものはDocumentを受け付けますの�
 とすることをお勧めします。
 </p>
 
-<p><input type="button" value="説明を隠す△" style="WIDTH:10em"
+<p><input type="button" value="説明を隠す△" style="WIDTH:12em"
    onClick="document.getElementById('divNode_2').style.display='none';
             document.getElementById('divNode_1').style.display='block';
             document.location='#divNode_1'"></p>
@@ -2629,7 +2819,7 @@ mongo-java-driver-3.12が標準エラーに出すlogの止め方は不明です�
 
 <a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
 <p class=B1 id="version">
-&emsp;変更履歴
+&emsp;更新履歴
 </p>
 <p class=c>
 &emsp;0.05
@@ -2670,6 +2860,29 @@ mongo-java-driver-3.12が標準エラーに出すlogの止め方は不明です�
 </li>
 <li>サンプルでのラムダ引数の命名法を統一</li>
 <li>JAVADOC記述を修正/強化</li>
+</ul>
+
+<p class=c>
+&emsp;0.08
+</p>
+<ul>
+<li>出力フォーマット微調整設定をpublicにした<br>
+msonで引用符を"にすることもできる</li> <!-- Output format change API enabled -->
+<li>
+hiMongo拡張JSON文字列(hson)からDocumet,Bson,List<Document>,List<Bson>を得るメソッドをpublicにした
+</li>
+</ul>
+<p>
+以下はhiMongo本体の変更ではありませんが、サンプルを含むリリースセットの変更としてここに載せます。
+</p>
+<ul>
+<li>.batによるビルド/試験を追加</li>
+<li>.shによる試験でmongo-shell呼び出しをhere_documentからjs参照に変更</li>
+<li>javadocオプションに-Xdoclint:none追加(table-captionによるレイアウト乱れを避けるため）</li>
+<li>$recordIdへの対処記述を追加</li>
+<li>試験での結果ファイルをutf-8化。表示はシステム標準</li>
+<li>サンプルで結果をkekka.txt(システム標準)に残すようにした</li>
+<li>オツライブラリ/hiNoteを最新版3.10にした</li>
 </ul>
 
 <a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
@@ -2738,6 +2951,7 @@ public class hiMongo {
    public final static void nolog(){}
    /**
     * mongo-java-driverのログを止める（未）.
+    *@param class_ クラス（mainのクラス)
     *<!-- hiMongo -->
     */
    public static void nolog(Class<?> class_){}
@@ -2937,15 +3151,26 @@ public class hiMongo {
       return json_engine.str(obj_,option_);
       }
    /**
-    * JSON解析/表示エンジンのクローンを取得.
+    * 拡張JSON(MSON)解析/表示エンジン取得.
     *<p>
-    *mongoDB用設定が追加されたJSON解析/表示エンジンを取得します。
+    *mongoDB用設定が追加されたJSON解析/MSON表示エンジン(clone)を取得します。
     *</p>
     *@return エンジン
     *<!-- hiMongo -->
     */
    public static hiJSON.Engine engine(){
       return mson_engine.clone();
+      }
+   /**
+    * 標準JSON表示エンジン取得.
+    *<p>
+    *標準JSON表示エンジン(clone)を取得します。
+    *</p>
+    *@return エンジン
+    *<!-- hiMongo -->
+    */
+   public static hiJSON.Engine engineJ(){
+      return json_engine.clone();
       }
    /**
     * 現在時刻の拡張JSON表記を得る.
@@ -2962,8 +3187,15 @@ public class hiMongo {
    public static String date(){
       return "{$date:"+new Date().getTime()+"}";
       }
+   /**
+    * List<Doument>を得る.
+    *@param data_ 拡張JSON文字列、File、List<Document>
+    *@param engine_ 拡張JSON解析エンジン(nullの場合は用いない)
+    *@return List<Document>
+    *<!-- hiMongo -->
+    */
    @SuppressWarnings("unchecked")
-   private static List<Bson> parseAsBsonList(Object data_,hiJSON.Engine engine_){
+   public static List<Bson> parseAsBsonList(Object data_,hiJSON.Engine engine_){
       if( data_ instanceof List ){
          List<Object>   _objs=(List<Object>)data_;
          if( _objs.isEmpty() ) return (List<Bson>)data_;
@@ -2972,11 +3204,14 @@ public class hiMongo {
       return new ArrayList<Bson>(parseAsDocumentList(data_,engine_));
       }
    /**
-    * org.bson.Documentを用いて[...]形式をパーズする.
+    * List<Doument>を得る.
+    *@param data_ 拡張JSON文字列、File、List<Document>
+    *@param engine_ 拡張JSON解析エンジン(nullの場合は用いない)
+    *@return List<Document>
     *<!-- hiMongo -->
     */
    @SuppressWarnings("unchecked")
-   private static List<Document> parseAsDocumentList(Object data_,hiJSON.Engine engine_){
+   public static List<Document> parseAsDocumentList(Object data_,hiJSON.Engine engine_){
        ArrayList<Document> _ret=new ArrayList<>();
       if( data_ instanceof File ){
          data_ = hiFile.readTextAll((File)data_);
@@ -2992,7 +3227,7 @@ public class hiMongo {
             return _ret;
             }
          catch(Exception _ex){}
-         data_=mson_engine.str(data_);
+         data_=mson_engine.str(data_);// 標準msonで文字列化
          }
       try{
          if( engine_!=null ){
@@ -3010,15 +3245,25 @@ public class hiMongo {
       }
    /**
     * StringまたはMapオブジェクトからDocumentを得る.
+    *@param data_ 拡張JSON文字列、File、Document
+    *@param engine_ 拡張JSON解析エンジン(nullの場合は用いない)
+    *@return Document
     *<!-- hiMongo -->
     */
    @SuppressWarnings("unchecked")
-   private static Document objToDoc(Object data_,hiJSON.Engine engine_){
+   public static Document objToDoc(Object data_,hiJSON.Engine engine_){
       if( data_ instanceof Document ) return (Document)data_;
       return objToDocX(data_,engine_);
       }
+   /**
+    * StringまたはMapオブジェクトからDocumentを得る.
+    *@param data_ 拡張JSON文字列、File、Document
+    *@param engine_ 拡張JSON解析エンジン(nullの場合は用いない)
+    *@return Bson
+    *<!-- hiMongo -->
+    */
    @SuppressWarnings("unchecked")
-   private static Bson objToBson(Object data_,hiJSON.Engine engine_){
+   public  static Bson objToBson(Object data_,hiJSON.Engine engine_){
       if( data_ instanceof Bson ) { // Documentも含む
          return (Bson)data_;
          }
@@ -3199,10 +3444,7 @@ public class hiMongo {
        */
       protected String mson(Object obj_){
          if( msonEngine==null ) return hiMongo.mson_engine.str(obj_);
-         String _ret=msonEngine.str(obj_);
-         msonEngine.str_format().str_param_field("on_flags",0);      // 一時的対応
-         msonEngine.str_format().str_param_field("disabled_flags",0);// 一時的対応
-         return _ret;
+         return msonEngine.str(obj_);
          }
       /**
        * オブジェクトからJsonを得る.
@@ -3459,13 +3701,13 @@ hiMongo.use("db01")
       /**
        * Mson表示オプションon設定.
        *<p>
-       *{@link hi.hiMongo.Accessor#getMsonList(long) getMsonList()}で得る表示のオプションを変更します。<br>
-       *デフォルトのオプションはhiU.JSON_STYLEとhiU.WITH_SINGLE_QUOTEです。<br>
+       *{@link hi.hiMongo.Accessor#getMsonList(long) getMsonList()}で得る表示のオプションを変更します。
+       *</p>
+       *<p>
        *オプション値は{@link otsu.hiNote.hiFieldFormat#option hiFieldFormatオプション}を参照して下さい。
        *</p>
        *<p>
-       *{@link hi.hiMongo.Accessor#getJsonList(long) getJsonList()}用のデフォルトオプション値はhiU.JSON_STYLEのみです。<br>
-       *getJsonList()で得る表示の変更は{@link #forThis()}と{4link hi.hiMongo.Accessor#engineJ() engineJ()}を用い次の様に行います。
+       *getJsonList()で得る表示の変更は{@link #forThis(hiU.ConsumerEx)}と{4link hi.hiMongo.Accessor#engineJ() engineJ()}を用い次の様に行います。
        *</p>
        *<pre class=quote10>
        * // Jsonの表示オプション変更
@@ -3478,7 +3720,7 @@ hiMongo.use("db01")
        *@return this
        *<!-- Finder -->
        */
-      private Finder str_option(long option_){
+      public Finder str_option(long option_){
          engine().str_format().str_option(option_);
          return this;
          }
@@ -3486,7 +3728,7 @@ hiMongo.use("db01")
        * Mson表示オプションoff設定.
        *<p>
        *getMsonListで得る表示のオプションを変更します。<br>
-       *デフォルトのオプションはhiU.JSON_STYLEとhiU.WITH_SINGLE_QUOTEです。<br
+       *デフォルトのオプションはhiU.JSON_STYLEとhiU.WITH_SINGLE_QUOTEです。<br>
        *オプション値は{@link otsu.hiNote.hiFieldFormat#option hiFieldFormatオプション}を参照して下さい。
        *</p>
        *<pre class=prog10>
@@ -3497,10 +3739,8 @@ hiMongo.use("db01")
        *@return this
        *<!-- Finder -->
        */
-      private Finder str_disable_option(long option_){
+      public Finder str_disable_option(long option_){
          engine().str_format().str_disable_option(option_);
-         engine().str_format().str_param_field("on_flags",0);      // 一時的対応
-         //msonEngine.str_format().str_param_field("disabled_flags",0);// 一時的対応
          return this;
          }
       /**
@@ -3555,6 +3795,8 @@ hiMongo.use("db01")
        *指定しない場合全レコードとなります。<br>
        *この段階で指定数のレコードを得る訳ではなく、最終的リスト取得またはforEachアクセス時に反映されます。
        *</p>
+       *@param 取得数
+       *@return this
        *<!-- Finder -->
        */
       public Finder limit(int limit_){
@@ -3746,7 +3988,7 @@ WITH showRecordId
        *@return this
        *<!-- Aggregrator -->
        */
-      private Aggregrator str_option(long option_){
+      public Aggregrator str_option(long option_){
          engine().str_format().str_option(option_);
          return this;
          }
@@ -3763,7 +4005,7 @@ WITH showRecordId
        *@return this
        *<!-- Aggregrator -->
        */
-      private Aggregrator str_disable_option(long option_){
+      public Aggregrator str_disable_option(long option_){
          engine().str_format().str_disable_option(option_);
          return this;
          }
@@ -4281,6 +4523,12 @@ use db01
 db.coll_01.updateOne({$and:[{type:'A'},{value:4.56}]},
                     {$set:{value:0.15}});
        *</pre>
+<p>
+単純な値の置き換えを行う$setの他に値の増減を行う$incなども用意されています。
+(<a class=A1 href=
+"https://docs.mongodb.com/manual/reference/operator/update/"
+>更新の演算子</a>参照)
+</p>
        *@param filterJ_ 条件
        *@param updateJ_ 置き換えフィールド指定
        *@return this

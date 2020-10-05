@@ -14,7 +14,7 @@ public class Test {
          MongoDatabase             db    = client.getDatabase("db01");
          MongoCollection<Document> col   = db.getCollection("coll_01");
          col.drop();
-         System.out.println("--- insertOne/insertMany");
+         hiU.out.println("--- insertOne/insertMany");
          //HashMap<String,Object> doc=new HashMap<String,Object>(){{
          //   put("type","A");put("value",12.3);put("date",new Date());}};
          //col.insertOne(new Document(doc));
@@ -39,7 +39,7 @@ public class Test {
          col.insertMany(documents);
          FindIterable<Document> find = col.find().projection(field);
          for(Document out_doc:find){
-            System.out.println(out_doc.toJson());
+            hiU.out.println(out_doc.toJson());
             }
 
         //-----------------------------------------------
@@ -47,7 +47,7 @@ public class Test {
          //  {$and:[{type:'A'},{value:{$lt:1}]},
          //  {$set:{value:0.01}
          //-----------------------------------------------
-         System.out.println("\n--- with Object updateOne 0.12 -> 0.01");
+         hiU.out.println("\n--- with Object updateOne 0.12 -> 0.01");
 
          Document condition=new Document()
             .append("$and",
@@ -74,20 +74,20 @@ public class Test {
          col.updateOne(condition,new Document(o_set_001));
          find = col.find().projection(field);
          for(Document out_doc:find){
-            System.out.println(out_doc.toJson());
+            hiU.out.println(out_doc.toJson());
             }
 
 
-         System.out.println("condition="+hiU.str(condition,hiU.WITH_TYPE|hiU.WITH_INDENT));
-         //System.out.println("filter(Obj)="+hiU.str(o_typeA_and_valLt1,hiU.WITH_TYPE|hiU.WITH_INDENT|hiU.IGNORE_toString));
-         System.out.println("update(Obj)="+hiU.str(o_set_001,hiU.WITH_TYPE|hiU.WITH_INDENT|hiU.IGNORE_toString));
+         hiU.out.println("condition="+hiU.str(condition,hiU.WITH_TYPE|hiU.WITH_INDENT));
+         //hiU.out.println("filter(Obj)="+hiU.str(o_typeA_and_valLt1,hiU.WITH_TYPE|hiU.WITH_INDENT|hiU.IGNORE_toString));
+         hiU.out.println("update(Obj)="+hiU.str(o_set_001,hiU.WITH_TYPE|hiU.WITH_INDENT|hiU.IGNORE_toString));
 
         //-----------------------------------------------
          // 標準Documentを使用
          //  {$and:[{type:'B'},{value:{$5gt:5}]},
          //  {$set:{value:4.32}
          //-----------------------------------------------
-         System.out.println("\n--- with Document updateOne 2001->4.32");
+         hiU.out.println("\n--- with Document updateOne 2001->4.32");
          Document type_B  = new Document().append("type","B");
          Document gt_5    = new Document().append("$gt",5);
          Document val_gt_5= new Document().append("value",gt_5);
@@ -100,18 +100,18 @@ public class Test {
          col.updateOne(typeB_and_valGt5,set_432);
          find = col.find().projection(field);
          for(Document out_doc:find){
-            System.out.println(out_doc.toJson());
+            hiU.out.println(out_doc.toJson());
             }
 
-         System.out.println("filter(Doc)="+hiU.str(typeB_and_valGt5,hiU.WITH_TYPE|hiU.WITH_INDENT|hiU.IGNORE_toString));
-         System.out.println("update(Doc)="+hiU.str(set_432,hiU.WITH_TYPE|hiU.WITH_INDENT|hiU.IGNORE_toString));
+         hiU.out.println("filter(Doc)="+hiU.str(typeB_and_valGt5,hiU.WITH_TYPE|hiU.WITH_INDENT|hiU.IGNORE_toString));
+         hiU.out.println("update(Doc)="+hiU.str(set_432,hiU.WITH_TYPE|hiU.WITH_INDENT|hiU.IGNORE_toString));
 
          //-----------------------------------------------
          // Filters/Updatesを使用
          //  {$and:[{type:'A'},{value:{$lt:5}]},
          //  {$set:{value:23.4}
          //-----------------------------------------------
-         System.out.println("\n--- with Bson (Filters/Updates) updateOne 2001->23.4");
+         hiU.out.println("\n--- with Bson (Filters/Updates) updateOne 2001->23.4");
          Bson filter   // Documentではない！
          =Filters.and(
             Filters.eq("type","A"),
@@ -122,11 +122,11 @@ public class Test {
          col.updateOne(filter,update);
          find = col.find().projection(field);
          for(Document out_doc:find){
-            System.out.println(out_doc.toJson());
+            hiU.out.println(out_doc.toJson());
             }
 
-         System.out.println("filter="+hiU.str(filter,hiU.WITH_TYPE|hiU.WITH_INDENT|hiU.IGNORE_toString));
-         System.out.println("update="+hiU.str(update,hiU.WITH_TYPE|hiU.WITH_INDENT|hiU.IGNORE_toString));
+         hiU.out.println("filter="+hiU.str(filter,hiU.WITH_TYPE|hiU.WITH_INDENT|hiU.IGNORE_toString));
+         hiU.out.println("update="+hiU.str(update,hiU.WITH_TYPE|hiU.WITH_INDENT|hiU.IGNORE_toString));
          //----------------
          //BsonDocument bfilter= filter.toBsonDocument(Document.class,codecRegistry);
          }

@@ -16,9 +16,12 @@ mongoLIB=${LIB_DIR}/${mongoJAR}
 #LOG_LIB=../libs_only_for_disable_log
 #SLF4J=${LOG_LIB}/slf4j-api-1.7.2.jar:${LOG_LIB}:slf4j-log4j12-1.5.6.jar:${LOG_LIB}/slf4j-simple-1.6.2.jar:${LOG_LIB}/logback-classic-1.2.3.jar:${LOG_LIB}/logback-core-1.2.3.jar
 export LIBS=".:${hiNoteLIB}:${mongoLIB}:${hiMongoLIB}:${SLF4J}"
-export JAVAC="javac -Xlint:unchecked -encoding utf-8 -cp ${LIBS} ${MAIN}.java"
-export RUN="java -cp ${LIBS} ${MAIN} 2> mon.log"
-export BUILD_AND_RUN="${JAVAC};${RUN}"
+export BUILD="javac -Xlint:unchecked -encoding utf-8 -cp ${LIBS} ${MAIN}.java"
+export RUN="java -cp ${LIBS} ${MAIN} 2> mon.log > kekka.txt"
+export BUILD_AND_RUN="${BUILD};${RUN}"
+# (sampleSetのkekka.txtはシステム標準)
+# export DISP="java -jar ${hiNoteLIB} conv -in kekka.txt"
+export DISP="cat kekka.txt"
 #
 export TEST_DIR=$(basename `pwd`)
 echo ----- ${TEST_DIR} -----

@@ -35,7 +35,7 @@ public class Test {
          col.insertMany(_recs);
          //
          col.find()
-            .forEachMson(Rm->System.out.println(Rm));
+            .forEachMson(Rm->hiU.out.println(Rm));
          }
       catch(Exception _ex){
          _ex.printStackTrace(System.err);

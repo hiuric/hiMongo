@@ -1,5 +1,6 @@
 #!/bin/sh
 # LF    CR-LFだと動かない
+
 SCRIPT_DIR=$(cd $(dirname ${BASH_SOURCE:-$0}); pwd)
 CNF_DIR=${SCRIPT_DIR}/../configure
 JDOC_DIR=../docs
@@ -15,16 +16,21 @@ rm -rf ${JDOC_DIR}
 mkdir ${JDOC_DIR}
 mkdir ${JDOC_DIR}/img
 
-# JDON内の<>に対処
+
+#----------------------------------------
+# JDOC内の<、>などエスケープ
+# 変換結果は hi/hiMongo.javaに置かれる
+#----------------------------------------
 rm -rf hi
 mkdir hi/
 echo java -jar ${hiNoteLIB} conv -with propJ.txt -in ${TARGET}.java -out hi/${TARGET}.java
 java -jar ${hiNoteLIB} conv -with propJ.txt -in ${TARGET}.java -out hi/${TARGET}.java
 
+#----------------------------------------
 # javadoc実施 (-link先がhttpのものが有ることに留意)
 # 3.12はhttpでもhttpsでも上手く@linkされない
-
-javadoc -public -link http://www.otsu.co.jp/OtsuLibrary/jdoc/ -link https://docs.oracle.com/javase/jp/8/docs/api/  -link http://mongodb.github.io/mongo-java-driver/3.7/javadoc/ --allow-script-in-comments -encoding UTF-8 -charset "UTF-8" -docencoding UTF-8 -d ${JDOC_DIR} -classpath ${LIBS} hi/${TARGET}.java
+#----------------------------------------
+javadoc -Xdoclint:none -public -link http://www.otsu.co.jp/OtsuLibrary/jdoc/ -link https://docs.oracle.com/javase/jp/8/docs/api/  -link http://mongodb.github.io/mongo-java-driver/3.7/javadoc/ --allow-script-in-comments -encoding UTF-8 -charset "UTF-8" -docencoding UTF-8 -d ${JDOC_DIR} -classpath ${LIBS} hi/${TARGET}.java
 
 ###
 rm -rf hi
@@ -55,4 +61,3 @@ find ${JDOC_DIR} -name \*.html -exec bash -c 'convert_html "${1}"' -- {} \;
 rm -rf /var/www/html/hiMongo/* > /dev/null
 cp -R ${JDOC_DIR}/* /var/www/html/hiMongo/
 
-# 0_05->0_06 mongo-java-driver参照を3.7から3.12に変更

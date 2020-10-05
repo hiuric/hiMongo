@@ -9,3 +9,14 @@ _last_date_Y 1597648060000
 EXCEPTION TEST no such field _id
 ======== 異常回避 =========
 _last_date_Y 1597648060000
+======== 代替名 =========
+Document{{type=A, value=12.3, date=Mon Aug 17 16:07:00 JST 2020, $recordId=1}}
+Document{{type=A, value=4.56, date=Mon Aug 17 16:07:10 JST 2020, $recordId=2}}
+Document{{type=B, value=2001.0, date=Mon Aug 17 16:07:20 JST 2020, $recordId=3}}
+Document{{type=A, value=7.89, date=Mon Aug 17 16:07:30 JST 2020, $recordId=4}}
+Document{{type=A, value=0.12, date=Mon Aug 17 16:07:40 JST 2020, $recordId=5}}
+{type="A", value=12.3, date=Mon Aug 17 16:07:00 JST 2020, record_id=1}
+{type="A", value=4.56, date=Mon Aug 17 16:07:10 JST 2020, record_id=2}
+{type="B", value=2001.0, date=Mon Aug 17 16:07:20 JST 2020, record_id=3}
+{type="A", value=7.89, date=Mon Aug 17 16:07:30 JST 2020, record_id=4}
+{type="A", value=0.12, date=Mon Aug 17 16:07:40 JST 2020, record_id=5}

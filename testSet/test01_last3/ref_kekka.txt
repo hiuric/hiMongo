@@ -2,42 +2,57 @@
 {"type":"A", "value":7.89, "date":{"$date":1597648050000}}
 {"type":"A", "value":0.12, "date":{"$date":1597648060000}}
 #### MsonList
-{'_id':ObjectId('5f6ff8fb7b5536344a095dba'), 'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
-{'_id':ObjectId('5f6ff8fb7b5536344a095dbc'), 'type':'A', 'value':7.89, 'date':ISODate('2020-08-17T07:07:30.000Z')}
-{'_id':ObjectId('5f6ff8fb7b5536344a095dbd'), 'type':'A', 'value':0.12, 'date':ISODate('2020-08-17T07:07:40.000Z')}
+{'_id':ObjectId('5f74d38597523be500f3303a'), 'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
+{'_id':ObjectId('5f74d38597523be500f3303c'), 'type':'A', 'value':7.89, 'date':ISODate('2020-08-17T07:07:30.000Z')}
+{'_id':ObjectId('5f74d38597523be500f3303d'), 'type':'A', 'value':0.12, 'date':ISODate('2020-08-17T07:07:40.000Z')}
 #### ClassList
-(Test$Record){_id=(ObjectId)5f6ff8fb7b5536344a095dba, type=(String)"A", value=(double)4.56, date=(Date)Mon Aug 17 16:07:10 JST 2020}
-(Test$Record){_id=(ObjectId)5f6ff8fb7b5536344a095dbc, type=(String)"A", value=(double)7.89, date=(Date)Mon Aug 17 16:07:30 JST 2020}
-(Test$Record){_id=(ObjectId)5f6ff8fb7b5536344a095dbd, type=(String)"A", value=(double)0.12, date=(Date)Mon Aug 17 16:07:40 JST 2020}
+(Test$Record){_id=(ObjectId)5f74d38597523be500f3303a, type=(String)"A", value=(double)4.56, date=(Date)Mon Aug 17 16:07:10 JST 2020}
+(Test$Record){_id=(ObjectId)5f74d38597523be500f3303c, type=(String)"A", value=(double)7.89, date=(Date)Mon Aug 17 16:07:30 JST 2020}
+(Test$Record){_id=(ObjectId)5f74d38597523be500f3303d, type=(String)"A", value=(double)0.12, date=(Date)Mon Aug 17 16:07:40 JST 2020}
 #### MNodeList
-Document{{_id=5f6ff8fb7b5536344a095dba, type=A, value=4.56, date=Mon Aug 17 16:07:10 JST 2020}}
-Document{{_id=5f6ff8fb7b5536344a095dbc, type=A, value=7.89, date=Mon Aug 17 16:07:30 JST 2020}}
-Document{{_id=5f6ff8fb7b5536344a095dbd, type=A, value=0.12, date=Mon Aug 17 16:07:40 JST 2020}}
+Document{{_id=5f74d38597523be500f3303a, type=A, value=4.56, date=Mon Aug 17 16:07:10 JST 2020}}
+Document{{_id=5f74d38597523be500f3303c, type=A, value=7.89, date=Mon Aug 17 16:07:30 JST 2020}}
+Document{{_id=5f74d38597523be500f3303d, type=A, value=0.12, date=Mon Aug 17 16:07:40 JST 2020}}
 #### MNodeList/hiU.str(WITH_TYPE)
-(Document){(String)"_id"=(ObjectId)5f6ff8fb7b5536344a095dba, (String)"type"=(String)"A", (String)"value"=(Double)4.56, (String)"date"=(Date)Mon Aug 17 16:07:10 JST 2020}
-(Document){(String)"_id"=(ObjectId)5f6ff8fb7b5536344a095dbc, (String)"type"=(String)"A", (String)"value"=(Double)7.89, (String)"date"=(Date)Mon Aug 17 16:07:30 JST 2020}
-(Document){(String)"_id"=(ObjectId)5f6ff8fb7b5536344a095dbd, (String)"type"=(String)"A", (String)"value"=(Double)0.12, (String)"date"=(Date)Mon Aug 17 16:07:40 JST 2020}
+(Document){(String)"_id"=(ObjectId)5f74d38597523be500f3303a, (String)"type"=(String)"A", (String)"value"=(Double)4.56, (String)"date"=(Date)Mon Aug 17 16:07:10 JST 2020}
+(Document){(String)"_id"=(ObjectId)5f74d38597523be500f3303c, (String)"type"=(String)"A", (String)"value"=(Double)7.89, (String)"date"=(Date)Mon Aug 17 16:07:30 JST 2020}
+(Document){(String)"_id"=(ObjectId)5f74d38597523be500f3303d, (String)"type"=(String)"A", (String)"value"=(Double)0.12, (String)"date"=(Date)Mon Aug 17 16:07:40 JST 2020}
 #### MNodeList/mson
-{'_id':ObjectId('5f6ff8fb7b5536344a095dba'), 'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
-{'_id':ObjectId('5f6ff8fb7b5536344a095dbc'), 'type':'A', 'value':7.89, 'date':ISODate('2020-08-17T07:07:30.000Z')}
-{'_id':ObjectId('5f6ff8fb7b5536344a095dbd'), 'type':'A', 'value':0.12, 'date':ISODate('2020-08-17T07:07:40.000Z')}
+{'_id':ObjectId('5f74d38597523be500f3303a'), 'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
+{'_id':ObjectId('5f74d38597523be500f3303c'), 'type':'A', 'value':7.89, 'date':ISODate('2020-08-17T07:07:30.000Z')}
+{'_id':ObjectId('5f74d38597523be500f3303d'), 'type':'A', 'value':0.12, 'date':ISODate('2020-08-17T07:07:40.000Z')}
 #### MNodeList/json
-{"_id":{"$oid":5f6ff8fb7b5536344a095dba}, "type":"A", "value":4.56, "date":{"$date":1597648030000}}
-{"_id":{"$oid":5f6ff8fb7b5536344a095dbc}, "type":"A", "value":7.89, "date":{"$date":1597648050000}}
-{"_id":{"$oid":5f6ff8fb7b5536344a095dbd}, "type":"A", "value":0.12, "date":{"$date":1597648060000}}
+{"_id":{"$oid":5f74d38597523be500f3303a}, "type":"A", "value":4.56, "date":{"$date":1597648030000}}
+{"_id":{"$oid":5f74d38597523be500f3303c}, "type":"A", "value":7.89, "date":{"$date":1597648050000}}
+{"_id":{"$oid":5f74d38597523be500f3303d}, "type":"A", "value":0.12, "date":{"$date":1597648060000}}
 #### MNodeList/mongo.str
-{"_id"=5f6ff8fb7b5536344a095dba, "type"="A", "value"=4.56, "date"=Mon Aug 17 16:07:10 JST 2020}
-{"_id"=5f6ff8fb7b5536344a095dbc, "type"="A", "value"=7.89, "date"=Mon Aug 17 16:07:30 JST 2020}
-{"_id"=5f6ff8fb7b5536344a095dbd, "type"="A", "value"=0.12, "date"=Mon Aug 17 16:07:40 JST 2020}
+{"_id"=5f74d38597523be500f3303a, "type"="A", "value"=4.56, "date"=Mon Aug 17 16:07:10 JST 2020}
+{"_id"=5f74d38597523be500f3303c, "type"="A", "value"=7.89, "date"=Mon Aug 17 16:07:30 JST 2020}
+{"_id"=5f74d38597523be500f3303d, "type"="A", "value"=0.12, "date"=Mon Aug 17 16:07:40 JST 2020}
 ========= USE hiMongo.parse()
 #### MsonList
-{'_id':ObjectId('5f6ff8fb7b5536344a095dba'), 'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
-{'_id':ObjectId('5f6ff8fb7b5536344a095dbc'), 'type':'A', 'value':7.89, 'date':ISODate('2020-08-17T07:07:30.000Z')}
-{'_id':ObjectId('5f6ff8fb7b5536344a095dbd'), 'type':'A', 'value':0.12, 'date':ISODate('2020-08-17T07:07:40.000Z')}
+{'_id':ObjectId('5f74d38597523be500f3303a'), 'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
+{'_id':ObjectId('5f74d38597523be500f3303c'), 'type':'A', 'value':7.89, 'date':ISODate('2020-08-17T07:07:30.000Z')}
+{'_id':ObjectId('5f74d38597523be500f3303d'), 'type':'A', 'value':0.12, 'date':ISODate('2020-08-17T07:07:40.000Z')}
 ========== multi forEach
+MSON:[[DOUBLE_QUOTE_FOR_CHAR, NO_LIMIT, AS_SAME_LEVEL, BYTE_AS_DEC, OMIT_EMPTY_MAP_ELEMENT, WITH_COLON, WITH_SINGLE_QUOTE, OMIT_EMPTY_ELEMENT, NAME_WITH_QUOTE, IGNORE_toString, USE_AT_FIELD, DOUBLE_QUOTE_FOR_MAP_KEY, AS_null_DISP], []]
+JSON:[[DOUBLE_QUOTE_FOR_CHAR, NO_LIMIT, AS_SAME_LEVEL, BYTE_AS_DEC, OMIT_EMPTY_MAP_ELEMENT, WITH_COLON, OMIT_EMPTY_ELEMENT, NAME_WITH_QUOTE, IGNORE_toString, USE_AT_FIELD, DOUBLE_QUOTE_FOR_MAP_KEY, AS_null_DISP], []]
+json
+{"type":"A", "value":12.3, "date":{"$date":1597648020000}}
+{"type":"A", "value":4.56, "date":{"$date":1597648030000}}
 mson
 {'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
 {'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
+single-quote json
+json:[[DOUBLE_QUOTE_FOR_CHAR, NO_LIMIT, AS_SAME_LEVEL, BYTE_AS_DEC, OMIT_EMPTY_MAP_ELEMENT, WITH_COLON, WITH_SINGLE_QUOTE, OMIT_EMPTY_ELEMENT, NAME_WITH_QUOTE, IGNORE_toString, USE_AT_FIELD, DOUBLE_QUOTE_FOR_MAP_KEY, AS_null_DISP], []]
+{'type':'A', 'value':12.3, 'date':{'$date':1597648020000}}
+{'type':'A', 'value':4.56, 'date':{'$date':1597648030000}}
+double-quote mson
+mson:[[DOUBLE_QUOTE_FOR_CHAR, NO_LIMIT, AS_SAME_LEVEL, BYTE_AS_DEC, OMIT_EMPTY_MAP_ELEMENT, WITH_COLON, OMIT_EMPTY_ELEMENT, NAME_WITH_QUOTE, IGNORE_toString, USE_AT_FIELD, DOUBLE_QUOTE_FOR_MAP_KEY, AS_null_DISP], [WITH_SINGLE_QUOTE]]
+{"type":"A", "value":12.3, "date":ISODate("2020-08-17T07:07:00.000Z")}
+{"type":"A", "value":4.56, "date":ISODate("2020-08-17T07:07:10.000Z")}
+single-quote mson
+mson:[[DOUBLE_QUOTE_FOR_CHAR, NO_LIMIT, AS_SAME_LEVEL, BYTE_AS_DEC, OMIT_EMPTY_MAP_ELEMENT, WITH_COLON, WITH_SINGLE_QUOTE, OMIT_EMPTY_ELEMENT, NAME_WITH_QUOTE, IGNORE_toString, USE_AT_FIELD, DOUBLE_QUOTE_FOR_MAP_KEY, AS_null_DISP], []]
 WITH showRecordId
 {'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z'), '$recordId':1}
 {'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z'), '$recordId':2}

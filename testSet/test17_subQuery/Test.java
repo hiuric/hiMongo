@@ -28,7 +28,7 @@ public class Test {
                       "]}",
                "{_id:0}")
          .getClassList(Record.class);
-      System.out.println("records="+hiU.str(_recs,hiU.WITH_INDENT));
+      hiU.out.println("records="+hiU.str(_recs,hiU.WITH_INDENT));
 
       // 最大、最少、平均を求める
       double _min  = Double.MAX_VALUE;
@@ -41,6 +41,6 @@ public class Test {
          _total += _val;
          }
       double _avg= _total/_recs.size();
-      System.out.printf("min=%.2f max=%.2f avg=%.2f\n",_min,_max,_avg);
+      hiU.out.printf("min=%.2f max=%.2f avg=%.2f\n",_min,_max,_avg);
       }
    }

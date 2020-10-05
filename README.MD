@@ -57,7 +57,7 @@ coll.insertOne(rec);
 ```
 ### run sample programs, test and rebuild library
 ```
-このフォルダはhiMongoのビルド環境および試験環境です。
+このフォルダはhiMongoのビルド環境および試験環境(Linux/Windows)です。
 Javaは8以上が必要です。
 サンプル/試験はmongoDBサーバーがローカルに動作していることを前提としています。
 
@@ -68,8 +68,8 @@ Javaは8以上が必要です。
 |   |-- index.html
 |   ...
 |-- lib        使用ライブラリおよびhiMongoライブラリ
-|   |-- hiMongo_0_07.jar
-|   |-- hiNote_3_09.jar
+|   |-- hiMongo_0_08.jar
+|   |-- hiNote_3_10.jar
 |   `-- mongo-java-driver-3.12.5.jar
 |-- sampleSet  サンプルセット
 |   |-- 01simpleAccess
@@ -89,17 +89,18 @@ Javaは8以上が必要です。
     ...
     |-- configure.sh
     `-- test.sh
+(Windows用に各.shと同等の機能を持つ.batも置かれています）
 
 hiMongoライブラリは予めビルドされた形でlibに置いてあります。
-lib/hiNote_3_09.jarとlib/mongo-java-driver-3.12.5.jarは
+lib/hiNote_3_10.jarとlib/mongo-java-driver-3.12.5.jarは
 本来は正式な公開元からダウンロードすべきものですが、簡便化
 とバージョン安定化のため、置きました。
 mongo-java-driver-3.12.5.jar:
    https://mongodb.github.io/mongo-java-driver/
-hiNote_3_09.jar:
+hiNote_3_10.jar:
    http://www.otsu.co.jp/OtsuLibrary/
 
-＝＝＝＝＝ 実行権限の付与＝＝＝＝＝ 
+＝＝＝＝＝ 実行権限の付与(Linuxの場合のみ)＝＝＝＝＝ 
 展開後最初に一度だけ
    sh run_this_to_set755.sh
 を実行し、全フォルダの.shに実行権限を与えます
@@ -107,7 +108,8 @@ hiNote_3_09.jar:
 
 ＝＝＝＝＝ sample実行 ＝＝＝＝＝ 
 sampleSetの各ディレクトリで
-   ./run.sh
+   ./run.sh  Linux
+   run.bat   Windows 
 を実行するとサンプルが動きます。
 標準エラーは各ディレクトリのmon.logに出ます。
 sampleSet直下の./run.shで全サンプルが動きます
@@ -115,7 +117,8 @@ sampleSet直下の./run.shで全サンプルが動きます
 
 ＝＝＝＝＝ 試験実行 ＝＝＝＝＝
 testSetの各ディレクトリで
-   ./test.sh
+   ./test.sh  Linux
+   run.bat    Windows
 実行すると試験プログラムが動きます。
 結果は予め置かれてあるリファレンスと比較し異なる場合は
 エラーとなります。
@@ -130,18 +133,27 @@ TEST10_remote/は環境依存なので、予めコメントアウトする
 hiMongoライブラリをビルドしなおすには
    src/
 下で
-   ./A01_build.sh
+   ./A01_build.sh Linux
+   A1_build.bat   Windows
 を実行します。
 lib/下に.jarが置かれます。
 
 docsを作り直すには
    src/
 下で
-   ./A09_javadoc.sh
+   ./A09_javadoc.sh  Linux
+   A09_javadoc.bat   Windows
 を実行します。
 ../docs/下にドキュメントが作られます。
 
-注意:/var/www/html/hiMongo/下にもコピーが作られます。
+注意:Linuxの場合
+        /var/www/html/hiMongo/
+     下にもコピーが作られます。
      不要の場合A09_javadoc.shの最終行を#コメントアウト
-     してください
+     してください 
+     Windowsの場合
+        C:\xampp\htdocs\hiMongo\
+     下にもコピーが作られます。
+     不要の場合B09_javadoc.batのxcopy行を::コメントアウト
+     してください 
 ```

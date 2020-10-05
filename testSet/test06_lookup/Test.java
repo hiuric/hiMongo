@@ -14,16 +14,16 @@ public class Test {
          int    販売単価;
          }
       }
-   static PrintStream ps=System.out;
+   static PrintStream ps=hiU.out;
    public static void main(String[] args_){
       if( "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
       try{
          hiMongo.DB db=hiMongo.use("sampleDB");
-         System.out.println("--- befor creteIndex");
-         db.get("商品").getIndexList().forEach(Do->System.out.println(Do));
+         hiU.out.println("--- befor creteIndex");
+         db.get("商品").getIndexList().forEach(Do->hiU.out.println(Do));
          db.get("商品").createIndex("{商品id:1}","{unique:true,expireAfterDays:730}");
-         System.out.println("--- after creteIndex");
-         db.get("商品").getIndexList().forEach(Do->System.out.println(Do));
+         hiU.out.println("--- after creteIndex");
+         db.get("商品").getIndexList().forEach(Do->hiU.out.println(Do));
 
          db.get("店舗商品")
            .aggregate("["+

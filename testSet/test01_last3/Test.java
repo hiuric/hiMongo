@@ -83,23 +83,29 @@ public class Test {
               .forEach(Rm->ps.println(Rm));
 
          ps.println("========== multi forEach");
+         ps.println("MSON:"+hiMongo.engine().str_format().str_current_options());
+         ps.println("JSON:"+hiMongo.engineJ().str_format().str_current_options());
          db.get("coll_01")
            .find("{}","{_id:0}")
            .limit(2)
-//           .forThis(Fi->System.out.println("json"))
-//           .forEachJson(Rj->System.out.println(Rj))
+           .forThis(Fi->System.out.println("json"))
+           .forEachJson(Rj->System.out.println(Rj))
            .forThis(Fi->System.out.println("mson"))
            .forEachMson(Rm->System.out.println(Rm))
-/*
+
            .forThis(Fi->System.out.println("single-quote json"))
            .forThis(Fi->Fi.engineJ().str_format().str_option(hiU.WITH_SINGLE_QUOTE))
+           .forThis(Fi->ps.println("json:"+Fi.engineJ().str_format().str_current_options()))
            .forEachJson(Rj->System.out.println(Rj))
 
            .forThis(Fi->System.out.println("double-quote mson"))
-           .str_option(hiU.WITH_TYPE)
            .str_disable_option(hiU.WITH_SINGLE_QUOTE)
+           .forThis(Fi->ps.println("mson:"+Fi.engine().str_format().str_current_options()))
            .forEachMson(Rm->System.out.println(Rm))
-*/
+
+           .forThis(Fi->System.out.println("single-quote mson"))
+           .str_option(hiU.WITH_SINGLE_QUOTE)
+           .forThis(Fi->ps.println("mson:"+Fi.engine().str_format().str_current_options()))
            .forThis(Fi->System.out.println("WITH showRecordId"))
            .forThis(Fi->Fi.getIterable().showRecordId(true))
            .forEachMson(Rm->System.out.println(Rm));

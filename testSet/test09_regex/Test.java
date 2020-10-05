@@ -8,29 +8,29 @@ public class Test {
       hiMongo.DB db=hiMongo.use("db02");
       db.get("composer")
         .find("{'famiryName': {'$regex': '^Ba', '$options': ''}}","{_id:0}")
-        .forEachJson(Rj->System.out.println(Rj))
+        .forEachJson(Rj->hiU.out.println(Rj))
         .back()
 
-        .forThis(C->System.out.println("--- start with Ba --"))
+        .forThis(C->hiU.out.println("--- start with Ba --"))
         .find("{famiryName:/^Ba/}","{_id:0}")
-        .forEachJson(Rj->System.out.println(Rj))
+        .forEachJson(Rj->hiU.out.println(Rj))
         .back()
 
-        .forThis(C->System.out.println("--- with ra or řá  --"))
+        .forThis(C->hiU.out.println("--- with ra or řá  --"))
         .find("{famiryName:/(ra|řá)/}","{_id:0}")
-        .forEachJson(Rj->System.out.println(Rj))
+        .forEachJson(Rj->hiU.out.println(Rj))
         .back()
 
-        .forThis(C->System.out.println("--- end with sky --"))
+        .forThis(C->hiU.out.println("--- end with sky --"))
         .find("{famiryName:/sky$/}","{_id:0}")
-        .forEachJson(Rj->System.out.println(Rj));
+        .forEachJson(Rj->hiU.out.println(Rj));
 
       Document _filt_01=Document.parse("{famiryName:/^Ba\"'/}");
-      System.out.println(_filt_01.toString());
-      System.out.println(_filt_01.toJson());
-      System.out.println("hiMongo.str="+hiMongo.str(_filt_01,hiU.WITH_TYPE|hiU.WITH_INDENT));
-      System.out.println("Mongo.mson="+hiMongo.mson(_filt_01,hiU.WITH_TYPE|hiU.WITH_INDENT|hiU.WITH_SINGLE_QUOTE));
-      System.out.println("hiMongo.json="+hiMongo.json(_filt_01,hiU.WITH_TYPE|hiU.WITH_INDENT));
+      hiU.out.println(_filt_01.toString());
+      hiU.out.println(_filt_01.toJson());
+      hiU.out.println("hiMongo.str="+hiMongo.str(_filt_01,hiU.WITH_TYPE|hiU.WITH_INDENT));
+      hiU.out.println("Mongo.mson="+hiMongo.mson(_filt_01,hiU.WITH_TYPE|hiU.WITH_INDENT|hiU.WITH_SINGLE_QUOTE));
+      hiU.out.println("hiMongo.json="+hiMongo.json(_filt_01,hiU.WITH_TYPE|hiU.WITH_INDENT));
       }
    }
 

@@ -3,7 +3,7 @@ import otsu.hiNote.*;
 import java.util.*;
 import java.io.*;
 public class Test {
-   static PrintStream ps=System.out;
+   static PrintStream ps=hiU.out;
    public static void main(String[] args_){
       if( "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
       try{

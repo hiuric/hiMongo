@@ -3,7 +3,7 @@ import otsu.hiNote.*;
 import java.util.*;
 import java.io.*;
 public class Test {
-   static PrintStream ps=System.out;
+   static PrintStream ps=hiU.out;
    static class Arec {
       String _id;
       double min;

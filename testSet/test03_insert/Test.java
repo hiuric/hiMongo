@@ -4,7 +4,7 @@ import java.util.*;
 import java.io.*;
 import org.bson.types.ObjectId;
 public class Test {
-   static PrintStream ps=System.out;
+   static PrintStream ps=hiU.out;
    static class Record {
       String           type;
       double           value;
@@ -33,67 +33,67 @@ public class Test {
          _coll.insertOne("{type:'A',value:8.90,date:ISODate('2020-08-17T07:07:20.000Z')}");
          _coll.insertOne("{type:'B',value:1.23,date:ISODate('2020-08-17T07:07:30.000Z')}"
                      ,"{type:'D',value:4.56,date:ISODate('2020-08-17T07:07:40.000Z')}");
-         System.out.println("NORMAL-JSON");
+         hiU.out.println("NORMAL-JSON");
          _coll.find("{}","{_id:0}").getJsonList()
-              .forEach(Rj->System.out.println(Rj));
-         System.out.println("MONGO-JSON");
+              .forEach(Rj->hiU.out.println(Rj));
+         hiU.out.println("MONGO-JSON");
          _coll.find("{}","{_id:0}").getMsonList()
-              .forEach(Rm->System.out.println(Rm));
-         System.out.println("");
-         System.out.println("COUNT="+_coll.count());
-         System.out.println("COUNT B OR C ="+_coll.count("{$or:[{type:'B'},{type:'C'}]}"));
+              .forEach(Rm->hiU.out.println(Rm));
+         hiU.out.println("");
+         hiU.out.println("COUNT="+_coll.count());
+         hiU.out.println("COUNT B OR C ="+_coll.count("{$or:[{type:'B'},{type:'C'}]}"));
 
 
-         System.out.println("####################");
+         hiU.out.println("####################");
 
          String _records_json=hiFile.readTextAll("data.json");
          Object _recodes_node=hiMongo.parseText(_records_json)
                                      .asNodeList();
          db.get("composer").drop()
            .insertMany(_recodes_node);
-         System.out.println("--- with hiMongo.parseText().asNode()");
+         hiU.out.println("--- with hiMongo.parseText().asNode()");
          db.get("composer")
            .find("{}","{_id:0}")
            //.str_option(hiU.WITH_TYPE|hiU.WITH_INDENT)
-           .forEachMson(Rm->System.out.println(Rm));
-         System.out.println("--- 19世紀生まれ");
+           .forEachMson(Rm->hiU.out.println(Rm));
+         hiU.out.println("--- 19世紀生まれ");
          db.get("composer")
            .find("{$and:[{'lifeTime.0':{$gte:1801}},{'lifeTime.0':{$lte:1900}}]},{_id:0}","{_id:0}")
            .sort("{'lifeTime.0':1}")
            .getMsonList()
-           .forEach(Rm->System.out.println(Rm));
+           .forEach(Rm->hiU.out.println(Rm));
 
 
          db.get("composer2").drop()
            .with_hson()
            .insertMany(_records_json);
-         System.out.println("\n--- with_hson");
+         hiU.out.println("\n--- with_hson");
          db.get("composer2")
            .find("{}","{_id:0}")
            //.str_option(hiU.WITH_TYPE|hiU.WITH_INDENT)
-           .forEachMson(Rm->System.out.println(Rm));
-         System.out.println("--- 19世紀生まれ");
+           .forEachMson(Rm->hiU.out.println(Rm));
+         hiU.out.println("--- 19世紀生まれ");
          db.get("composer2")
            .find("{$and:[{'lifeTime.0':{$gte:1801}},{'lifeTime.0':{$lte:1900}}]},{_id:0}","{_id:0}")
            .sort("{'lifeTime.0':1}")
            .getMsonList()
-           .forEach(Rm->System.out.println(Rm));
+           .forEach(Rm->hiU.out.println(Rm));
 
 
          db.get("composer3").drop()
            .with_hson()
            .insertMany(new File("data.json"));
-         System.out.println("\n--- with_hson/File");
+         hiU.out.println("\n--- with_hson/File");
          db.get("composer3")
            .find("{}","{_id:0}")
            //.str_option(hiU.WITH_TYPE|hiU.WITH_INDENT)
-           .forEachMson(Rm->System.out.println(Rm));
-         System.out.println("--- 19世紀生まれ");
+           .forEachMson(Rm->hiU.out.println(Rm));
+         hiU.out.println("--- 19世紀生まれ");
          db.get("composer3")
            .find("{$and:[{'lifeTime.0':{$gte:1801}},{'lifeTime.0':{$lte:1900}}]},{_id:0}","{_id:0}")
            .sort("{'lifeTime.0':1}")
            .getMsonList()
-           .forEach(Rm->System.out.println(Rm));
+           .forEach(Rm->hiU.out.println(Rm));
          }
       catch(Exception _ex){
          _ex.printStackTrace(System.err);
