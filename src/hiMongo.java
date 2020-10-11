@@ -471,7 +471,7 @@ OK
 <td>Finder&emsp;</td><td>Fi&emsp;</td><td>forThis(Fi->Fi.getIterable().showRecordId(true))</td>
 </tr>
 <tr>
-<td>Aggregetor&emsp;</td><td>Ag&emsp;</td><td>forThis(Ag->System.out.println("some message"))</td>
+<td>Aggregator&emsp;</td><td>Ag&emsp;</td><td>forThis(Ag->System.out.println("some message"))</td>
 </tr>
 <tr>
 <td>その他のDocumet&emsp;</td><td>Do&emsp;</td><td>getIndexList().forEach(Do->System.out.println(Do))</td>
@@ -1602,27 +1602,27 @@ Document{{v=2, unique=true, key=Document{{商品id=1}}, name=商品id_1
 <tr>
 <td>Documentで受け取る</td>
 <td>{@link hi.hiMongo.Accessor#getDocumentList() getDocumentList()} リストで受ける<br>
-    {@link hi.hiMongo.Aggregrator#forEachDocument(hiU.ConsumerEx) forEachDocument(Documentを引数とするラムダ式)}</td>
+    {@link hi.hiMongo.Aggregator#forEachDocument(hiU.ConsumerEx) forEachDocument(Documentを引数とするラムダ式)}</td>
 </tr>
 <tr>
 <td>利用者クラスインタンスで受け取る</td>
 <td>{@link hi.hiMongo.Accessor#getClassList(Class) getClassList(Class)} リストで受ける<br>
-    {@link hi.hiMongo.Aggregrator#forEachClass(Class,hiU.ConsumerEx) forEachClass(Class,利用者クラスインスタンスを引数とするラムダ式)}</td>
+    {@link hi.hiMongo.Aggregator#forEachClass(Class,hiU.ConsumerEx) forEachClass(Class,利用者クラスインスタンスを引数とするラムダ式)}</td>
 </tr>
 <tr>
 <td>ノード探査機で受け取る</td>
 <td>{@link hi.hiMongo.Accessor#getProbeList() getProbeList()} リストで受ける<br>
-    {@link hi.hiMongo.Aggregrator#forEachProbe(hiU.ConsumerEx) forEachProbe(Probeを引数とするラムダ式)}</td>
+    {@link hi.hiMongo.Aggregator#forEachProbe(hiU.ConsumerEx) forEachProbe(Probeを引数とするラムダ式)}</td>
 </tr>
 <tr>
 <td>JSON文字列で受け取る</td>
 <td>{@link hi.hiMongo.Accessor#getJsonList() getJsonList()} リストで受ける<br>
-    {@link hi.hiMongo.Aggregrator#forEachJson(hiU.ConsumerEx) forEachJson(Json文字列を引数とするラムダ式)}</td>
+    {@link hi.hiMongo.Aggregator#forEachJson(hiU.ConsumerEx) forEachJson(Json文字列を引数とするラムダ式)}</td>
 </tr>
 <tr>
 <td>拡張JSON文字列MSONで受け取る</td>
 <td>{@link hi.hiMongo.Accessor#getMsonList() getMsonList()} リストで受ける<br>
-    {@link hi.hiMongo.Aggregrator#forEachMson(hiU.ConsumerEx) forEachJson(Mson文字列を引数とするラムダ式)}</td>
+    {@link hi.hiMongo.Aggregator#forEachMson(hiU.ConsumerEx) forEachJson(Mson文字列を引数とするラムダ式)}</td>
 </tr>
 </table>
 
@@ -2390,14 +2390,14 @@ use()の前にconnect()メソッドにJSON文字列またはhiMongo.RemoteInfo�
 </p>
 <pre class=quote10>
 //---- JSON文字列で情報を与える
-DB db=hiMongo.connect("{"+
+hiMongo.DB db=hiMongo.connect("{"+
                       "host:'192.168.1.139',"+
                       "port:27017,"+
                       "dbName:'<span class=red>testDB</span>',"+
                       "user:'<span class=blue>testUser</span>',"+
                       "password:'<span class=green>xxx</span>'"+
                       "}")
-              .use("<span class=purple>db01</span>");// 利用者が使うDBはdb01
+                    .use("<span class=purple>db01</span>");// 利用者が使うDBはdb01
 db.get("coll_01").find()...
 </pre>
 <p>
@@ -2411,8 +2411,8 @@ _info.port    = 27017;
 _info.dbName  = "<span class=red>testDB</span>";
 _info.user    = "<span class=blue>testUser</span>";
 _info.password= "<span class=green>xxx</span>";
-DB db=hiMongo.connect(_info)
-             .use("<span class=purple>db01</span>");// 利用者が使うDBはdb01
+hiMongo.DB db=hiMongo.connect(_info)
+                     .use("<span class=purple>db01</span>");// 利用者が使うDBはdb01
 db.get("coll_01").find()...
 </pre>
 
@@ -2466,7 +2466,7 @@ hiMongoの各クラスが持つmongo-java-driverの要素にアクセスする�
 {@link com.mongodb.client.AggregateIterable AggregateIterable<TResult&gt;}
 </td>
 <td>
-{@link hi.hiMongo.Aggregrator#getIterable()}
+{@link hi.hiMongo.Aggregator#getIterable()}
 </td>
 </tr>
 
@@ -2626,10 +2626,6 @@ $ run.sh
             document.getElementById('divUpsert_1').style.display='block';
             document.location='#divUpsert_1'"></p>
 </div>
-
-
-
-
 
 <a class=A1 href="#top">top</a>、<a class=A1 href="#API">API</a>
 <p class=B1 id="node">
@@ -3324,7 +3320,7 @@ public class hiMongo {
    /**
     * レコードアクセス機(Finder,Aggregatorのベース).
     *<p>
-    *{@link hi.hiMongo.Finder},{@link hi.hiMongo.Aggregrator}のベースです。<br>
+    *{@link hi.hiMongo.Finder},{@link hi.hiMongo.Aggregator}のベースです。<br>
     *この階層を直接生成することは有りません。
     *</p>
     *<!-- Accessor -->
@@ -3958,23 +3954,23 @@ WITH showRecordId
     *<p>
     *{@link hi.hiMongo.Collection#aggregate(Object)}で得られます。
     *</p>
-    *<!-- Aggregrator -->
+    *<!-- Aggregator -->
     */
-   public static class Aggregrator extends Accessor{
+   public static class Aggregator extends Accessor{
       MongoCollection<Document> mongoCollection;
       List<Bson>      procs;
       /**
        * 指定のコレクション用の集計器.
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      Aggregrator(Collection collection_){
+      Aggregator(Collection collection_){
          super(collection_);
          mongoCollection= collection.mongoCollection;
          }
       /**
        * イテラブル取得
        *@return 管理しているAggregateIterable<Document> 
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
       public AggregateIterable<Document> getIterable(){
          return (AggregateIterable<Document>)records;
@@ -3986,9 +3982,9 @@ WITH showRecordId
        *</p>
        *@param option_ オプション
        *@return this
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      public Aggregrator str_option(long option_){
+      public Aggregator str_option(long option_){
          engine().str_format().str_option(option_);
          return this;
          }
@@ -4003,9 +3999,9 @@ WITH showRecordId
        *</pre>
        *@param option_ オプション
        *@return this
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      public Aggregrator str_disable_option(long option_){
+      public Aggregator str_disable_option(long option_){
          engine().str_format().str_disable_option(option_);
          return this;
          }
@@ -4016,9 +4012,9 @@ WITH showRecordId
        *</p>
        *@param option_ オプション
        *@return this
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      public Aggregrator with_option(long option_){
+      public Aggregator with_option(long option_){
          engine().with_option(option_);
          return this;
          }
@@ -4034,9 +4030,9 @@ WITH showRecordId
        *</pre>
        *@param option_ オプション
        *@return this
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      public Aggregrator without_option(long option_){
+      public Aggregator without_option(long option_){
          engine().without_option(option_);
          return this;
          }
@@ -4044,9 +4040,9 @@ WITH showRecordId
        * match設定.
        *@param arg_ match引数
        *@return this
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      public Aggregrator match(Object arg_){
+      public Aggregator match(Object arg_){
          procs.add(namedObjToDoc("$match",arg_,parse_engine()));
          records= mongoCollection.aggregate(procs);
          return this;
@@ -4055,9 +4051,9 @@ WITH showRecordId
        * group設定.
        *@param arg_ group引数
        *@return this
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      public Aggregrator group(Object arg_){
+      public Aggregator group(Object arg_){
          procs.add(namedObjToDoc("$group",arg_,parse_engine()));
          records= mongoCollection.aggregate(procs);
          return this;
@@ -4066,9 +4062,9 @@ WITH showRecordId
        * lookup設定.
        *@param arg_ lookup引数
        *@return this
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      public Aggregrator lookup(Object arg_){
+      public Aggregator lookup(Object arg_){
          procs.add(namedObjToDoc("$lookup",arg_,parse_engine()));
          records= mongoCollection.aggregate(procs);
          return this;
@@ -4077,9 +4073,9 @@ WITH showRecordId
        * project設定.
        *@param arg_ project引数
        *@return this
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      public Aggregrator project(Object arg_){
+      public Aggregator project(Object arg_){
          procs.add(namedObjToDoc("$project",arg_,parse_engine()));
          records= mongoCollection.aggregate(procs);
          return this;
@@ -4088,9 +4084,9 @@ WITH showRecordId
        * unwind設定.
        *@param arg_ unwind引数
        *@return this
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      public Aggregrator unwind(Object arg_){
+      public Aggregator unwind(Object arg_){
          procs.add(namedObjToDoc("$unwind",arg_,parse_engine()));
          records= mongoCollection.aggregate(procs);
          return this;
@@ -4099,9 +4095,9 @@ WITH showRecordId
        * sort設定.
        *@param arg_ sort引数
        *@return this
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      public Aggregrator sort(Object arg_){
+      public Aggregator sort(Object arg_){
          procs.add(namedObjToDoc("$sort",arg_,parse_engine()));
          records= mongoCollection.aggregate(procs);
          return this;
@@ -4110,9 +4106,9 @@ WITH showRecordId
        * limit設定.
        *@param limit_ limit数
        *@return this
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      public Aggregrator limit(int limit_){
+      public Aggregator limit(int limit_){
          procs.add(Document.parse("{$limit:"+limit_+"}"));
          records= mongoCollection.aggregate(procs);
          return this;
@@ -4125,9 +4121,9 @@ WITH showRecordId
        *@param proc_ 機能("$xxx")
        *@param arg_ 引数
        *@return this
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      public Aggregrator add_proc(String proc_,Object arg_){
+      public Aggregator add_proc(String proc_,Object arg_){
          procs.add(namedObjToDoc(proc_,arg_,parse_engine()));
          records= mongoCollection.aggregate(procs);
          return this;
@@ -4136,65 +4132,65 @@ WITH showRecordId
        * リストを介することなく、結果を１個ずつラムダ式で得る.
        *@param func_ Document-nodeを引数とするラムダ式
        *@return this
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      public Aggregrator forEachDocument(hiU.ConsumerEx<Document,Exception> func_){
-         return (Aggregrator)super_forEachDocument(func_);
+      public Aggregator forEachDocument(hiU.ConsumerEx<Document,Exception> func_){
+         return (Aggregator)super_forEachDocument(func_);
          }
       /** {@link #forEachDocument(hiU.ConsumerEx) forEachDocument(func_)}の別名. */
-      public Aggregrator forEach(hiU.ConsumerEx<Document,Exception> func_){
-         return (Aggregrator)super_forEachDocument(func_);
+      public Aggregator forEach(hiU.ConsumerEx<Document,Exception> func_){
+         return (Aggregator)super_forEachDocument(func_);
          }
       /**
        * リストを介することなく、Json結果を１個ずつラムダ式で得る.
        *@param func_ ラムダ式
        *@return this
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      public Aggregrator forEachJson(hiU.ConsumerEx<String,Exception> func_){
-         return (Aggregrator)super_forEachJson(func_);
+      public Aggregator forEachJson(hiU.ConsumerEx<String,Exception> func_){
+         return (Aggregator)super_forEachJson(func_);
          }
       /**
        * リストを介することなく、Mson結果を１個ずつラムダ式で得る.
        *@param func_ ラムダ式
        *@return this
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      public Aggregrator forEachMson(hiU.ConsumerEx<String,Exception> func_){
-         return (Aggregrator)super_forEachMson(func_);
+      public Aggregator forEachMson(hiU.ConsumerEx<String,Exception> func_){
+         return (Aggregator)super_forEachMson(func_);
          }
       /**
        * リストを介することなく、Probe結果を１個ずつラムダ式で得る.
        *@param func_ ラムダ式
        *@return this
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      public Aggregrator forEachProbe(hiU.ConsumerEx<hiJSON.Probe,Exception> func_){
-         return (Aggregrator)super_forEachProbe(func_);
+      public Aggregator forEachProbe(hiU.ConsumerEx<hiJSON.Probe,Exception> func_){
+         return (Aggregator)super_forEachProbe(func_);
          }
       /**
        * リストを介することなく、結果を１個ずつ利用者クラスを引数とするラムダ式で得る.
        *@param <T> 利用者クラス
        *@param class_ 利用者クラス
        *@return this
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      public <T> Aggregrator forEachClass(Class<T>                    class_,
+      public <T> Aggregator forEachClass(Class<T>                    class_,
                                           hiU.ConsumerEx<T,Exception> func_){
-         return (Aggregrator)super_forEachClass(class_,func_);
+         return (Aggregator)super_forEachClass(class_,func_);
          }
       /** {@link #forEachClass(Class,hiU.ConsumerEx) forEachClass(func_)}の別名. */
-      public <T> Aggregrator forEach(Class<T>                    class_,
+      public <T> Aggregator forEach(Class<T>                    class_,
                                 hiU.ConsumerEx<T,Exception> func_){
-         return (Aggregrator)super_forEachClass(class_,func_);
+         return (Aggregator)super_forEachClass(class_,func_);
          }
       /**
        * この集計器に対してラムダ式実行.
-       *@param func_ Aggregratorを引数とするラムダ式
+       *@param func_ Aggregatorを引数とするラムダ式
        *@return this
-       *<!-- Aggregrator -->
+       *<!-- Aggregator -->
        */
-      public Aggregrator forThis(hiU.ConsumerEx<Aggregrator,Exception> func_){
+      public Aggregator forThis(hiU.ConsumerEx<Aggregator,Exception> func_){
          hiU.rap(func_,this);
          return this;
          }
@@ -4489,8 +4485,8 @@ hiMongo.use("db01")
        *@return 集計器
        *<!-- Collection -->
        */
-      public Aggregrator aggregate(Object proc_){
-         Aggregrator _ret=new Aggregrator(this);
+      public Aggregator aggregate(Object proc_){
+         Aggregator _ret=new Aggregator(this);
          _ret.procs   = parseAsBsonList(proc_,parse_engine());// BSONのリスト
          _ret.records = mongoCollection.aggregate(_ret.procs);
          return _ret;
@@ -4500,13 +4496,13 @@ hiMongo.use("db01")
        * aggregate(集計).
        *<p>
        *集計手続き無で集計器を作成します。<br>
-       *集計手続きは集計器の{@link hi.hiMongo.Aggregrator#match(Object) match()メソッド}などで追加出来ます。
+       *集計手続きは集計器の{@link hi.hiMongo.Aggregator#match(Object) match()メソッド}などで追加出来ます。
        *</p>
        *@return 集計器
        *<!-- Collection -->
        */
-      public Aggregrator aggregate(){
-         Aggregrator _ret=new Aggregrator(this);
+      public Aggregator aggregate(){
+         Aggregator _ret=new Aggregator(this);
          _ret.procs = new ArrayList<Bson>();
          return _ret;
          }

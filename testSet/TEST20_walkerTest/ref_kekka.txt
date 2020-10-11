@@ -1,0 +1,150 @@
+################ Finder
+==== Document
+-- forEach
+Document{{type=A, value=12.3, date=Mon Aug 17 16:07:00 JST 2020}}
+Document{{type=A, value=4.56, date=Mon Aug 17 16:07:10 JST 2020}}
+Document{{type=B, value=2001.0, date=Mon Aug 17 16:07:20 JST 2020}}
+-- forEachDocument
+Document{{type=A, value=12.3, date=Mon Aug 17 16:07:00 JST 2020}}
+Document{{type=A, value=4.56, date=Mon Aug 17 16:07:10 JST 2020}}
+Document{{type=B, value=2001.0, date=Mon Aug 17 16:07:20 JST 2020}}
+-- getList/forEach
+Document{{type=A, value=12.3, date=Mon Aug 17 16:07:00 JST 2020}}
+Document{{type=A, value=4.56, date=Mon Aug 17 16:07:10 JST 2020}}
+Document{{type=B, value=2001.0, date=Mon Aug 17 16:07:20 JST 2020}}
+-- getDocumentList/forEach
+Document{{type=A, value=12.3, date=Mon Aug 17 16:07:00 JST 2020}}
+Document{{type=A, value=4.56, date=Mon Aug 17 16:07:10 JST 2020}}
+Document{{type=B, value=2001.0, date=Mon Aug 17 16:07:20 JST 2020}}
+==== Document toJson
+-- forEach toJson
+{"type": "A", "value": 12.3, "date": {"$date": 1597648020000}}
+{"type": "A", "value": 4.56, "date": {"$date": 1597648030000}}
+{"type": "B", "value": 2001.0, "date": {"$date": 1597648040000}}
+-- forEachDocument toJson
+{"type": "A", "value": 12.3, "date": {"$date": 1597648020000}}
+{"type": "A", "value": 4.56, "date": {"$date": 1597648030000}}
+{"type": "B", "value": 2001.0, "date": {"$date": 1597648040000}}
+-- getList/forEach toJson
+{"type": "A", "value": 12.3, "date": {"$date": 1597648020000}}
+{"type": "A", "value": 4.56, "date": {"$date": 1597648030000}}
+{"type": "B", "value": 2001.0, "date": {"$date": 1597648040000}}
+-- getDocumentList/forEach toJson
+{"type": "A", "value": 12.3, "date": {"$date": 1597648020000}}
+{"type": "A", "value": 4.56, "date": {"$date": 1597648030000}}
+{"type": "B", "value": 2001.0, "date": {"$date": 1597648040000}}
+==== Document hiMongo.json()
+-- forEach hiMongo.json()
+{"type":"A", "value":12.3, "date":{"$date":1597648020000}}
+{"type":"A", "value":4.56, "date":{"$date":1597648030000}}
+{"type":"B", "value":2001, "date":{"$date":1597648040000}}
+-- forEachDocument hiMongo.json()
+{"type":"A", "value":12.3, "date":{"$date":1597648020000}}
+{"type":"A", "value":4.56, "date":{"$date":1597648030000}}
+{"type":"B", "value":2001, "date":{"$date":1597648040000}}
+-- getList/forEach hiMongo.json()
+{"type":"A", "value":12.3, "date":{"$date":1597648020000}}
+{"type":"A", "value":4.56, "date":{"$date":1597648030000}}
+{"type":"B", "value":2001, "date":{"$date":1597648040000}}
+-- getDocumentList/forEach hiMongo.json()
+{"type":"A", "value":12.3, "date":{"$date":1597648020000}}
+{"type":"A", "value":4.56, "date":{"$date":1597648030000}}
+{"type":"B", "value":2001, "date":{"$date":1597648040000}}
+==== Document hiMongo.mson()
+-- forEach hiMongo.mson()
+{'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+{'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
+{'type':'B', 'value':2001, 'date':ISODate('2020-08-17T07:07:20.000Z')}
+-- forEachDocument hiMongo.mson()
+{'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+{'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
+{'type':'B', 'value':2001, 'date':ISODate('2020-08-17T07:07:20.000Z')}
+-- getList/forEach hiMongo.mson()
+{'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+{'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
+{'type':'B', 'value':2001, 'date':ISODate('2020-08-17T07:07:20.000Z')}
+-- getDocumentList/forEach hiMongo.mson()
+{'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+{'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
+{'type':'B', 'value':2001, 'date':ISODate('2020-08-17T07:07:20.000Z')}
+==== Class
+-- forEach hiU.str
+{type="A", value=12.3, date=Mon Aug 17 16:07:00 JST 2020}
+{type="A", value=4.56, date=Mon Aug 17 16:07:10 JST 2020}
+{type="B", value=2001.0, date=Mon Aug 17 16:07:20 JST 2020}
+-- forEachClass hiU.str
+{type="A", value=12.3, date=Mon Aug 17 16:07:00 JST 2020}
+{type="A", value=4.56, date=Mon Aug 17 16:07:10 JST 2020}
+{type="B", value=2001.0, date=Mon Aug 17 16:07:20 JST 2020}
+-- getList/forEach hiU.str
+{type="A", value=12.3, date=Mon Aug 17 16:07:00 JST 2020}
+{type="A", value=4.56, date=Mon Aug 17 16:07:10 JST 2020}
+{type="B", value=2001.0, date=Mon Aug 17 16:07:20 JST 2020}
+-- getClassList/forEach hiU.str
+{type="A", value=12.3, date=Mon Aug 17 16:07:00 JST 2020}
+{type="A", value=4.56, date=Mon Aug 17 16:07:10 JST 2020}
+{type="B", value=2001.0, date=Mon Aug 17 16:07:20 JST 2020}
+==== Probe
+-- forEachProbe hiU.str
+{node={"type"="A", "value"=12.3, "date"=Mon Aug 17 16:07:00 JST 2020}}
+{node={"type"="A", "value"=4.56, "date"=Mon Aug 17 16:07:10 JST 2020}}
+{node={"type"="B", "value"=2001.0, "date"=Mon Aug 17 16:07:20 JST 2020}}
+-- getProbeList/forEach hiU.str
+{node={"type"="A", "value"=12.3, "date"=Mon Aug 17 16:07:00 JST 2020}}
+{node={"type"="A", "value"=4.56, "date"=Mon Aug 17 16:07:10 JST 2020}}
+{node={"type"="B", "value"=2001.0, "date"=Mon Aug 17 16:07:20 JST 2020}}
+==== Json
+-- forEachJson
+{"type":"A", "value":12.3, "date":{"$date":1597648020000}}
+{"type":"A", "value":4.56, "date":{"$date":1597648030000}}
+{"type":"B", "value":2001, "date":{"$date":1597648040000}}
+-- getJsonList/forEach
+{"type":"A", "value":12.3, "date":{"$date":1597648020000}}
+{"type":"A", "value":4.56, "date":{"$date":1597648030000}}
+{"type":"B", "value":2001, "date":{"$date":1597648040000}}
+==== Mson
+-- forEachJson
+{'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+{'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
+{'type':'B', 'value':2001, 'date':ISODate('2020-08-17T07:07:20.000Z')}
+-- getMsonList/forEach
+{'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+{'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
+{'type':'B', 'value':2001, 'date':ISODate('2020-08-17T07:07:20.000Z')}
+==== back to Collection indexList(Record)
+-- Co.getIndexList
+Document{{v=2, key=Document{{_id=1}}, name=_id_, ns=db01.coll_01}}
+################ Aggregator
+==== Document
+-- forEach
+Document{{_id=A, min=0.12, max=12.3, avg=6.2175}}
+-- forEachDocument
+Document{{_id=A, min=0.12, max=12.3, avg=6.2175}}
+-- getList/forEach
+Document{{_id=A, min=0.12, max=12.3, avg=6.2175}}
+-- getDocumentList/forEach
+Document{{_id=A, min=0.12, max=12.3, avg=6.2175}}
+==== Class
+-- forEach hiU.str
+{_id="A", min=0.12, max=12.3, avg=6.2175}
+-- forEachClass hiU.str
+{_id="A", min=0.12, max=12.3, avg=6.2175}
+-- getList/forEach hiU.str
+{_id="A", min=0.12, max=12.3, avg=6.2175}
+-- getClassList/forEach hiU.str
+{_id="A", min=0.12, max=12.3, avg=6.2175}
+==== Probe
+-- forEachProbe hiU.str
+{node={"_id"="A", "min"=0.12, "max"=12.3, "avg"=6.2175}}
+-- getProbeList/forEach hiU.str
+{node={"_id"="A", "min"=0.12, "max"=12.3, "avg"=6.2175}}
+==== Json
+-- forEachJson
+{"_id":"A", "min":0.12, "max":12.3, "avg":6.2175}
+-- getJsonList/forEach
+{"_id":"A", "min":0.12, "max":12.3, "avg":6.2175}
+==== Mson
+-- forEachJson
+{'_id':'A', 'min':0.12, 'max':12.3, 'avg':6.2175}
+-- getMsonList/forEach
+{'_id':'A', 'min':0.12, 'max':12.3, 'avg':6.2175}

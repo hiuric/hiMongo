@@ -1,0 +1,18 @@
+// hiMongoWalker基礎試験01
+{
+   connect:{
+      host:'192.168.1.139',
+      port:27017,
+      dbName:'testDB',
+      user:'testUser',
+      password:'xxx'
+      },
+   use:"db01",
+   get:"coll_01",
+   execute:[
+      {find:[{type:'A'},{_id:0}]},// Col->Finder
+      {sort:{_id:-1}},             // Finder->Finder
+      {limit:3}                    // Finder->Finder
+      {getJsonList:1}              // Finder->List
+      ]
+   }
