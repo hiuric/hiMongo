@@ -1,9 +1,9 @@
-import hi.hiMongo;
+import hi.db.hiMongo;
 import otsu.hiNote.*;
 public class Test {
    public static void main(String[] args_){
       hiMongo.DB db=hiMongo.use("db01");  // database   'db01'選択
-      db.get("coll_01")                     // collection 選択
+      db.in("coll_01")                     // collection 選択
          .find("{type:'A'}","{_id:0}")      // typeが'A'のレコード,
          .sort("{_id:-1}")                  // _idで逆向きにソート
          .limit(3)                          // 個数制限

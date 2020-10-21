@@ -1,11 +1,26 @@
-import hi.hiMongo;
+import hi.db.*;
 import otsu.hiNote.*;
 import java.io.*;
 import java.util.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.bson.types.ObjectId;
+import org.bson.Document;
 public class Test {
+   final static boolean USE_MSON=false;
+   final static boolean DOT_ZERO=true;
+   static String dot_zero(String value_){
+      if( !DOT_ZERO ) return value_;
+      return hiMongo.suprress_dot_0(value_);
+      }
+   static String str(Document doc_){
+      if(!USE_MSON ) return dot_zero(doc_.toString());
+      return hiMongo.mson(doc_);
+      }
+   static String json(Document doc_){
+      if(!USE_MSON ) return dot_zero(doc_.toJson());
+      return hiMongo.mson(doc_);
+      }
    static PrintStream ps=System.out;
    final static SimpleDateFormat dateFormat
          = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
@@ -24,11 +39,18 @@ public class Test {
       return "ISODate(\""+dateFormat.format(_dt)+"\")";
       }
    public static void main(String[] args_){
-      //hiMongo.nolog(Test.class);
-      if( true || "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
+      hiMongo.MoreMongo mongo;
+      if( new File("../test_workerMode.txt").exists() ) {
+         mongo=new hiMongoCaller(new hiMongoWorker());
+         hiU.out.println("// caller-worker mode");
+         }
+      else {
+         mongo=new hiMongoDirect();
+         hiU.out.println("// direct mode");
+         }
       try{ // DBのcloseは呼ばない
-         hiMongo.DB db=hiMongo.use("db01");    // database   'db01'選択
-         db.get("coll_01")                     // collection 'coll_01'選択
+         hiMongo.DB db=mongo.use("db01");    // database   'db01'選択
+         db.in("coll_01")                     // collection 'coll_01'選択
             .find("{type:'A'}","{_id:0}")      // typeが'A'のレコード,_idは不要
             .sort("{_id:-1}")                  // _idで逆向きにソート
             .limit(3)                          // 個数制限
@@ -36,7 +58,7 @@ public class Test {
             .getJsonList(hiU.REVERSE)          // 反転したリスト取得
             .forEach(Rj->System.out.println(Rj)) // レコード表示
             ;
-         hiMongo.Finder _find=db.get("coll_01")
+         hiMongo.Finder _find=db.in("coll_01")
                                 .find("{type:'A'}")
                                 .sort("{_id:-1}")
                                 .limit(3);
@@ -74,7 +96,7 @@ public class Test {
 
          Object _f_node=hiMongo.parseText("{type:'A'}").asNode();
          Object _s_node=hiMongo.parseText("{_id:-1}").asNode();
-         hiMongo.Finder _curs2=db.get("coll_01")
+         hiMongo.Finder _curs2=db.in("coll_01")
                                 .find(_f_node)
                                 .sort(_s_node)
                                 .limit(3);
@@ -85,7 +107,7 @@ public class Test {
          ps.println("========== multi forEach");
          ps.println("MSON:"+hiMongo.engine().str_format().str_current_options());
          ps.println("JSON:"+hiMongo.engineJ().str_format().str_current_options());
-         db.get("coll_01")
+         db.in("coll_01")
            .find("{}","{_id:0}")
            .limit(2)
            .forThis(Fi->System.out.println("json"))
@@ -103,12 +125,15 @@ public class Test {
            .forThis(Fi->ps.println("mson:"+Fi.engine().str_format().str_current_options()))
            .forEachMson(Rm->System.out.println(Rm))
 
+/* TODO:別建て
            .forThis(Fi->System.out.println("single-quote mson"))
            .str_option(hiU.WITH_SINGLE_QUOTE)
            .forThis(Fi->ps.println("mson:"+Fi.engine().str_format().str_current_options()))
            .forThis(Fi->System.out.println("WITH showRecordId"))
            .forThis(Fi->Fi.getIterable().showRecordId(true))
-           .forEachMson(Rm->System.out.println(Rm));
+*/
+           .forEachMson(Rm->System.out.println(Rm))
+           ;
          //ps.println("WAO!");
          }
       catch(Exception _ex){

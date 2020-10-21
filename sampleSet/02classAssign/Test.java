@@ -1,4 +1,4 @@
-import hi.hiMongo;
+import hi.db.hiMongo;
 import otsu.hiNote.*;
 import java.util.*;
 public class Test {
@@ -14,7 +14,7 @@ public class Test {
       hiMongo.DB db=hiMongo.use("db01");
       // 最後の'A'レコードの時刻(unix-epoch)を得る
       long _last_date
-      =db.get("coll_01")
+      =db.in("coll_01")
          .find("{type:'A'}","{_id:0,date:1}")
          .sort("{_id:-1}").limit(1)
          .getClassList(WithDate.class)
@@ -24,7 +24,7 @@ public class Test {
       long _start_date= _last_date-30000; // 30秒前
       System.out.println("last="+_last_date+" start="+_start_date);
       ArrayList<Record> _recs
-      =db.get("coll_01")
+      =db.in("coll_01")
          .find("{$and:["+
                      "{type:'A'},"+
                      "{date:{$gte:{$date:"+_start_date+"}}}"+

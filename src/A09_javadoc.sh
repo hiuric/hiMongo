@@ -19,18 +19,25 @@ mkdir ${JDOC_DIR}/img
 
 #----------------------------------------
 # JDOC内の<、>などエスケープ
-# 変換結果は hi/hiMongo.javaに置かれる
+# 変換結果は hi/db/hiMongo.javaに置かれる
 #----------------------------------------
 rm -rf hi
 mkdir hi/
-echo java -jar ${hiNoteLIB} conv -with propJ.txt -in ${TARGET}.java -out hi/${TARGET}.java
-java -jar ${hiNoteLIB} conv -with propJ.txt -in ${TARGET}.java -out hi/${TARGET}.java
+mkdir hi/db
+convert_java() {
+   echo java -jar ${hiNoteLIB} conv -with propJ.txt -in ${1} -out hi/db/${1}
+   java -jar ${hiNoteLIB} conv -with propJ.txt -in ${1} -out hi/db/${1}
+   }
+export hiNoteLIB
+export -f convert_java
+echo find . -name \*.java -exec bash -c 'convert_java "${1}"' -- {} \;
+find . -name \*.java -exec bash -c 'convert_java "${1}"' -- {} \;
 
 #----------------------------------------
 # javadoc実施 (-link先がhttpのものが有ることに留意)
 # 3.12はhttpでもhttpsでも上手く@linkされない
 #----------------------------------------
-javadoc -Xdoclint:none -public -link http://www.otsu.co.jp/OtsuLibrary/jdoc/ -link https://docs.oracle.com/javase/jp/8/docs/api/  -link http://mongodb.github.io/mongo-java-driver/3.7/javadoc/ --allow-script-in-comments -encoding UTF-8 -charset "UTF-8" -docencoding UTF-8 -d ${JDOC_DIR} -classpath ${LIBS} hi/${TARGET}.java
+javadoc -Xdoclint:none -public -link http://www.otsu.co.jp/OtsuLibrary/jdoc/ -link https://docs.oracle.com/javase/jp/8/docs/api/  -link http://mongodb.github.io/mongo-java-driver/3.7/javadoc/ --allow-script-in-comments -encoding UTF-8 -charset "UTF-8" -docencoding UTF-8 -d ${JDOC_DIR} -classpath ${LIBS} hi/db/*.java
 
 ###
 rm -rf hi
@@ -58,6 +65,7 @@ export -f convert_html
 find ${JDOC_DIR} -name \*.html -exec bash -c 'convert_html "${1}"' -- {} \;
 
 # 自ホスト上のwebサーバへ送る
-rm -rf /var/www/html/hiMongo/* > /dev/null
+rm -rf /var/www/html/hiMongo > /dev/null
+mkdir /var/www/html/hiMongo
 cp -R ${JDOC_DIR}/* /var/www/html/hiMongo/
 

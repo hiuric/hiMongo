@@ -25,13 +25,22 @@ mkdir %JDOC_DIR%\img
 
 ::----------------------------------------
 :: JDOC内の<、>などエスケープ 
-:: 変換結果は hi/hiMongo.javaに置かれる
+:: 変換結果は hi/db/hiMongo.javaに置かれる
 ::----------------------------------------
-rd /s /q .\hi\
-mkdir .\hi\
-echo java -jar %hiNoteLIB% conv -with propJ.txt -in %TARGET%.java -out hi\%TARGET%.java
-java -jar %hiNoteLIB% conv -with propJ.txt -in %TARGET%.java -out hi\%TARGET%.java
-
+rd /s /q .\hi\db\
+mkdir .\hi\db\
+:: 一旦.javaを全部hi/dbに展開
+::copy *.java .\hi\db\
+::echo java -jar %hiNoteLIB% conv -with propJ.txt -in %TARGET%.java -out hi\db\%TARGET%.java
+::java -jar %hiNoteLIB% conv -with propJ.txt -in %TARGET%.java -out hi\db\%TARGET%.java
+::--------------------------
+:: javaに変更を加える
+:: (findstr判断の必要はなかった)
+::--------------------------
+dir /B /S .\*.java
+for /F "usebackq delims=" %%a in (`dir /B /S .\*.java ^| findstr ".*\\.*java"`) do (
+   call :convert_java %%a
+   )
 ::----------------------------------------
 :: javadoc実施 (-link先がhttpのものが有ることに留意)
 :: mongo-java-driver3.12は上手く@linkされないのでこの段階では3.7を
@@ -42,9 +51,9 @@ java -jar %hiNoteLIB% conv -with propJ.txt -in %TARGET%.java -out hi\%TARGET%.ja
 :: を行う。
 ::----------------------------------------
 
-echo javadoc -Xdoclint:none -public -link http://www.otsu.co.jp/OtsuLibrary/jdoc/ -link https://docs.oracle.com/javase/jp/8/docs/api/  -link http://mongodb.github.io/mongo-java-driver/3.7/javadoc/ --allow-script-in-comments -encoding UTF-8 -charset "UTF-8" -docencoding UTF-8 -d %JDOC_DIR% -classpath %LIBS% hi\%TARGET%.java
+echo javadoc -Xdoclint:none -public -link http://www.otsu.co.jp/OtsuLibrary/jdoc/ -link https://docs.oracle.com/javase/jp/8/docs/api/  -link http://mongodb.github.io/mongo-java-driver/3.7/javadoc/ --allow-script-in-comments -encoding UTF-8 -charset "UTF-8" -docencoding UTF-8 -d %JDOC_DIR% -classpath %LIBS% hi\db\*.java
 
-javadoc -Xdoclint:none -public -link http://www.otsu.co.jp/OtsuLibrary/jdoc/ -link https://docs.oracle.com/javase/jp/8/docs/api/  -link http://mongodb.github.io/mongo-java-driver/3.7/javadoc/ --allow-script-in-comments -encoding UTF-8 -charset "UTF-8" -docencoding UTF-8 -d %JDOC_DIR% -classpath %LIBS% hi\%TARGET%.java
+javadoc -Xdoclint:none -public -link http://www.otsu.co.jp/OtsuLibrary/jdoc/ -link https://docs.oracle.com/javase/jp/8/docs/api/  -link http://mongodb.github.io/mongo-java-driver/3.7/javadoc/ --allow-script-in-comments -encoding UTF-8 -charset "UTF-8" -docencoding UTF-8 -d %JDOC_DIR% -classpath %LIBS% hi\db\*.java
 
 
 rd /s /q .\hi\
@@ -64,6 +73,7 @@ for /F "usebackq delims=" %%a in (`dir /B /S %JDOC_DIR% ^| findstr ".*\.*html"`)
    )
 :: 自ホスト上のwebサーバへ送る
 :COPY
+
 rd /s /q C:\xampp\htdocs\hiMongo\
 xcopy /e %JDOC_DIR% C:\xampp\htdocs\hiMongo\
 
@@ -89,6 +99,15 @@ exit /b %result%
    echo java -jar %hiNoteLIB% conv -with convDrivVer.regex -in %~1.out -out %~1
    java -jar %hiNoteLIB% conv -with convDrivVer.regex -in %~1.out -out %~1
    del %~1.out
+exit /b
+
+::----------- サブルーチン(2)
+::
+:: %~1:javaファイル
+:convert_java
+   ::echo %~n1.java
+   echo java -jar %hiNoteLIB% conv -with propJ.txt -in %~1 -out .\hi\db\%~n1.java
+   java -jar %hiNoteLIB% conv -with propJ.txt -in %~1 -out .\hi\db\%~n1.java
 exit /b
 
 ::-------------------------------------------------------
@@ -120,5 +139,5 @@ exit /b
 ::   です。
 ::   convの仕様記述は次の場所にあります。
 ::   http://www.otsu.co.jp/OtsuLibrary/jdoc/otsu/hiNote/COMMAND.html
-
-
+::
+:: ・

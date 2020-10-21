@@ -11,11 +11,13 @@ hiNoteLIB=${LIB_DIR}/${hiNoteJAR}
 mongoLIB=${LIB_DIR}/${mongoJAR}
 LIBS=".:${hiNoteLIB}:${mongoLIB}:${SLF4J}"
 #-----
-javac -Xlint:unchecked -Xlint:deprecation -encoding utf-8 -cp ${LIBS} ${hiMongo}.java
+javac -Xlint:unchecked -Xlint:deprecation -encoding utf-8 -cp ${LIBS} *.java
 #-----
-mkdir hi/
-mv *.class hi/ > /dev/null
-jar -cvfM ${hiMongoJAR} hi/*.class
-rm -rf hi/
+rm -rf hi > /dev/null
+mkdir hi
+mkdir hi/db
+mv *.class hi/db > /dev/null
+jar -cvfM ${hiMongoJAR} hi/db/*.class
+rm -rf hi/db
 mv ${hiMongoJAR} ${LIB_DIR}
 

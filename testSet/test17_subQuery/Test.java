@@ -1,6 +1,7 @@
-import hi.hiMongo;
+import hi.db.*;
 import otsu.hiNote.*;
 import java.util.*;
+import java.io.*;
 public class Test {
    static class WithDate { // dateだけを得るクラス
       Date date;
@@ -11,14 +12,23 @@ public class Test {
       Date   date;
       }
    public static void main(String[] args_){
-      hiMongo.DB db=hiMongo.use("db01");
+      hiMongo.MoreMongo mongo;
+      if( new File("../test_workerMode.txt").exists() ) {
+         mongo=new hiMongoCaller(new hiMongoWorker());
+         hiU.out.println("// caller-worker mode");
+         }
+      else {
+         mongo=new hiMongoDirect();
+         hiU.out.println("// direct mode");
+         }
+      hiMongo.DB db=mongo.use("db01");
       ArrayList<Record> _recs
-      =db.get("coll_01")
+      =db.in("coll_01")
          .find("{$and:["+
                      "{type:'A'},"+
                      "{date:{$gte:{$date:"+
               (
-              db.get("coll_01")
+              db.in("coll_01")
                 .find("{type:'A'}","{_id:0,date:1}")
                 .sort("{_id:-1}").limit(1)
                 .getClassList(WithDate.class)

@@ -1,4 +1,4 @@
-import hi.hiMongo;
+import hi.db.*;
 import otsu.hiNote.*;
 import java.io.*;
 import java.util.*;
@@ -24,7 +24,15 @@ public class Test {
       return "ISODate(\""+dateFormat.format(_dt)+"\")";
       }
    public static void main(String[] args_){
-      if( "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
+      hiMongo.MoreMongo mongo;
+      if( new File("../test_workerMode.txt").exists() ) {
+         mongo=new hiMongoCaller(new hiMongoWorker());
+         hiU.out.println("// caller-worker mode");
+         }
+      else {
+         mongo=new hiMongoDirect();
+         hiU.out.println("// direct mode");
+         }
       String _remote="{"+
                        "host:'"+args_[0]+"',"+
                        "port:27017,"+
@@ -33,15 +41,15 @@ public class Test {
                        "password:'xxx'"+
                       "}";
       try{
-         hiMongo.DB db=hiMongo.connect(_remote).use("db01");
-         db.get("coll_01")                     // collection 'coll_01'選択
+         hiMongo.DB db=mongo.connect(_remote).use("db01");
+         db.in("coll_01")                     // collection 'coll_01'選択
             .find("{type:'A'}","{_id:0}")        // typeが'A'のレコード,_idは不要
             .sort("{_id:-1}")                    // _idで逆向きにソート
             .limit(3)                            // 個数制限
             .getJsonList(hiU.REVERSE)            // 反転したリスト取得
             .forEach(Rj->hiU.out.println(Rj))   // レコード表示
             ;
-         hiMongo.Finder _find=db.get("coll_01")
+         hiMongo.Finder _find=db.in("coll_01")
                                 .find("{type:'A'}")
                                 .sort("{_id:-1}")
                                 .limit(3);
@@ -78,7 +86,7 @@ public class Test {
 
          Object _f_node=hiMongo.parseText("{type:'A'}").asNode();
          Object _s_node=hiMongo.parseText("{_id:-1}").asNode();
-         hiMongo.Finder _find2=db.get("coll_01")
+         hiMongo.Finder _find2=db.in("coll_01")
                                 .find(_f_node)
                                 .sort(_s_node)
                                 .limit(3);
@@ -89,7 +97,7 @@ public class Test {
 
          ps.println("========= local USE {}");
          hiMongo.DB db2=hiMongo.connect("{}").use("db01");
-         db2.get("coll_01")
+         db2.in("coll_01")
             .find("{type:'A'}")
             .sort("{_id:-1}").limit(3)
             .getMsonList(hiU.REVERSE)
@@ -97,7 +105,7 @@ public class Test {
          ps.println("========= local USE {} node");
          Object _empty=hiMongo.parse("{}").asNode();
          hiMongo.DB db3=hiMongo.connect("{}").use("db01");
-         db3.get("coll_01")
+         db3.in("coll_01")
             .find("{type:'A'}")
             .sort("{_id:-1}").limit(3)
             .getMsonList(hiU.REVERSE)

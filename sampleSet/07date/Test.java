@@ -1,4 +1,4 @@
-import hi.hiMongo;
+import hi.db.hiMongo;
 import otsu.hiNote.*;
 import java.util.*;
 import org.bson.Document;

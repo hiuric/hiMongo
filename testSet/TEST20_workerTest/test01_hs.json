@@ -1,0 +1,72 @@
+// hiMongoWalker基礎試験01
+
+{
+format:'hiMomgo',
+content_type:'request',// 'result'
+status:'request',      // 'ok'/'error'
+
+
+content:{
+   connect:{
+      host:'192.168.1.139',
+      port:27017,
+      dbName:'testDB',
+      user:'testUser',
+      password:'xxx'
+      },
+   str_option:16384,
+   //show_dbs:true,
+   use:"db01",
+   get:"coll_01",
+   execute:[
+      {find:[{type:'A'},{_id:0}]},// Col->Finder
+      {sort:{_id:-1}},             // Finder->Finder
+      {limit:3},                    // Finder->Finder
+      //{getJsonList:true}         // Finder->List
+      //{str_option:256}
+      {getMsonList:true}           // Finder->List
+      ]
+   //}
+   }
+
+
+}
+
+/*
+{
+   connect:{
+      host:'192.168.1.139',
+      port:27017,
+      dbName:'testDB',
+      user:'testUser',
+      password:'xxx'},
+    use:'db01',
+    get:'coll_01',execute:[{getMsonList:false}]}
+*/
+/*
+{
+   content_type:'request',
+   status      :'request',
+   content:{
+      connect:{
+         host:'192.168.1.139',
+         port:27017,
+         dbName:'testDB',
+         user:'testUser',
+         password:'xxx'
+         },
+      str_option:16384,// hiU.WITH_INDENT デバグ用
+      //show_dbs:true;
+      use:"db01",
+      get:"coll_01",
+      execute:[
+         {find:[{type:'A'},{_id:0}]},// Col->Finder
+         {sort:{_id:-1}},             // Finder->Finder
+         {limit:3},                    // Finder->Finder
+         //{getJsonList:true}         // Finder->List
+         //{str_option:256}
+         {getMsonList:true}           // Finder->List
+         ]
+      }
+   }
+*/

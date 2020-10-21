@@ -1,4 +1,4 @@
-import hi.hiMongo;
+import hi.db.hiMongo;
 import otsu.hiNote.*;
 import java.util.*;
 import java.io.*;
@@ -15,12 +15,12 @@ public class Test {
    public static void main(String[] args_){
       hiMongo.DB db=hiMongo.use("db01");
       long _start_date
-      =db.get("coll_01")
+      =db.in("coll_01")
          .find("{type:'A'}","{_id:0,date:1}")
          .sort("{_id:-1}").limit(1).getClassList(WithDate.class).get(0)
          .date.getTime()-30000;
       Arec _r
-      = db.get("coll_01")
+      = db.in("coll_01")
           .aggregate("["+
               "{ $match:{$and:["+
                   "{type:'A'},"+

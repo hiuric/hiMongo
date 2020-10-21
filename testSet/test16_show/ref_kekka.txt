@@ -1,14 +1,12 @@
+// caller-worker mode
 --- show dbs ---
 //admin
 //config
 db01
 db02
-//ecg
+db03
 //local
 //sampleDB
-//testDB
-//test_db
-//tmp
 --- use(db01) show collections ---
 coll_01
 coll_02
@@ -23,3 +21,27 @@ false
 5
 --- use(db01) coll_01 count({value:{$gt:5}}) ---
 3
+--- use(db01).coll_01.drop().count({}) ---
+0
+--- use(db01).show collections ---
+[coll_02]
+--- use(db01).drop() show collections ---
+[]
+--- show dbs ---
+//admin
+//config
+db02
+db03
+//local
+//sampleDB
+--- use(db03).drop() show collections ---
+[]
+--- use(db03).coll_03.insertOne.insertOne
+[{'a':'B'}, {'a':'X'}]
+--- show dbs ---
+//admin
+//config
+db02
+db03
+//local
+//sampleDB

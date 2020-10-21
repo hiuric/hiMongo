@@ -1,4 +1,4 @@
-import hi.hiMongo;
+import hi.db.*;
 import otsu.hiNote.*;
 import java.util.*;
 import java.io.*;
@@ -17,18 +17,26 @@ public class Test {
       Date date;
       }
    public static void main(String[] args_){
-      if( "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
+      hiMongo.MoreMongo mongo;
+      if( new File("../test_workerMode.txt").exists() ) {
+         mongo=new hiMongoCaller(new hiMongoWorker());
+         hiU.out.println("// caller-worker mode");
+         }
+      else {
+         mongo=new hiMongoDirect();
+         hiU.out.println("// direct mode");
+         }
       try{
-         hiMongo.DB db=hiMongo.use("db01");
+         hiMongo.DB db=mongo.use("db01");
          long _start_date=
-         db.get("coll_01")
+         db.in("coll_01")
             .find("{type:'A'}","{_id:0,date:1}")
             //.sort("{_id:-1}").limit(1).getProbeList().get(0)
             //.to("date").get(D->((Date)D).getTime()-30000)
             .sort("{_id:-1}").limit(1).getClassList(WithDate.class).get(0)
             .date.getTime()-30000
             ;
-         db.get("coll_01")
+         db.in("coll_01")
             .aggregate("["+
                 "{ $match:{$and:["+
                     "{type:'A'},"+
@@ -43,7 +51,7 @@ public class Test {
             .forEachDocument(Rd->ps.println(hiMongo.json(Rd)))
             ;
          ps.println("#####################");
-         db.get("coll_01")
+         db.in("coll_01")
             .aggregate()
             .match("{$and:["+
                        "{type:'A'},"+
@@ -71,7 +79,7 @@ public class Test {
                      "avg:{$avg:'$value'}}}"+
                 "]"
             ).asNode();
-        db.get("coll_01")
+        db.in("coll_01")
             .aggregate(_a_node)
             .forEach(Rd->ps.println(hiMongo.json(Rd)))
             ;

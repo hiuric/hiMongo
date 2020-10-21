@@ -1,10 +1,10 @@
-import hi.hiMongo;
+import hi.db.hiMongo;
 import otsu.hiNote.*;
 import java.util.*;
 public class Test {
    public static void main(String[] args_){
       hiMongo.DB db =hiMongo.use("db01");
-      hiMongo.Collection  _coll=db.get("coll_01").drop();
+      hiMongo.Collection  _coll=db.in("coll_01").drop();
       System.out.println("--- insertOne/insertMany");
       _coll.insertOne(
            " {type:'A',value:12.3,date:"+hiMongo.date()+"}");

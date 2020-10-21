@@ -9,6 +9,8 @@ if  "%1"=="" (
    goto PAUSE:
    )
 call ..\configure.bat nopause
+del mon.log 2> NUL
+del kekka.txt 2> NUL
 :: ビルド
 %BUILD%
 if ERRORLEVEL 1 goto ERR:
@@ -32,15 +34,13 @@ if ERRORLEVEL 1 goto CHECK_ERR:
 echo @@@@@@ CHECK OK @@@@@@
 goto END:
 
-:CHECK_ERR
-echo @@@@@@ CHECK ERROR @@@@@@
-goto END:
-
 :ERR
 :: ログ表示
 type mon.log
+:CHECK_ERR
+echo @@@@@@ CHECK ERROR @@@@@@
 echo @@@@@@ SOME ERROR OCCURRED @@@@@@
-
+exit /b 1
 :END
 if not "%1"=="" goto NOPAUSE
 :PAUSE

@@ -1,9 +1,10 @@
-import hi.hiMongo;
+import hi.db.*;
 import otsu.hiNote.*;
 import java.io.*;
 import java.util.*;
 import java.util.Date;
 import org.bson.types.ObjectId;
+import org.bson.Document;
 //
 // ラムダ引数命名法
 //   レコード
@@ -20,6 +21,21 @@ import org.bson.types.ObjectId;
 //   index-list Do レコードとは異なるDocument
 //
 public class Test {
+   final static boolean USE_MSON=true;
+   final static boolean DOT_ZERO=true;
+   static String dot_zero(String value_){
+      if( !DOT_ZERO ) return value_;
+      return hiMongo.suprress_dot_0(value_);
+      }
+   static String str(Document doc_){
+      if(!USE_MSON ) return dot_zero(doc_.toString());
+      return hiMongo.mson(doc_);
+      }
+   static String json(Document doc_){
+      if(!USE_MSON ) return dot_zero(doc_.toJson());
+      return hiMongo.mson(doc_);
+      }
+
    static class MyClass {
       String type;
       double value;
@@ -32,38 +48,47 @@ public class Test {
       double avg;
       }
    public static void main(String[] args_){
-      hiMongo.DB db= hiMongo.use("db01");
+      hiMongo.MoreMongo mongo;
+      if( new File("../test_workerMode.txt").exists() ) {
+         mongo=new hiMongoCaller(new hiMongoWorker());
+         hiU.out.println("// caller-worker mode");
+         }
+      else {
+         mongo=new hiMongoDirect();
+         hiU.out.println("// direct mode");
+         }
+      hiMongo.DB db= mongo.use("db01");
       hiU.out.println("################ Finder");
-      db.get("coll_01")
+      db.in("coll_01")
         .find("{}","{_id:0}")
         .limit(3) // 先頭３個
         // --- Document ---
         .forThis(Fi->hiU.out.println("==== Document"))
         .forThis(Fi->hiU.out.println("-- forEach"))
-        .forEach(Rd->hiU.out.println(Rd))
+        .forEach(Rd->hiU.out.println(str(Rd)))
         .forThis(Fi->hiU.out.println("-- forEachDocument"))
-        .forEachDocument(Rd->hiU.out.println(Rd))
+        .forEachDocument(Rd->hiU.out.println(str(Rd)))
         .forThis(Fi->{
             hiU.out.println("-- getList/forEach");
             Fi.getList()
-              .forEach(Rd->hiU.out.println(Rd));
+              .forEach(Rd->hiU.out.println(str(Rd)));
             hiU.out.println("-- getDocumentList/forEach");
             Fi.getDocumentList()
-              .forEach(Rd->hiU.out.println(Rd));
+              .forEach(Rd->hiU.out.println(str(Rd)));
             })
         // --- Document toJson ---
         .forThis(Fi->hiU.out.println("==== Document toJson"))
         .forThis(Fi->hiU.out.println("-- forEach toJson"))
-        .forEach(Rd->hiU.out.println(Rd.toJson()))
+        .forEach(Rd->hiU.out.println(json(Rd)))
         .forThis(Fi->hiU.out.println("-- forEachDocument toJson"))
-        .forEachDocument(Rd->hiU.out.println(Rd.toJson()))
+        .forEachDocument(Rd->hiU.out.println(json(Rd)))
         .forThis(Fi->{
             hiU.out.println("-- getList/forEach toJson");
             Fi.getList()
-              .forEach(Rd->hiU.out.println(Rd.toJson()));
+              .forEach(Rd->hiU.out.println(json(Rd)));
             hiU.out.println("-- getDocumentList/forEach toJson");
             Fi.getDocumentList()
-              .forEach(Rd->hiU.out.println(Rd.toJson()));
+              .forEach(Rd->hiU.out.println(json(Rd)));
             })
         // --- Document hiMongo.json() ---
         .forThis(Fi->hiU.out.println("==== Document hiMongo.json()"))
@@ -110,11 +135,11 @@ public class Test {
         // --- Probe ---
         .forThis(Fi->hiU.out.println("==== Probe"))
         .forThis(Fi->hiU.out.println("-- forEachProbe hiU.str"))
-        .forEachProbe(Rp->hiU.out.println(hiU.str(Rp)))
+        .forEachProbe(Rp->hiU.out.println(hiMongo.suprress_dot_0(hiU.str(Rp))))
         .forThis(Fi->{
             hiU.out.println("-- getProbeList/forEach hiU.str");
             Fi.getProbeList()
-              .forEach(Rp->hiU.out.println(hiU.str(Rp)));
+              .forEach(Rp->hiU.out.println(hiMongo.suprress_dot_0(hiU.str(Rp))));
             })
         // --- Json ---
         .forThis(Fi->hiU.out.println("==== Json"))
@@ -139,11 +164,11 @@ public class Test {
         .back() // Collectionに戻る
         .forThis(Co->{
             hiU.out.println("-- Co.getIndexList");
-            Co.getIndexList().forEach(Do->hiU.out.println(Do));
+            Co.getIndexList().forEach(Do->hiU.out.println(str(Do)));
             })
          ;
       hiU.out.println("################ Aggregator");
-      db.get("coll_01")
+      db.in("coll_01")
         .aggregate("["+
                 "{ $match:{type:'A'}},"+
                 "{ $group:{"+

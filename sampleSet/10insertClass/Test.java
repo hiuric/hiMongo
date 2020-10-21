@@ -1,4 +1,4 @@
-import hi.hiMongo;
+import hi.db.hiMongo;
 import otsu.hiNote.*;
 import java.util.*;
 public class Test {
@@ -10,7 +10,7 @@ public class Test {
    public static void main(String[] args_){
       hiMongo.DB db=hiMongo.use("db01");
       hiMongo.Collection coll
-      =db.get("coll_01").drop();
+      =db.in("coll_01").drop();
       //
       ArrayList<MyRecord> _recs= new ArrayList<>();
       for(int _n=0;_n<4;++_n){

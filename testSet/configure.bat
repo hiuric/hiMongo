@@ -27,7 +27,7 @@ set hiNoteLIB=%LIB_DIR%\%hiNoteJAR%
 set mongoLIB=%LIB_DIR%\%mongoJAR%
 
 set LIBS=".;%hiNoteLIB%;%mongoLIB%;%hiMongoLIB%;%SLF4J%"
-set BUILD=javac -Xlint:unchecked -encoding utf-8 -cp %LIBS% %MAIN%.java
+set BUILD=javac -Xlint:unchecked -encoding utf-8 -cp %LIBS% *.java
 set RUN=java -cp %LIBS% %MAIN% %TEST_ARGS%
 set CHECK_KEKKA=java -jar %hiNoteLIB% diff kekka.txt ref_kekka.txt -ign "// -omt _id=[^,]*" -omt "\"_id\"[^,]*"
 set CHECK_KEKKA2=java -jar %hiNoteLIB% diff kekka.txt ref_kekka.txt -ign "// -omt date.*"

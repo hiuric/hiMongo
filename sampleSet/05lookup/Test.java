@@ -1,4 +1,4 @@
-import hi.hiMongo;
+import hi.db.hiMongo;
 import otsu.hiNote.*;
 import java.util.*;
 public class Test {
@@ -13,11 +13,11 @@ public class Test {
       }
    public static void main(String[] args_){
       hiMongo.DB db=hiMongo.use("sampleDB");
-      db.get("商品").getIndexList().forEach(Do->System.out.println(Do));
-      db.get("商品").createIndex("{商品id:1}","{unique:true,expireAfterDays:730}");
-      db.get("商品").getIndexList().forEach(Do->System.out.println(Do));
+      db.in("商品").getIndexList().forEach(Do->System.out.println(Do));
+      db.in("商品").createIndex("{商品id:1}","{unique:true,expireAfterDays:730}");
+      db.in("商品").getIndexList().forEach(Do->System.out.println(Do));
       ArrayList<A_Rec> _recs=
-      db.get("店舗商品").aggregate("["+
+      db.in("店舗商品").aggregate("["+
             "{$match:{$or:["+
                  "{'店舗名':'東京'},"+
                  "{'店舗名':'福岡'}"+

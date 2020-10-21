@@ -1,4 +1,4 @@
-import hi.hiMongo;
+import hi.db.hiMongo;
 import otsu.hiNote.*;
 import java.util.*;
 public class Test {
@@ -11,7 +11,7 @@ public class Test {
       }
    public static void main(String[] args_){
       hiMongo.DB db=hiMongo.use("db01");
-      db.get("coll_01")
+      db.in("coll_01")
         .find("{}","{_id:0}")
         .limit(3)
         .forThis(Fi->Fi.getIterable().showRecordId(true))

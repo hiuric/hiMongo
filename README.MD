@@ -13,7 +13,7 @@ class MyRecord {
 // get last 3 type-A documents as Record-class list.
 hiMongo.DB     db=hiMongo.use("db01");
 List<MyRecord> recs
-=db.get("coll_01")
+=db.in("coll_01")
    .find("{type:'A'}","{_id:0}")
    .sort("{_id:-1}")
    .limit(3)
@@ -31,7 +31,7 @@ class MyRecord {
    }
 -----
 hiMongo.DB         db   = hiMongo.use("db01");
-hiMongo.Collection coll = db.get("coll_01")
+hiMongo.Collection coll = db.in("coll_01")
 MyReord rec = new MyRecord();
 rec.type  = "D";
 rec.value = 12.3;
@@ -126,7 +126,7 @@ testSetの各ディレクトリで
 testSet直下の./test.shで全テストが動きます。ただし、
 TEST10_remote/は環境依存なので、予めコメントアウトする
 必要があります。
-./test_hson.shはhiMongoのパーズ機能を使う試験です。
+
 
 
 ＝＝＝＝＝ ライブラリのリビルド ＝＝＝＝＝

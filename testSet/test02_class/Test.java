@@ -1,6 +1,7 @@
-import hi.hiMongo;
+import hi.db.*;
 import otsu.hiNote.*;
 import java.util.*;
+import java.io.*;
 public class Test {
    static class Record {
       String type;
@@ -22,12 +23,20 @@ public class Test {
       long   record_id;
       }
    public static void main(String[] args_){
-      if( "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
+      hiMongo.MoreMongo mongo;
+      if( new File("../test_workerMode.txt").exists() ) {
+         mongo=new hiMongoCaller(new hiMongoWorker());
+         hiU.out.println("// caller-worker mode");
+         }
+      else {
+         mongo=new hiMongoDirect();
+         hiU.out.println("// direct mode");
+         }
       try{
-         hiMongo.DB db=hiMongo.use("db01");
+         hiMongo.DB db=mongo.use("db01");
          // 最後の'A'レコードの時刻(unix-epoch)を得る
          long _last_date
-         =db.get("coll_01")
+         =db.in("coll_01")
             .find("{type:'A'}","{_id:0,date:1}")
             .sort("{_id:-1}")
                     //.limit(1).getProbeList().get(0)
@@ -38,7 +47,7 @@ public class Test {
          long _start_date= _last_date-30000; // 30秒前
          hiU.out.println("last="+_last_date+" start="+_start_date);
          ArrayList<Record> _recs
-         =db.get("coll_01")
+         =db.in("coll_01")
             .find("{$and:["+
                         "{type:'A'},"+
                         "{date:{$gte:{$date:"+_start_date+"}}}"+
@@ -62,7 +71,7 @@ public class Test {
          _vals[0]=Double.MAX_VALUE;// 0:min
          _vals[1]=Double.MIN_VALUE;// 1:max
          _vals[2]=0;               // 2:total
-         db.get("coll_01")
+         db.in("coll_01")
            .find("{$and:["+
                        "{type:'A'},"+
                        "{date:{$gte:{$date:"+_start_date+"}}}"+
@@ -82,7 +91,7 @@ public class Test {
          hiU.out.println("======== 異常系 =========");
          try{
            long _last_date_X
-                 =db.get("coll_01")
+                 =db.in("coll_01")
                     .find("{type:'A'}","{_id:0,date:1}")
                     .sort("{_id:-1}")
                     .limit(1).getClassList(WithDate_X.class).get(0)
@@ -95,7 +104,7 @@ public class Test {
          hiU.out.println("======== 異常回避 =========");
          try{
            long _last_date_Y
-           =db.get("coll_01")
+           =db.in("coll_01")
               .find("{type:'A'}","{_id:0,date:1}")
               .sort("{_id:-1}")
               //.forThis(T->T.engine().without_option(hiU.CHECK_UNKNOWN_FIELD|hiU.CHECK_UNSET_FIELD))
@@ -110,7 +119,7 @@ public class Test {
          hiU.out.println("======== 異常系 =========");
          try{
            long _last_date_X
-           =db.get("coll_01")
+           =db.in("coll_01")
               .find("{type:'A'}","{_id:1,date:1}")
               .sort("{_id:-1}")
               .limit(1).getClassList(WithDate_X.class).get(0)
@@ -123,7 +132,7 @@ public class Test {
          hiU.out.println("======== 異常回避 =========");
          try{
            long _last_date_Y
-           =db.get("coll_01")
+           =db.in("coll_01")
               .find("{type:'A'}","{_id:1,date:1}")
               .sort("{_id:-1}")
               //.forThis(T->T.engine().without_option(hiU.CHECK_UNKNOWN_FIELD|hiU.CHECK_UNSET_FIELD))
@@ -135,13 +144,15 @@ public class Test {
          catch(Exception _ex){
             hiU.out.println("EXCEPTION TEST "+_ex.getMessage());
             }
-
+/*
+TODO:別試験に移す
          hiU.out.println("======== 代替名 =========");
-         db.get("coll_01")
+         db.in("coll_01")
             .find("{}","{_id:0}")
             .forThis(Fi->Fi.getIterable().showRecordId(true))
             .forEachDocument(Rd->hiU.out.println(Rd))
             .forEachClass(Record2.class,Rc->hiU.out.println(hiU.str(Rc)));
+*/
          }
       catch(Exception _ex){
          _ex.printStackTrace(System.err);

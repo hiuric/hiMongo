@@ -1,13 +1,14 @@
---- befor creteIndex
-Document{{v=2, key=Document{{_id=1}}, name=_id_, ns=sampleDB.商品}}
---- after creteIndex
-Document{{v=2, key=Document{{_id=1}}, name=_id_, ns=sampleDB.商品}}
-Document{{v=2, unique=true, key=Document{{商品id=1}}, name=商品id_1, ns=sampleDB.商品, expireAfterSeconds=63072000}}
------ foreach MNode -----
-Document{{店舗名=東京, 数量=30.0, from商品=Document{{商品名=Tシャツ, 販売単価=1000.0}}}}
-Document{{店舗名=東京, 数量=50.0, from商品=Document{{商品名=穴あけパンチ, 販売単価=500.0}}}}
-Document{{店舗名=東京, 数量=15.0, from商品=Document{{商品名=カッターシャツ, 販売単価=4000.0}}}}
-Document{{店舗名=福岡, 数量=100.0, from商品=Document{{商品名=Tシャツ, 販売単価=1000.0}}}}
+// caller-worker mode
+--- befor creteIndex (do.toJson())
+{'v':2, 'key':{'_id':1}, 'name':'_id_', 'ns':'sampleDB.商品'}
+--- after creteIndex (do.toJson())
+{'v':2, 'key':{'_id':1}, 'name':'_id_', 'ns':'sampleDB.商品'}
+{'v':2, 'unique':true, 'key':{'商品id':1}, 'name':'商品id_1', 'ns':'sampleDB.商品', 'expireAfterSeconds':63072000}
+----- foreach mson(MNode) -----
+{'店舗名':'東京', '数量':30, 'from商品':{'商品名':'Tシャツ', '販売単価':1000}}
+{'店舗名':'東京', '数量':50, 'from商品':{'商品名':'穴あけパンチ', '販売単価':500}}
+{'店舗名':'東京', '数量':15, 'from商品':{'商品名':'カッターシャツ', '販売単価':4000}}
+{'店舗名':'福岡', '数量':100, 'from商品':{'商品名':'Tシャツ', '販売単価':1000}}
 ----- toClass -----
 {店舗名="東京", 数量=30, from商品={商品名="Tシャツ", 販売単価=1000}}
 {店舗名="東京", 数量=50, from商品={商品名="穴あけパンチ", 販売単価=500}}
@@ -18,3 +19,12 @@ Document{{店舗名=福岡, 数量=100.0, from商品=Document{{商品名=Tシャ
 {'店舗名':'東京', '数量':50, 'from商品':{'商品名':'穴あけパンチ', '販売単価':500}}
 {'店舗名':'東京', '数量':15, 'from商品':{'商品名':'カッターシャツ', '販売単価':4000}}
 {'店舗名':'福岡', '数量':100, 'from商品':{'商品名':'Tシャツ', '販売単価':1000}}
+--- after creteIndex (do.toJson())
+{'v':2, 'key':{'_id':1}, 'name':'_id_', 'ns':'sampleDB.商品'}
+{'v':2, 'unique':true, 'key':{'商品id':1}, 'name':'商品id_1', 'ns':'sampleDB.商品', 'expireAfterSeconds':63072000}
+{'v':2, 'key':{'商品分類':1}, 'name':'商品分類_1', 'ns':'sampleDB.商品', 'expireAfterSeconds':63072000}
+--- after deleteIndex  商品分類_1(do.toJson())
+{'v':2, 'key':{'_id':1}, 'name':'_id_', 'ns':'sampleDB.商品'}
+{'v':2, 'unique':true, 'key':{'商品id':1}, 'name':'商品id_1', 'ns':'sampleDB.商品', 'expireAfterSeconds':63072000}
+--- after deleteIndexes (do.toJson())
+{'v':2, 'key':{'_id':1}, 'name':'_id_', 'ns':'sampleDB.商品'}

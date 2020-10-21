@@ -1,0 +1,126 @@
+---- befor
+Document{{type=A, value=12.3, date=Mon Aug 17 16:07:00 JST 2020}}
+Document{{type=A, value=4.56, date=Mon Aug 17 16:07:10 JST 2020}}
+Document{{type=B, value=2001.0, date=Mon Aug 17 16:07:20 JST 2020}}
+Document{{type=A, value=7.89, date=Mon Aug 17 16:07:30 JST 2020}}
+Document{{type=A, value=0.12, date=Mon Aug 17 16:07:40 JST 2020}}
+---- after 4.56->0.55
+Document{{type=A, value=12.3, date=Mon Aug 17 16:07:00 JST 2020}}
+Document{{type=A, value=0.55, date=Mon Aug 17 16:07:10 JST 2020}}
+Document{{type=B, value=2001.0, date=Mon Aug 17 16:07:20 JST 2020}}
+Document{{type=A, value=7.89, date=Mon Aug 17 16:07:30 JST 2020}}
+Document{{type=A, value=0.12, date=Mon Aug 17 16:07:40 JST 2020}}
+---- after 0.xx -> 1.00 
+Document{{type=A, value=12.3, date=Mon Aug 17 16:07:00 JST 2020}}
+Document{{type=A, value=1.0, date=Mon Aug 17 16:07:10 JST 2020}}
+Document{{type=B, value=2001.0, date=Mon Aug 17 16:07:20 JST 2020}}
+Document{{type=A, value=7.89, date=Mon Aug 17 16:07:30 JST 2020}}
+Document{{type=A, value=1.0, date=Mon Aug 17 16:07:40 JST 2020}}
+---- after replaceOne 
+Document{{type=A, value=12.3, date=Mon Aug 17 16:07:00 JST 2020}}
+Document{{type=A, value=1.0, date=Mon Aug 17 16:07:10 JST 2020}}
+Document{{type=B, value=2001.0, date=Mon Aug 17 16:07:20 JST 2020}}
+Document{{type=B, value=3000, date=Mon Aug 17 16:07:50 JST 2020}}
+Document{{type=A, value=1.0, date=Mon Aug 17 16:07:40 JST 2020}}
+---- after deleteOne type:'A' 
+Document{{type=A, value=1.0, date=Mon Aug 17 16:07:10 JST 2020}}
+Document{{type=B, value=2001.0, date=Mon Aug 17 16:07:20 JST 2020}}
+Document{{type=B, value=3000, date=Mon Aug 17 16:07:50 JST 2020}}
+Document{{type=A, value=1.0, date=Mon Aug 17 16:07:40 JST 2020}}
+---- after deleteMany value:1 
+Document{{type=B, value=2001.0, date=Mon Aug 17 16:07:20 JST 2020}}
+Document{{type=B, value=3000, date=Mon Aug 17 16:07:50 JST 2020}}
+---- before $set
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+---- after $set
+{'type':'C', 'name':'X', 'value':3}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':3}
+---- before $inc
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+---- after $inc
+{'type':'C', 'name':'X', 'value':8}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':16}
+===== 名称間違い試験(存在しないレコード)
+---- before $set
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+---- after $set
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+---- before $inc
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+---- after $inc
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+===== 名称間違い試験(存在しないフィールド)
+---- before $set
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+---- after $set
+{'type':'C', 'name':'X', 'value':5, 'valueX':3}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13, 'valueX':3}
+---- before $inc
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+---- after $inc
+{'type':'C', 'name':'X', 'value':5, 'valueX':3}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13, 'valueX':3}
+===== 名称間違い試験(予備:存在するフィールドexist使用)
+---- before $set
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+---- after $set
+{'type':'C', 'name':'X', 'value':3}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':3}
+---- before $inc
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+---- after $inc
+{'type':'C', 'name':'X', 'value':8}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':16}
+===== 名称間違い試験(予備:存在しないフィールドexist使用)
+---- before $set
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+---- after $set
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+---- before $inc
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+---- after $inc
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+===== findOneAndUpdate
+---- before $set
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+---- after $set
+{'type':'C', 'name':'X', 'value':5}
+{'type':'C', 'name':'Y', 'value':10}
+{'type':'C', 'name':'X', 'value':13}
+{'name':'Z', 'type':'C', 'valueX':3}

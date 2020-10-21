@@ -1,4 +1,4 @@
-import hi.hiMongo;
+import hi.db.hiMongo;
 public class Test {
    public static void main(String[] args_){
       hiMongo.DB db=hiMongo.use("db01");

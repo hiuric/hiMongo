@@ -1,9 +1,19 @@
-import hi.hiMongo;
+import hi.db.*;
 import otsu.hiNote.*;
+import java.io.*;
 public class Test {
    public static void main(String[] args_){
+      hiMongo.MoreMongo mongo;
+      if( new File("../test_workerMode.txt").exists() ) {
+         mongo=new hiMongoCaller(new hiMongoWorker());
+         hiU.out.println("// caller-worker mode");
+         }
+      else {
+         mongo=new hiMongoDirect();
+         hiU.out.println("// direct mode");
+         }
       try{ 
-         hiMongo.DB db=hiMongo.use("db01");
+         hiMongo.DB db=mongo.use("db01");
          hiMongo.Collection col
          =db.createCappedCollection(
               "coll_cap",      // コレクション名

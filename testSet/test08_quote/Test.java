@@ -1,11 +1,19 @@
-import hi.hiMongo;
+import hi.db.*;
 import otsu.hiNote.*;
 import java.io.*;
 import org.bson.Document;
 import java.util.*;
 public class Test {
    public static void main(String[] args_){
-      if( "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
+      hiMongo.MoreMongo mongo;
+      if( new File("../test_workerMode.txt").exists() ) {
+         mongo=new hiMongoCaller(new hiMongoWorker());
+         hiU.out.println("// caller-worker mode");
+         }
+      else {
+         mongo=new hiMongoDirect();
+         hiU.out.println("// direct mode");
+         }
       String _filter
       ="{$and:["+
                 "{type :'A'},"+
@@ -23,7 +31,5 @@ public class Test {
       hiU.out.println("---------");
       hiU.out.println("doc/Object ="+hiU.str(_doc,hiU.WITH_TYPE|hiU.WITH_INDENT));
       hiU.out.println("node/Object="+hiU.str(_node,hiU.WITH_TYPE|hiU.WITH_INDENT));
-
-
       }
    }

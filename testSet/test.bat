@@ -11,7 +11,6 @@ for /F "usebackq delims=" %%a in (`dir /B ^| findstr "test[0-9].*"`) do (
    if ERRORLEVEL 1 goto ERR:
    )
 endlocal
-
 ::TEST10はリモートの存在が必要なので別建てにしてある
 ::環境が異なる場合はTEST_ARGSを変更するかgoto END:
 ::で処理を飛ばすこと

@@ -1,12 +1,20 @@
-import hi.hiMongo;
+import hi.db.*;
 import otsu.hiNote.*;
 import java.io.*;
 import org.bson.Document;
 public class Test {
    public static void main(String[] args_){
-      if( "yes".equals(System.getenv("WITH_HSON")) ) hiMongo.with_hson(true);
-      hiMongo.DB db=hiMongo.use("db02");
-      db.get("composer")
+      hiMongo.MoreMongo mongo;
+      if( new File("../test_workerMode.txt").exists() ) {
+         mongo=new hiMongoCaller(new hiMongoWorker());
+         hiU.out.println("// caller-worker mode");
+         }
+      else {
+         mongo=new hiMongoDirect();
+         hiU.out.println("// direct mode");
+         }
+      hiMongo.DB db=mongo.use("db02");
+      db.in("composer")
         .find("{'famiryName': {'$regex': '^Ba', '$options': ''}}","{_id:0}")
         .forEachJson(Rj->hiU.out.println(Rj))
         .back()
