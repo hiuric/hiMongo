@@ -3041,7 +3041,7 @@ hiMongoを動かすには次のjarをリンクする必要があります。(バ
 </p>
 <table class=t0>
 <tr>
-<td>hiMongo_0_10.jar</td>
+<td>hiMongo_0_11.jar</td>
 <td>:  hiMongo本体</td>
 </tr>
 <tr>
@@ -3061,7 +3061,7 @@ hiMongoを動かすには次のjarをリンクする必要があります。(バ
 # 注意！ 改行=LF
 MAIN=Test
 LIB_DIR=../lib
-hiMongoLIB=hiMongo_0_10.jar
+hiMongoLIB=hiMongo_0_11.jar
 hiNoteLIB=hiNote_3_10.jar
 mongoLIB=mongo-java-driver-3.12.5.jar
 LIBS=".:${LIB_DIR}/${hiNoteLIB}:${LIB_DIR}/${mongoLIB}:${LIB_DIR}/${hiMongoLIB}

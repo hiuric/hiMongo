@@ -20,7 +20,7 @@ Windowsでサーバを起動
 <pre class=quote10>
 :: simpleServ.bat
 set LIB_DIR=<i>ライブラリフォルダ</i>
-set hiMongoLIB=%LIB_DIR%hiMongo_0_10.jar
+set hiMongoLIB=%LIB_DIR%hiMongo_0_11.jar
 set hiNoteLIB=%LIB_DIR%\hiNote_3_10.jar
 set mongoLIB=%LIB_DIR%\mongo-java-driver-3.12.5.jar
 set LIBS=".;%hiNoteLIB%;%mongoLIB%;%hiMongoLIB%
@@ -32,7 +32,7 @@ Windowsでクライアントを起動
 <pre class=quote10>
 :: simpleClie.bat
 set LIB_DIR=<i>ライブラリフォルダ</i>
-set hiMongoLIB=%LIB_DIR%hiMongo_0_10.jar
+set hiMongoLIB=%LIB_DIR%hiMongo_0_11.jar
 set hiNoteLIB=%LIB_DIR%\hiNote_3_10.jar
 set mongoLIB=%LIB_DIR%\mongo-java-driver-3.12.5.jar
 set LIBS=".;%hiNoteLIB%;%mongoLIB%;%hiMongoLIB%
