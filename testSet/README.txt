@@ -16,4 +16,12 @@ Dateなど一定値とならないものは差異チェックの対象では
 kekka.txtの文字コードはUTF-8です。
 mon.logの文字コードはシステム標準です。
 
-test_X_11は詳細チェック中
+試験は３つのモードがあります。
+./test_00_DirectMode.sh  : mongo-java-driverの直呼び
+./test_00_WorkerMode.sh  : Caler/Workerモデル
+./test_00_ServerMode.sh  : socke通信でサーバを呼ぶ
+ServerMode実行にはlocalhostで
+../bin/simpleServ.sh
+を起動しておく必要があります
+.sh上のlocalhostを他ホストのipアドレスに変えると
+他ホストと接続することもできます。

@@ -23,15 +23,25 @@ public class Test {
       long   record_id;
       }
    public static void main(String[] args_){
+      //--------------------------------------------------------
       hiMongo.MoreMongo mongo;
-      if( new File("../test_workerMode.txt").exists() ) {
-         mongo=new hiMongoCaller(new hiMongoWorker());
-         hiU.out.println("// caller-worker mode");
+      File _modeFile= new File("../test_workerMode.txt");
+      if( _modeFile.exists() ) {
+         String _host= hiFile.readTextAll(_modeFile).trim();
+         if( _host.length()<5 ){
+            mongo=new hiMongoCaller(new hiMongoWorker());
+            hiU.out.println("// MODE: Caller/Worker");
+            }
+         else {
+            mongo=new hiMongoCaller(new hiMonWorkerSample.COM(_host,8010,3));
+            hiU.out.println("// MODE: call SERVER '"+_host+"'");
+            }
          }
       else {
          mongo=new hiMongoDirect();
-         hiU.out.println("// direct mode");
+         hiU.out.println("// MODE: DIRECT");
          }
+      //--------------------------------------------------------
       try{
          hiMongo.DB db=mongo.use("db01");
          // 最後の'A'レコードの時刻(unix-epoch)を得る
@@ -51,6 +61,7 @@ public class Test {
             .find("{$and:["+
                         "{type:'A'},"+
                         "{date:{$gte:{$date:"+_start_date+"}}}"+
+                        //"{'date.$date':{$gte:"+_start_date+"}}"+
                         "]}",
                    "{_id:0}")
              .getClassList(Record.class);

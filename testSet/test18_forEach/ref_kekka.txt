@@ -1,10 +1,10 @@
-// caller-worker mode
+// MODE: DIRECT
 ################ Finder
 ==== Document
--- forEach
-{'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
-{'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
-{'type':'B', 'value':2001, 'date':ISODate('2020-08-17T07:07:20.000Z')}
+-- forEach #CRU/#CUR.value
+{'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}/12.3
+{'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}/4.56
+{'type':'B', 'value':2001, 'date':ISODate('2020-08-17T07:07:20.000Z')}/2001
 -- forEachDocument
 {'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
 {'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
@@ -19,9 +19,9 @@
 {'type':'B', 'value':2001, 'date':ISODate('2020-08-17T07:07:20.000Z')}
 ==== Document toJson
 -- forEach toJson
-{'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
-{'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}
-{'type':'B', 'value':2001, 'date':ISODate('2020-08-17T07:07:20.000Z')}
+//{"type": "A", "value": 12.3, "date": {"$date": 1597648020000}}
+//{"type": "A", "value": 4.56, "date": {"$date": 1597648030000}}
+//{"type": "B", "value": 2001.0, "date": {"$date": 1597648040000}}
 -- forEachDocument toJson
 {'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
 {'type':'A', 'value':4.56, 'date':ISODate('2020-08-17T07:07:10.000Z')}

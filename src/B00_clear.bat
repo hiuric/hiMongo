@@ -14,6 +14,8 @@ for /F "usebackq delims=" %%a in (`dir /B /S ..\testSet ^| findstr ".*\\kekka.tx
    echo del %%a
    del %%a
    )
+echo del ..\testSet\test_workerMode.txt
+del ..\testSet\test_workerMode.txt 2> NUL
 for /F "usebackq delims=" %%a in (`dir /B /S ..\sampleSet ^| findstr ".*\.class"`) do (
    echo del %%a
    del %%a

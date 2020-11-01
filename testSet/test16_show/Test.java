@@ -7,15 +7,25 @@ import java.util.Date;
 import org.bson.types.ObjectId;
 public class Test {
    public static void main(String[] args_){
+      //--------------------------------------------------------
       hiMongo.MoreMongo mongo;
-      if( new File("../test_workerMode.txt").exists() ) {
-         mongo=new hiMongoCaller(new hiMongoWorker());
-         hiU.out.println("// caller-worker mode");
+      File _modeFile= new File("../test_workerMode.txt");
+      if( _modeFile.exists() ) {
+         String _host= hiFile.readTextAll(_modeFile).trim();
+         if( _host.length()<5 ){
+            mongo=new hiMongoCaller(new hiMongoWorker());
+            hiU.out.println("// MODE: Caller/Worker");
+            }
+         else {
+            mongo=new hiMongoCaller(new hiMonWorkerSample.COM(_host,8010,3));
+            hiU.out.println("// MODE: call SERVER '"+_host+"'");
+            }
          }
       else {
          mongo=new hiMongoDirect();
-         hiU.out.println("// direct mode");
+         hiU.out.println("// MODE: DIRECT");
          }
+      //--------------------------------------------------------
       ArrayList<String> _dbs= mongo.show_dbs(true);
       hiU.out.println("--- show dbs ---");
       for(String _db:_dbs){

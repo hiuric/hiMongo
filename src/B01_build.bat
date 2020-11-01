@@ -17,6 +17,7 @@ set LIBS=".;%hiNoteLIB%;%mongoLIB%;%hiMongoLIB%;%SLF4J%"
 ::-----
 echo javac -Xlint:unchecked -Xlint:deprecation -encoding utf-8 -cp %LIBS% *.java
 javac -Xlint:unchecked -Xlint:deprecation -encoding utf-8 -cp %LIBS% *.java
+if ERRORLEVEL 1 goto ERR:
 ::-----
 mkdir .\hi
 mkdir .\hi\db
@@ -24,7 +25,9 @@ move *.class .\hi\db
 jar -cvf %hiMongoJAR% .\hi\db\*.class
 rd /s /q .\hi\
 move %hiMongoJAR% %LIB_DIR%
-
+goto END:
+:ERR
+echo ERROR
 :END
 if not "%1"=="" goto NOPAUSE
 :PAUSE

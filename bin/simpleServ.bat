@@ -15,5 +15,5 @@ set mongoLIB=%LIB_DIR%\%mongoJAR%
 
 set LIBS=".;%hiNoteLIB%;%mongoLIB%;%hiMongoLIB%;%SLF4J%"
 ::
-java -cp %LIBS% hi.db.hiMonWorkerSample
-
+java -cp %LIBS% hi.db.hiMonWorkerSample -port 8010
+pause

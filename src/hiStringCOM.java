@@ -11,15 +11,15 @@ package hi.db;
  *例えば、試験用には途中で電文を表示する中継器を次のように作成することが出来ます。
  *</p>
 <pre class=quote10>
-public class Repeager implements hiStringCOM{
+public class Repeater implements hiStringCOM{
    hiStringCOM to;
    public Repeater(hiStringCOM to_){
       to= to_;
       }
-   @Overrride
+   @Override
    public String call(String msg_){
       System.err.println("call    :"+msg_);
-      String _resp= to.call(_msg);
+      String _resp= to.call(msg_);
       System.err.println("response:"+_resp);
       return _resp;
       }

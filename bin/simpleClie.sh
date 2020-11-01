@@ -9,5 +9,5 @@ hiNoteLIB=${LIB_DIR}/${hiNoteJAR}
 mongoLIB=${LIB_DIR}/${mongoJAR}
 LIBS=".:${hiNoteLIB}:${mongoLIB}:${hiMongoLIB}"
 
-java -cp ${LIBS} hi.db.hiMonWorkerSample -call localhost
+java -cp ${LIBS} hi.db.hiMonWorkerSample -call localhost -port 8010
 

@@ -24,15 +24,25 @@ public class Test {
       return "ISODate(\""+dateFormat.format(_dt)+"\")";
       }
    public static void main(String[] args_){
+      //--------------------------------------------------------
       hiMongo.MoreMongo mongo;
-      if( new File("../test_workerMode.txt").exists() ) {
-         mongo=new hiMongoCaller(new hiMongoWorker());
-         hiU.out.println("// caller-worker mode");
+      File _modeFile= new File("../test_workerMode.txt");
+      if( _modeFile.exists() ) {
+         String _host= hiFile.readTextAll(_modeFile).trim();
+         if( _host.length()<5 ){
+            mongo=new hiMongoCaller(new hiMongoWorker());
+            hiU.out.println("// MODE: Caller/Worker");
+            }
+         else {
+            mongo=new hiMongoCaller(new hiMonWorkerSample.COM(_host,8010,3));
+            hiU.out.println("// MODE: call SERVER '"+_host+"'");
+            }
          }
       else {
          mongo=new hiMongoDirect();
-         hiU.out.println("// direct mode");
+         hiU.out.println("// MODE: DIRECT");
          }
+      //--------------------------------------------------------
       String _remote="{"+
                        "host:'"+args_[0]+"',"+
                        "port:27017,"+
@@ -62,7 +72,7 @@ public class Test {
               .forEach(Rc->ps.println(hiU.str(Rc,hiU.WITH_TYPE)));
 
          _find.forThis(Fi->ps.println("#### MNodeList"));
-         _find.getList(hiU.REVERSE)         // getDocumentListと同じ
+         _find.getDocumentList(hiU.REVERSE)         // getDocumentListと同じ
               .forEach(Rd->ps.println(Rd));
 
          _find.forThis(Fi->ps.println("#### MNodeList/hiU.str(WITH_TYPE)"));
@@ -70,7 +80,7 @@ public class Test {
               .forEach(Rd->ps.println(hiU.str(hiMongo.parseNode(Rd).asNode(),hiU.WITH_TYPE)));
 
          _find.forThis(Fi->ps.println("#### MNodeList/mson"));
-         _find.getList(hiU.REVERSE)
+         _find.getDocumentList(hiU.REVERSE)
               .forEach(Rd->ps.println(hiMongo.mson(Rd)));
 
          _find.forThis(Fi->ps.println("#### MNodeList/json"));
@@ -79,7 +89,7 @@ public class Test {
 
 
          _find.forThis(Fi->ps.println("#### MNodeList/mongo.str"));
-         _find.getList(hiU.REVERSE)
+         _find.getDocumentList(hiU.REVERSE)
               .forEach(Rd->ps.println(hiMongo.str(Rd)));
 
          ps.println("========= USE hiMongo.parse()");

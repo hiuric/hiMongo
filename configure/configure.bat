@@ -5,7 +5,7 @@
 :: mongoDB‚ÌƒƒO‚ğ—}~‚·‚é‚½‚ß‚Ì‚¾‚¯ƒ‰ƒCƒuƒ‰ƒŠ‚ÍŠÜ‚ñ‚Å‚¢‚È‚¢
 
 set hiMongo=hiMongo
-set hiMongoVER=_0_10
+set hiMongoVER=_0_11
 set hiMongoJAR=%hiMongo%%hiMongoVER%.jar
 set hiNoteJAR=hiNote_3_10.jar
 set mongoJAR=mongo-java-driver-3.12.5.jar

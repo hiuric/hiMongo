@@ -38,6 +38,35 @@ rec.value = 12.3;
 rec.date  = new Date();
 coll.insertOne(rec);
 ```
+### recursive access to db
+hiMongo application can access the DB recursively with a reference definition.
+```
+import hi.db.hiMongo;
+public class Test { 
+   public static void main(String[] args_){
+      hiMongo.DB db=hiMongo.use("db01");
+      db.in("famiryTree")
+        .find("{name:{$in:['P0027','P0028','P0029','P0030','P0031']}}")
+        .forEachRecursive(
+            "{#CUR.father:name,#CUR.mother:name}" // reference definition
+           ,Fr->{ // main lambda. recursivelly called
+               if( "KING".equals(Fr.get("#CUR.status")) ) {
+                  return Fr.disp(" is a descendant of KING #CUR.name");
+                  }
+               return null;
+               }
+           ,Ff->{ // finished with result (found)
+               System.out.println(Ff.disp("#TOP.name")+Ff.get("#RESULT")+".");
+               }
+           ,Fn->{ // finidhed with no result (not found)
+               System.out.println(Fn.disp("#TOP.name is not."));
+               }
+            )
+         ;
+      }
+   }
+// record Schema {'name':'P0017', 'status':'-', 'father':'P0009', 'mother':'P0010'}
+```
 ### extended JSON input;comment,document array without bracket,ETC.
 ```
 // 作曲家リスト
@@ -127,7 +156,15 @@ testSet直下の./test.shで全テストが動きます。ただし、
 TEST10_remote/は環境依存なので、予めコメントアウトする
 必要があります。
 
-
+試験は３つのモードがあります。
+./test_00_DirectMode.sh  : mongo-java-driverの直呼び
+./test_00_WorkerMode.sh  : Caler/Workerモデル
+./test_00_ServerMode.sh  : socke通信でサーバを呼ぶ
+ServerMode実行にはlocalhostで
+../bin/simpleServ.sh
+を起動しておく必要があります
+.sh上のlocalhostを他ホストのipアドレスに変えると
+他ホストと接続することもできます。
 
 ＝＝＝＝＝ ライブラリのリビルド ＝＝＝＝＝
 hiMongoライブラリをビルドしなおすには

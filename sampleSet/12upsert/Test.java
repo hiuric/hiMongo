@@ -12,8 +12,8 @@ public class Test {
         .forThis(Rc->
            Rc.getMongoCollection()
              .findOneAndUpdate(
-                   hiMongo.objToBson("{$and:[{type:'C'},{name:'Z'}]}",null),
-                   hiMongo.objToBson("{$set:{value:3}}",null),
+                   hiMongo.objToBson("{$and:[{type:'C'},{name:'Z'}]}"),
+                   hiMongo.objToBson("{$set:{value:3}}"),
                    (new FindOneAndUpdateOptions()).upsert(true))
            )
         .forThis(Fc->System.out.println("---- after $set"))

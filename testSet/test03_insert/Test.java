@@ -11,15 +11,25 @@ public class Test {
       Map<String,Long> date;
       }
    public static void main(String[] args_){
+      //--------------------------------------------------------
       hiMongo.MoreMongo mongo;
-      if( new File("../test_workerMode.txt").exists() ) {
-         mongo=new hiMongoCaller(new hiMongoWorker());
-         hiU.out.println("// caller-worker mode");
+      File _modeFile= new File("../test_workerMode.txt");
+      if( _modeFile.exists() ) {
+         String _host= hiFile.readTextAll(_modeFile).trim();
+         if( _host.length()<5 ){
+            mongo=new hiMongoCaller(new hiMongoWorker());
+            hiU.out.println("// MODE: Caller/Worker");
+            }
+         else {
+            mongo=new hiMongoCaller(new hiMonWorkerSample.COM(_host,8010,3));
+            hiU.out.println("// MODE: call SERVER '"+_host+"'");
+            }
          }
       else {
          mongo=new hiMongoDirect();
-         hiU.out.println("// direct mode");
+         hiU.out.println("// MODE: DIRECT");
          }
+      //--------------------------------------------------------
       try{
          hiMongo.DB db  =mongo.use("db02");
          String _records=
@@ -57,6 +67,7 @@ public class Test {
          String _records_json=hiFile.readTextAll("data.json");
          Object _recodes_node=hiMongo.parseText(_records_json)
                                      .asNodeList();
+hiU.m("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ .insertMany(_recodes_node);");
          db.in("composer").drop()
            .insertMany(_recodes_node);
          hiU.out.println("--- with hiMongo.parseText().asNode()");
@@ -71,9 +82,10 @@ public class Test {
            .getMsonList()
            .forEach(Rm->hiU.out.println(Rm));
 
-
+hiU.m("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ .insertMany(_records_json);");
+hiU.m("_records_json="+_records_json);
          db.in("composer2").drop()
-           .with_hson()
+           //.with_hson()
            .insertMany(_records_json);
          hiU.out.println("\n--- with_hson");
          db.in("composer2")
@@ -89,7 +101,7 @@ public class Test {
 
 
          db.in("composer3").drop()
-           .with_hson()
+           //.with_hson()
            .insertMany(new File("data.json"));
          hiU.out.println("\n--- with_hson/File");
          db.in("composer3")

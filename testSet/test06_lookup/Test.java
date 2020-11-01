@@ -36,15 +36,25 @@ public class Test {
 
    static PrintStream ps=hiU.out;
    public static void main(String[] args_){
+      //--------------------------------------------------------
       hiMongo.MoreMongo mongo;
-      if( new File("../test_workerMode.txt").exists() ) {
-         mongo=new hiMongoCaller(new hiMongoWorker());
-         hiU.out.println("// caller-worker mode");
+      File _modeFile= new File("../test_workerMode.txt");
+      if( _modeFile.exists() ) {
+         String _host= hiFile.readTextAll(_modeFile).trim();
+         if( _host.length()<5 ){
+            mongo=new hiMongoCaller(new hiMongoWorker());
+            hiU.out.println("// MODE: Caller/Worker");
+            }
+         else {
+            mongo=new hiMongoCaller(new hiMonWorkerSample.COM(_host,8010,3));
+            hiU.out.println("// MODE: call SERVER '"+_host+"'");
+            }
          }
       else {
          mongo=new hiMongoDirect();
-         hiU.out.println("// direct mode");
+         hiU.out.println("// MODE: DIRECT");
          }
+      //--------------------------------------------------------
       try{
          hiMongo.DB db=mongo.use("sampleDB");
          hiU.out.println("--- befor creteIndex (do.toJson())");
@@ -74,9 +84,9 @@ public class Test {
                 "{$unwind:'$from商品'}"+
                "]")
            .forThis(Ag->ps.println("----- foreach mson(MNode) -----"))
-           .forEach(Rd->ps.println(str(Rd)))
+           .forEachDocument(Rd->ps.println(str(Rd)))
            .forThis(Ag->ps.println("----- toClass -----"))
-           .forEach(A_Rec.class,
+           .forEachClass(A_Rec.class,
                     Rc->ps.println(hiU.str(Rc)))
            .forThis(Ag->ps.println("----- getMsonList -----"))
            .getMsonList().forEach(Rm->ps.println(Rm))

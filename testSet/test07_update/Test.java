@@ -31,55 +31,65 @@ public class Test {
       }
    static PrintStream ps=hiU.out;
    public static void main(String[] args_){
+      //--------------------------------------------------------
       hiMongo.MoreMongo mongo;
-      if( new File("../test_workerMode.txt").exists() ) {
-         mongo=new hiMongoCaller(new hiMongoWorker());
-         hiU.out.println("// caller-worker mode");
+      File _modeFile= new File("../test_workerMode.txt");
+      if( _modeFile.exists() ) {
+         String _host= hiFile.readTextAll(_modeFile).trim();
+         if( _host.length()<5 ){
+            mongo=new hiMongoCaller(new hiMongoWorker());
+            hiU.out.println("// MODE: Caller/Worker");
+            }
+         else {
+            mongo=new hiMongoCaller(new hiMonWorkerSample.COM(_host,8010,3));
+            hiU.out.println("// MODE: call SERVER '"+_host+"'");
+            }
          }
       else {
          mongo=new hiMongoDirect();
-         hiU.out.println("// direct mode");
+         hiU.out.println("// MODE: DIRECT");
          }
+      //--------------------------------------------------------
       try{
          final String _field_name="value";
          hiMongo.DB db=mongo.use("db01");
          db.in("coll_01")
            .find("{}","{_id:0}")
            .forThis(Fi->ps.println("---- befor"))
-           .forEach(Rd->ps.println(str(Rd)))
+           .forEachDocument(Rd->ps.println(str(Rd)))
            .back()
 
            .updateOne("{$and:[{type:'A'},{value:4.56}]}",
                       "{$set:{value:0.55}}")
            .find("{}","{_id:0}")
            .forThis(Fi->ps.println("---- after 4.56->0.55"))
-           .forEach(Rd->ps.println(str(Rd)))
+           .forEachDocument(Rd->ps.println(str(Rd)))
            .back()
 
            .updateMany("{$and:[{type:'A'},{value:{$lt:1.00}}]}",
                       "{$set:{value:1.00}}")
            .find("{}","{_id:0}")
            .forThis(Fi->ps.println("---- after 0.xx -> 1.00 "))
-           .forEach(Rd->ps.println(str(Rd)))
+           .forEachDocument(Rd->ps.println(str(Rd)))
            .back()
 
            .replaceOne("{$and:[{type:'A'},{value:7.89}]}",
                        "{type:'B',value:3000,date:ISODate('2020-08-17T07:07:50.000Z')}")
            .find("{}","{_id:0}")
            .forThis(Fi->ps.println("---- after replaceOne "))
-           .forEach(Rd->ps.println(str(Rd)))
+           .forEachDocument(Rd->ps.println(str(Rd)))
            .back()
 
            .deleteOne("{type:'A'}")
            .find("{}","{_id:0}")
            .forThis(Fi->ps.println("---- after deleteOne type:'A' "))
-           .forEach(Rd->ps.println(str(Rd)))
+           .forEachDocument(Rd->ps.println(str(Rd)))
            .back()
 
            .deleteMany("{value:1}")
            .find("{}","{_id:0}")
            .forThis(Fi->ps.println("---- after deleteMany value:1 "))
-           .forEach(Rd->ps.println(str(Rd)))
+           .forEachDocument(Rd->ps.println(str(Rd)))
            .back()
 
            // %set試験

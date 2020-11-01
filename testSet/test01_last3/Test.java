@@ -39,16 +39,26 @@ public class Test {
       return "ISODate(\""+dateFormat.format(_dt)+"\")";
       }
    public static void main(String[] args_){
+      //--------------------------------------------------------
       hiMongo.MoreMongo mongo;
-      if( new File("../test_workerMode.txt").exists() ) {
-         mongo=new hiMongoCaller(new hiMongoWorker());
-         hiU.out.println("// caller-worker mode");
+      File _modeFile= new File("../test_workerMode.txt");
+      if( _modeFile.exists() ) {
+         String _host= hiFile.readTextAll(_modeFile).trim();
+         if( _host.length()<5 ){
+            mongo=new hiMongoCaller(new hiMongoWorker());
+            hiU.out.println("// MODE: Caller/Worker");
+            }
+         else {
+            mongo=new hiMongoCaller(new hiMonWorkerSample.COM(_host,8010,3));
+            hiU.out.println("// MODE: call SERVER '"+_host+"'");
+            }
          }
       else {
          mongo=new hiMongoDirect();
-         hiU.out.println("// direct mode");
+         hiU.out.println("// MODE: DIRECT");
          }
-      try{ // DBのcloseは呼ばない
+      //--------------------------------------------------------
+      try{
          hiMongo.DB db=mongo.use("db01");    // database   'db01'選択
          db.in("coll_01")                     // collection 'coll_01'選択
             .find("{type:'A'}","{_id:0}")      // typeが'A'のレコード,_idは不要

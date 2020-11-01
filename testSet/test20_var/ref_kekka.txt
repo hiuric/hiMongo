@@ -1,0 +1,234 @@
+// MODE: DIRECT
+============ readOne and the_value
+---- readOne
+records=[
+   {
+      type="A",
+      value=4.56,
+      date=Mon Aug 17 16:07:10 JST 2020},
+   {
+      type="A",
+      value=7.89,
+      date=Mon Aug 17 16:07:30 JST 2020},
+   {
+      type="A",
+      value=0.12,
+      date=Mon Aug 17 16:07:40 JST 2020}]
+---- the_value
+records=[
+   {
+      type="A",
+      value=4.56,
+      date=Mon Aug 17 16:07:10 JST 2020},
+   {
+      type="A",
+      value=7.89,
+      date=Mon Aug 17 16:07:30 JST 2020},
+   {
+      type="A",
+      value=0.12,
+      date=Mon Aug 17 16:07:40 JST 2020}]
+============ sub query ARRAY
+---- coll_01
+{'name':'A', 'value':100}
+{'name':'B', 'value':200}
+{'name':'B', 'value':400}
+{'name':'B', 'value':600}
+{'name':'A', 'value':200}
+{'name':'A', 'value':300}
+---- coll_02
+{'name':'X', 'value':100}
+{'name':'Y', 'value':100}
+{'name':'Z', 'value':400}
+{'name':'K', 'value':600}
+{'name':'L', 'value':300}
+---- coll_02 value in [100,200,300]
+{'name':'X', 'value':100}
+{'name':'Y', 'value':100}
+{'name':'L', 'value':300}
+---- coll_02 value in coll_1 use *.value
+{'name':'X', 'value':100}
+{'name':'Y', 'value':100}
+{'name':'L', 'value':300}
+============ sub query _id remain last 4
+---- coll_01
+{'name':'A', 'value':100}
+{'name':'B', 'value':200}
+{'name':'B', 'value':400}
+{'name':'B', 'value':600}
+{'name':'A', 'value':200}
+{'name':'A', 'value':300}
+--- readValue
+{'name':'B', 'value':400}
+{'name':'B', 'value':600}
+{'name':'A', 'value':200}
+{'name':'A', 'value':300}
+---- coll_01
+{'name':'A', 'value':100}
+{'name':'B', 'value':200}
+{'name':'B', 'value':400}
+{'name':'B', 'value':600}
+{'name':'A', 'value':200}
+{'name':'A', 'value':300}
+--- forOne("{#id:_id}",Fi->{deleteMany #id}
+{'name':'B', 'value':400}
+{'name':'B', 'value':600}
+{'name':'A', 'value':200}
+{'name':'A', 'value':300}
+---- coll_01
+{'name':'A', 'value':100}
+{'name':'B', 'value':200}
+{'name':'B', 'value':400}
+{'name':'B', 'value':600}
+{'name':'A', 'value':200}
+{'name':'A', 'value':300}
+--- forOne(Fi->{deleteMany #CUR._id}
+{'name':'B', 'value':400}
+{'name':'B', 'value':600}
+{'name':'A', 'value':200}
+{'name':'A', 'value':300}
+============ COL3 UPDATE type=A+1.5 B-2.5 C*1.5 d/2.5
+---- coll_03
+{'name':'X', 'type':'A', 'value':100}
+{'name':'Y', 'type':'A', 'value':200}
+{'name':'X', 'type':'B', 'value':300}
+{'name':'X', 'type':'C', 'value':400}
+{'name':'Z', 'type':'A', 'value':500}
+{'name':'Z', 'type':'D', 'value':600}
+{'name':'X', 'type':'C', 'value':700}
+--- forEach("{}",Fi->{}
+{'name':'X', 'type':'A', 'value':101.5}
+{'name':'Y', 'type':'A', 'value':201.5}
+{'name':'X', 'type':'B', 'value':297.5}
+{'name':'X', 'type':'C', 'value':600}
+{'name':'Z', 'type':'A', 'value':501.5}
+{'name':'Z', 'type':'D', 'value':240}
+{'name':'X', 'type':'C', 'value':1050}
+============ BASIC TEST
+-- find and setValue/withValue
+---- coll_04
+{'values':[100, 300, 500], 'name':'X', 'type':'H'}
+{'values':[300, 500, 600, 700], 'name':'Y', 'type':'H'}
+'A'
+'B'
+'C'
+{'type':'a', 'value':3}
+{'type':'b', 'value':2}
+{'type':'c', 'value':1}
+3 -- 'a' -- {'type':'a', 'value':3}
+(LinkedHashMap){(String)"type"=(String)"a", (String)"value"=(Long)3}
+mson={'type':'a', 'value':3}
+json={"type":"a", "value":3}
+doc.toString=Document{{type=a, value=3}}
+doc.toJson  ={"type": "a", "value": {"$numberLong": "3"}}
+2 -- 'b' -- {'type':'b', 'value':2}
+(LinkedHashMap){(String)"type"=(String)"b", (String)"value"=(Long)2}
+mson={'type':'b', 'value':2}
+json={"type":"b", "value":2}
+doc.toString=Document{{type=b, value=2}}
+doc.toJson  ={"type": "b", "value": {"$numberLong": "2"}}
+1 -- 'c' -- {'type':'c', 'value':1}
+(LinkedHashMap){(String)"type"=(String)"c", (String)"value"=(Long)1}
+mson={'type':'c', 'value':1}
+json={"type":"c", "value":1}
+doc.toString=Document{{type=c, value=1}}
+doc.toJson  ={"type": "c", "value": {"$numberLong": "1"}}
+-- no find and setValue/withValue
+'A'
+'B'
+'C'
+{'type':'a', 'value':3}
+{'type':'b', 'value':2}
+{'type':'c', 'value':1}
+3 -- 'a' -- {'type':'a', 'value':3}
+(LinkedHashMap){(String)"type"=(String)"a", (String)"value"=(Long)3}
+mson={'type':'a', 'value':3}
+json={"type":"a", "value":3}
+doc.toString=Document{{type=a, value=3}}
+doc.toJson  ={"type": "a", "value": {"$numberLong": "3"}}
+2 -- 'b' -- {'type':'b', 'value':2}
+(LinkedHashMap){(String)"type"=(String)"b", (String)"value"=(Long)2}
+mson={'type':'b', 'value':2}
+json={"type":"b", "value":2}
+doc.toString=Document{{type=b, value=2}}
+doc.toJson  ={"type": "b", "value": {"$numberLong": "2"}}
+1 -- 'c' -- {'type':'c', 'value':1}
+(LinkedHashMap){(String)"type"=(String)"c", (String)"value"=(Long)1}
+mson={'type':'c', 'value':1}
+json={"type":"c", "value":1}
+doc.toString=Document{{type=c, value=1}}
+doc.toJson  ={"type": "c", "value": {"$numberLong": "1"}}
+============ COL4
+---- coll_04
+{'values':[100, 300, 500], 'name':'X', 'type':'H'}
+{'values':[300, 500, 600, 700], 'name':'Y', 'type':'H'}
+{'values':[100, 300, 500], 'name':'X', 'type':'H'}
+{'values':[300, 500, 600, 700], 'name':'Y', 'type':'H'}
+100 on 'X'
+{'name':'X', 'value':100}
+{'name':'Y', 'value':100}
+300 on 'X'
+{'name':'L', 'value':300}
+500 on 'X'
+300 on 'Y'
+{'name':'L', 'value':300}
+500 on 'Y'
+600 on 'Y'
+{'name':'K', 'value':600}
+700 on 'Y'
+100 on 'X'
+{'name':'X', 'value':100}
+{'name':'Y', 'value':100}
+300 on 'X'
+{'name':'L', 'value':300}
+500 on 'X'
+300 on 'Y'
+{'name':'L', 'value':300}
+500 on 'Y'
+600 on 'Y'
+{'name':'K', 'value':600}
+700 on 'Y'
+============ COL4/2 forEach-#CUR and withValue-#CUR
+---- coll_04
+{'values':[100, 300, 500], 'name':'X', 'type':'H'}
+{'values':[300, 500, 600, 700], 'name':'Y', 'type':'H'}
+{'values':[100, 300, 500], 'name':'X', 'type':'H'}
+{'values':[300, 500, 600, 700], 'name':'Y', 'type':'H'}
+{'values':[100, 300, 500], 'name':'X', 'type':'H'}
+{'values':[300, 500, 600, 700], 'name':'Y', 'type':'H'}
+100 on 'X'
+{'name':'X', 'value':100}
+{'name':'Y', 'value':100}
+300 on 'X'
+{'name':'L', 'value':300}
+500 on 'X'
+300 on 'Y'
+{'name':'L', 'value':300}
+500 on 'Y'
+600 on 'Y'
+{'name':'K', 'value':600}
+700 on 'Y'
+100 on 'X'
+{'name':'X', 'value':100}
+{'name':'Y', 'value':100}
+300 on 'X'
+{'name':'L', 'value':300}
+500 on 'X'
+300 on 'Y'
+{'name':'L', 'value':300}
+500 on 'Y'
+600 on 'Y'
+{'name':'K', 'value':600}
+700 on 'Y'
+100 on 'X'
+{'name':'X', 'value':100}
+{'name':'Y', 'value':100}
+300 on 'X'
+{'name':'L', 'value':300}
+500 on 'X'
+300 on 'Y'
+{'name':'L', 'value':300}
+500 on 'Y'
+600 on 'Y'
+{'name':'K', 'value':600}
+700 on 'Y'

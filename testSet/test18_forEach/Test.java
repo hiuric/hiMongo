@@ -48,15 +48,25 @@ public class Test {
       double avg;
       }
    public static void main(String[] args_){
+      //--------------------------------------------------------
       hiMongo.MoreMongo mongo;
-      if( new File("../test_workerMode.txt").exists() ) {
-         mongo=new hiMongoCaller(new hiMongoWorker());
-         hiU.out.println("// caller-worker mode");
+      File _modeFile= new File("../test_workerMode.txt");
+      if( _modeFile.exists() ) {
+         String _host= hiFile.readTextAll(_modeFile).trim();
+         if( _host.length()<5 ){
+            mongo=new hiMongoCaller(new hiMongoWorker());
+            hiU.out.println("// MODE: Caller/Worker");
+            }
+         else {
+            mongo=new hiMongoCaller(new hiMonWorkerSample.COM(_host,8010,3));
+            hiU.out.println("// MODE: call SERVER '"+_host+"'");
+            }
          }
       else {
          mongo=new hiMongoDirect();
-         hiU.out.println("// direct mode");
+         hiU.out.println("// MODE: DIRECT");
          }
+      //--------------------------------------------------------
       hiMongo.DB db= mongo.use("db01");
       hiU.out.println("################ Finder");
       db.in("coll_01")
@@ -64,13 +74,13 @@ public class Test {
         .limit(3) // 先頭３個
         // --- Document ---
         .forThis(Fi->hiU.out.println("==== Document"))
-        .forThis(Fi->hiU.out.println("-- forEach"))
-        .forEach(Rd->hiU.out.println(str(Rd)))
+        .forThis(Fi->hiU.out.println("-- forEach #CRU/#CUR.value"))
+        .forEach(Fi->hiU.out.println(Fi.disp("#CUR/#CUR.value")))
         .forThis(Fi->hiU.out.println("-- forEachDocument"))
         .forEachDocument(Rd->hiU.out.println(str(Rd)))
         .forThis(Fi->{
             hiU.out.println("-- getList/forEach");
-            Fi.getList()
+            Fi.getDocumentList()
               .forEach(Rd->hiU.out.println(str(Rd)));
             hiU.out.println("-- getDocumentList/forEach");
             Fi.getDocumentList()
@@ -79,12 +89,12 @@ public class Test {
         // --- Document toJson ---
         .forThis(Fi->hiU.out.println("==== Document toJson"))
         .forThis(Fi->hiU.out.println("-- forEach toJson"))
-        .forEach(Rd->hiU.out.println(json(Rd)))
+        .forEach(Fi->hiU.out.println("//"+Fi.getValueAsDocument("#CUR").toJson()))
         .forThis(Fi->hiU.out.println("-- forEachDocument toJson"))
         .forEachDocument(Rd->hiU.out.println(json(Rd)))
         .forThis(Fi->{
             hiU.out.println("-- getList/forEach toJson");
-            Fi.getList()
+            Fi.getDocumentList()
               .forEach(Rd->hiU.out.println(json(Rd)));
             hiU.out.println("-- getDocumentList/forEach toJson");
             Fi.getDocumentList()
@@ -93,12 +103,12 @@ public class Test {
         // --- Document hiMongo.json() ---
         .forThis(Fi->hiU.out.println("==== Document hiMongo.json()"))
         .forThis(Fi->hiU.out.println("-- forEach hiMongo.json()"))
-        .forEach(Rd->hiU.out.println(hiMongo.json(Rd)))
+        .forEach(Fi->hiU.out.println(hiMongo.json(Fi.getValueAsDocument("#CUR"))))
         .forThis(Fi->hiU.out.println("-- forEachDocument hiMongo.json()"))
         .forEachDocument(Rd->hiU.out.println(hiMongo.json(Rd)))
         .forThis(Fi->{
             hiU.out.println("-- getList/forEach hiMongo.json()");
-            Fi.getList()
+            Fi.getDocumentList()
               .forEach(Rd->hiU.out.println(hiMongo.json(Rd)));
             hiU.out.println("-- getDocumentList/forEach hiMongo.json()");
             Fi.getDocumentList()
@@ -107,12 +117,12 @@ public class Test {
         // --- Document hiMongo.mson() ---
         .forThis(Fi->hiU.out.println("==== Document hiMongo.mson()"))
         .forThis(Fi->hiU.out.println("-- forEach hiMongo.mson()"))
-        .forEach(Rd->hiU.out.println(hiMongo.mson(Rd)))
+        .forEach(Fi->hiU.out.println(hiMongo.mson(Fi.getValueAsDocument("#CUR"))))
         .forThis(Fi->hiU.out.println("-- forEachDocument hiMongo.mson()"))
         .forEachDocument(Rd->hiU.out.println(hiMongo.mson(Rd)))
         .forThis(Fi->{
             hiU.out.println("-- getList/forEach hiMongo.mson()");
-            Fi.getList()
+            Fi.getDocumentList()
               .forEach(Rd->hiU.out.println(hiMongo.mson(Rd)));
             hiU.out.println("-- getDocumentList/forEach hiMongo.mson()");
             Fi.getDocumentList()
@@ -121,12 +131,12 @@ public class Test {
         // --- MyClass ---
         .forThis(Fi->hiU.out.println("==== Class"))
         .forThis(Fi->hiU.out.println("-- forEach hiU.str"))
-        .forEach(MyClass.class,Rc->hiU.out.println(hiU.str(Rc)))
+        .forEachClass(MyClass.class,Rc->hiU.out.println(hiU.str(Rc)))
         .forThis(Fi->hiU.out.println("-- forEachClass hiU.str"))
         .forEachClass(MyClass.class,Rc->hiU.out.println(hiU.str(Rc)))
         .forThis(Fi->{
             hiU.out.println("-- getList/forEach hiU.str");
-            Fi.getList(MyClass.class)
+            Fi.getClassList(MyClass.class)
               .forEach(Rc->hiU.out.println(hiU.str(Rc)));
             hiU.out.println("-- getClassList/forEach hiU.str");
             Fi.getClassList(MyClass.class)
@@ -180,12 +190,12 @@ public class Test {
         // --- Document ---
         .forThis(Ag->hiU.out.println("==== Document"))
         .forThis(Ag->hiU.out.println("-- forEach"))
-        .forEach(Rd->hiU.out.println(Rd))
+        .forEachDocument(Rd->hiU.out.println(Rd))
         .forThis(Ag->hiU.out.println("-- forEachDocument"))
         .forEachDocument(Rd->hiU.out.println(Rd))
         .forThis(Ag->{
             hiU.out.println("-- getList/forEach");
-            Ag.getList()
+            Ag.getDocumentList()
               .forEach(Rd->hiU.out.println(Rd));
             hiU.out.println("-- getDocumentList/forEach");
             Ag.getDocumentList()
@@ -194,12 +204,12 @@ public class Test {
         // --- MyAgClass ---
         .forThis(Ag->hiU.out.println("==== Class"))
         .forThis(Ag->hiU.out.println("-- forEach hiU.str"))
-        .forEach(MyAgClass.class,Rc->hiU.out.println(hiU.str(Rc)))
+        .forEachClass(MyAgClass.class,Rc->hiU.out.println(hiU.str(Rc)))
         .forThis(Ag->hiU.out.println("-- forEachClass hiU.str"))
         .forEachClass(MyAgClass.class,Rc->hiU.out.println(hiU.str(Rc)))
         .forThis(Ag->{
             hiU.out.println("-- getList/forEach hiU.str");
-            Ag.getList(MyAgClass.class)
+            Ag.getClassList(MyAgClass.class)
               .forEach(Rc->hiU.out.println(hiU.str(Rc)));
             hiU.out.println("-- getClassList/forEach hiU.str");
             Ag.getClassList(MyAgClass.class)

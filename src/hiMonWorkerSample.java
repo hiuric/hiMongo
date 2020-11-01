@@ -40,13 +40,14 @@ java -cp %LIBS% hi.db.hiMonWorkerSample -call localhost
 pause
 </pre>
 <p>
-以上に対応するスクリプトをソースセットのbin下に置いてあります。
+以上に相当するスクリプトをソースセットのbin下に置いてあります。
 </p>
 <p>
 全コードを示します。
 </p>
 <pre class=quote10>
 public class hiMonWorkerSample {
+   /{@literal *}{@literal *} お試しCaller/Worker通信機 {@literal *}/
    public static class COM implements hiStringCOM,AutoCloseable {
       hiSocket.TCP.ForText sock;
       public COM(String host_,int port_,int timeout_){
@@ -58,10 +59,11 @@ public class hiMonWorkerSample {
          return sock.readLine();                 // 1行受け取る
          }
       @Override
-      public void close()throws Exception{
+      public void close(){
          hiU.close(sock);
          }
       }
+   /{@literal *}{@literal *} お試しWorker {@literal *}/
    public static class SampleWorker extends Thread {
       hiSocket.TCP.ForText sock;
       hiMongoWorker        worker=new hiMongoWorker();
@@ -94,10 +96,10 @@ public class hiMonWorkerSample {
       int     _port   = _args.argInt("-port",8010);
       int     _timeout= _args.argInt("-timeout",0)*1000;
       if( _call!=null ){
-         // クライアント実行
+         // クライアント
          System.out.println("SimpleClient STARTED "+_call+":"+_port+" tout="+_timeout);
-         hiStringCOM  _com    = new COM(_call,_port,_timeout);
-         hiMongo.DB db      = hiMongo.use("db01",_com);
+         hiStringCOM _com = new COM(_call,_port,_timeout);
+         hiMongo.DB  db   = hiMongo.use("db01",_com);
          db.in("coll_01")
            .find("{}","{_id:0}")
            .sort("{_id:-1}")
@@ -128,6 +130,7 @@ public class hiMonWorkerSample {
 </pre>
  */
 public class hiMonWorkerSample {
+   /** お試しCaller/Worker通信機 */
    public static class COM implements hiStringCOM,AutoCloseable {
       hiSocket.TCP.ForText sock;
       public COM(String host_,int port_,int timeout_){
@@ -139,10 +142,11 @@ public class hiMonWorkerSample {
          return sock.readLine();                 // 1行受け取る
          }
       @Override
-      public void close()throws Exception{
+      public void close(){
          hiU.close(sock);
          }
       }
+   /** お試しWorker */
    public static class SampleWorker extends Thread {
       hiSocket.TCP.ForText sock;
       hiMongoWorker        worker=new hiMongoWorker();
@@ -175,10 +179,10 @@ public class hiMonWorkerSample {
       int     _port   = _args.argInt("-port",8010);
       int     _timeout= _args.argInt("-timeout",0)*1000;
       if( _call!=null ){
-         // クライアント実行
+         // クライアント
          System.out.println("SimpleClient STARTED "+_call+":"+_port+" tout="+_timeout);
-         hiStringCOM  _com    = new COM(_call,_port,_timeout);
-         hiMongo.DB db      = hiMongo.use("db01",_com);
+         hiStringCOM _com = new COM(_call,_port,_timeout);
+         hiMongo.DB  db   = hiMongo.use("db01",_com);
          db.in("coll_01")
            .find("{}","{_id:0}")
            .sort("{_id:-1}")

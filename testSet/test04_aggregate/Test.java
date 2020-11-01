@@ -17,15 +17,25 @@ public class Test {
       Date date;
       }
    public static void main(String[] args_){
+      //--------------------------------------------------------
       hiMongo.MoreMongo mongo;
-      if( new File("../test_workerMode.txt").exists() ) {
-         mongo=new hiMongoCaller(new hiMongoWorker());
-         hiU.out.println("// caller-worker mode");
+      File _modeFile= new File("../test_workerMode.txt");
+      if( _modeFile.exists() ) {
+         String _host= hiFile.readTextAll(_modeFile).trim();
+         if( _host.length()<5 ){
+            mongo=new hiMongoCaller(new hiMongoWorker());
+            hiU.out.println("// MODE: Caller/Worker");
+            }
+         else {
+            mongo=new hiMongoCaller(new hiMonWorkerSample.COM(_host,8010,3));
+            hiU.out.println("// MODE: call SERVER '"+_host+"'");
+            }
          }
       else {
          mongo=new hiMongoDirect();
-         hiU.out.println("// direct mode");
+         hiU.out.println("// MODE: DIRECT");
          }
+      //--------------------------------------------------------
       try{
          hiMongo.DB db=mongo.use("db01");
          long _start_date=
@@ -81,7 +91,7 @@ public class Test {
             ).asNode();
         db.in("coll_01")
             .aggregate(_a_node)
-            .forEach(Rd->ps.println(hiMongo.json(Rd)))
+            .forEachDocument(Rd->ps.println(hiMongo.json(Rd)))
             ;
 
          }

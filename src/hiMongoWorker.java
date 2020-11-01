@@ -1,9 +1,19 @@
 package hi.db;
 import otsu.hiNote.*;
 import java.util.*;
-
+/**
+ * mongo-java-driver-API実行機.
+ *<p>
+ *拡張JSON形式のコマンドを受け、mongo-java-driverにアクセスし、結果を拡張JSON形式で返す機構です。
+ *</p>
+ *<p>
+ *コマンドプロトコルの公開は検討中です。
+ *</p>
+ */
 public class hiMongoWorker implements hiStringCOM {
-   final static boolean D=true;// デバグフラグ（開発時用）
+   final static boolean D =hiMongo.MASTERD&&true;
+
+   static boolean USE_POOL=true;
    static class Command {
       Object   connect;
       Boolean  show_dbs;
@@ -17,7 +27,29 @@ public class hiMongoWorker implements hiStringCOM {
       // Collection以下
       Object[] execute;
       }
-
+   static class ClientInfo {
+      hiMongo.Client client;
+      HashMap<String,hiMongo.DB> dbs=new HashMap<>();
+      }
+   static HashMap<String,ClientInfo> clients=new HashMap<>();
+   static synchronized ClientInfo getClient(Object connect_){
+      String     _clie_key = hiJSON.str(connect_);
+      ClientInfo _clieInfo = clients.get(_clie_key);
+      if( _clieInfo==null ){
+         _clieInfo        = new ClientInfo();
+         _clieInfo.client = hiMongo.connect(connect_);
+         clients.put(_clie_key,_clieInfo);
+         }
+      return _clieInfo;
+      }
+   static synchronized hiMongo.DB getDB(ClientInfo clieInfo_,String use_){
+      hiMongo.DB _db= clieInfo_.dbs.get(use_);
+      if( _db==null ){
+         _db = clieInfo_.client.use(use_);
+         clieInfo_.dbs.put(use_,_db);
+         }
+      return _db;
+      }
    Object namedObject(String name_,Object obj_){
        HashMap<String,Object> _ret=new HashMap<>();
        _ret.put(name_,obj_);
@@ -26,12 +58,13 @@ public class hiMongoWorker implements hiStringCOM {
    @Override
    @SuppressWarnings("unchecked")
    public String call(String commandJson_){
+      if(D)hiU.m("@@@@ WORKER COMMAND = "+commandJson_);
       hiMongoCOM.Message _result= new hiMongoCOM.Message();
       _result.format      = "hiMongo";
       _result.content_type= "result";
       _result.status      = "ok";
       //
-      // hiU.m("Worker-command="+commandJson_);
+      //if(D)hiU.m("Worker-command="+commandJson_);
       hiMongoCOM.Message _message = hiMongo.parse(commandJson_)
                                 .as(hiMongoCOM.Message.class);
       Command _command   =hiMongo.parseNode(_message.content)
@@ -40,7 +73,15 @@ public class hiMongoWorker implements hiStringCOM {
       long _disp_option=0;
       ArrayList<Object> _ret    = new ArrayList<>();
       _result.content=_ret;
-      hiMongo.Client    _client = hiMongo.connect(_command.connect);
+      ClientInfo        _clieInfo= null;
+      hiMongo.Client    _client; 
+      if( USE_POOL ){
+         _clieInfo= getClient(_command.connect);
+         _client  = _clieInfo.client;
+         }
+      else{
+         _client  = hiMongo.connect(_command.connect);
+         }
       if( _command.str_option!=null ){
          _disp_option= _command.str_option;
          }
@@ -50,7 +91,9 @@ public class hiMongoWorker implements hiStringCOM {
          _ret.add(_res);
          }
       if( _command.use!=null ){
-         hiMongo.DB         db   = _client.use(_command.use);
+         hiMongo.DB     db;
+         if( USE_POOL ) db= getDB(_clieInfo,_command.use);
+         else           db= _client.use(_command.use);
          hiMongo.Collection _coll= null;
          if( _command.show_collections != null ){
             Object _res=namedObject(hiMongoCOM.SHOW_COLLECTIONS,
@@ -168,7 +211,75 @@ public class hiMongoWorker implements hiStringCOM {
                }
             }
          }
-      // hiU.m("result="+hiMongo.mson(_result));
-      return hiMongo.json(_result);// 
+      if(D)hiU.m("@@@@ WORKER RESULT = "+hiMongo.mson(_result));
+      return hiMongo.mson(_result);// 
       }
    }
+/*
+--- !USE_POOL
+Worker start
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Cluster description not yet available. Waiting for 30000 ms before timing out
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Opened connection [connectionId{localValue:5, serverValue:13864}] to localhost:27017
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, ve
+]}, minWireVersion=0, maxWireVersion=6, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=887286}
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Opened connection [connectionId{localValue:6, serverValue:13865}] to localhost:27017
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Cluster description not yet available. Waiting for 30000 ms before timing out
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Opened connection [connectionId{localValue:7, serverValue:13866}] to localhost:27017
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, ve
+]}, minWireVersion=0, maxWireVersion=6, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=951286}
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Opened connection [connectionId{localValue:8, serverValue:13867}] to localhost:27017
+Worker end
+Worker start
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Cluster description not yet available. Waiting for 30000 ms before timing out
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Opened connection [connectionId{localValue:5, serverValue:13864}] to localhost:27017
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, ve
+]}, minWireVersion=0, maxWireVersion=6, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=887286}
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Opened connection [connectionId{localValue:6, serverValue:13865}] to localhost:27017
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Cluster description not yet available. Waiting for 30000 ms before timing out
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Opened connection [connectionId{localValue:7, serverValue:13866}] to localhost:27017
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, ve
+]}, minWireVersion=0, maxWireVersion=6, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=951286}
+10 22, 2020 11:20:51 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Opened connection [connectionId{localValue:8, serverValue:13867}] to localhost:27017
+Worker end
+--- USE_POOL
+hiMongoSimpleServer waiting at port 8010
+Worker start
+10 22, 2020 11:41:28 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+10 22, 2020 11:41:28 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Cluster description not yet available. Waiting for 30000 ms before timing out
+10 22, 2020 11:41:28 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Opened connection [connectionId{localValue:1, serverValue:13872}] to localhost:27017
+10 22, 2020 11:41:28 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, ver
+]}, minWireVersion=0, maxWireVersion=6, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=3628169}
+10 22, 2020 11:41:28 午前 com.mongodb.diagnostics.logging.JULLogger log
+情報: Opened connection [connectionId{localValue:2, serverValue:13873}] to localhost:27017
+Worker end
+Worker start
+Worker end
+*/

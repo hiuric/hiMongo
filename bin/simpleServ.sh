@@ -9,7 +9,7 @@ hiNoteLIB=${LIB_DIR}/${hiNoteJAR}
 mongoLIB=${LIB_DIR}/${mongoJAR}
 LIBS=".:${hiNoteLIB}:${mongoLIB}:${hiMongoLIB}"
 
-java -cp ${LIBS} hi.db.hiMonWorkerSample
+java -cp ${LIBS} hi.db.hiMonWorkerSample -port 8010
 
 #memo.
 #CentOSでのポートオープン

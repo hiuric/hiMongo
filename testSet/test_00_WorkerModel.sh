@@ -1,2 +1,2 @@
 #!/bin/sh
-echo > test_workerMode.txt
+echo - > test_workerMode.txt

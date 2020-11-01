@@ -6,7 +6,7 @@ import java.util.*;
  *詳細説明公開準備中
  *</p>
  */
-public class hiMongoCOM {
+class hiMongoCOM {
    final static String EXCECUTE         = "excecute";
    final static String GET_RECORD       = "get_record";
    final static String SHOW_DBS         = "show_dbs";

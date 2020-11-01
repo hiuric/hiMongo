@@ -49,6 +49,7 @@ for /F "usebackq delims=" %%a in (`dir /B /S .\*.java ^| findstr ".*\\.*java"`) 
 :: -> https://mongodb.github.io/mongo-java-driver/3.12/javadoc/org/bson/Document.htm?is-external=truel
 :: -Xdoclint:noneを付けると@linkのチェックもなくなるので、一旦-Xdoclint:noneを外して@linkのチェック
 :: を行う。
+:: java11では-framesが必要。WEBの破壊者HTML5の悪行によりframeが標準から外されたため
 ::----------------------------------------
 
 echo javadoc -Xdoclint:none -public -link http://www.otsu.co.jp/OtsuLibrary/jdoc/ -link https://docs.oracle.com/javase/jp/8/docs/api/  -link http://mongodb.github.io/mongo-java-driver/3.7/javadoc/ --allow-script-in-comments -encoding UTF-8 -charset "UTF-8" -docencoding UTF-8 -d %JDOC_DIR% -classpath %LIBS% hi\db\*.java

@@ -1,3 +1,5 @@
+// MODE: Caller/Worker
+--- {'$regex': '^Ba', '$options': ''}} --
 {"famiryName":"Bach", "givenName":["Johann", "Sebastian"], "nationality":["独"], "lifeTime":[1685, 1750]}
 {"famiryName":"Bartók", "givenName":["Béla"], "nationality":["ハンガリー", "米"], "lifeTime":[1881, 1945]}
 --- start with Ba --
@@ -15,9 +17,7 @@ Document{{famiryName=BsonRegularExpression{pattern='^Ba"'', options=''}}}
 hiMongo.str=(Document){
    (String)"famiryName"=(BsonRegularExpression)BsonRegularExpression{pattern='^Ba"'', options=''}}
 Mongo.mson=(Document){
-   (String)'famiryName':(BsonRegularExpression){
-      'pattern':(String)'^Ba"\'',
-      'options':(String)''}}
+   (String)'famiryName':(BsonRegularExpression){'$regex':'^Ba"'','$options':''}}
 hiMongo.json=(Document){
    (String)"famiryName":(BsonRegularExpression){
       "pattern":(String)"^Ba\"'",
