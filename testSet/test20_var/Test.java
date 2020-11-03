@@ -92,8 +92,9 @@ public class Test {
       // 次のセットでdb.dropがあるので注意
       hiU.out.println("---- readOne");
       ArrayList<Record> _recs
-      =db.in("coll_01")
-         .find("{type:'A'}","{_id:0}")
+      =db.setValue("#TARGET","A")
+         .in("coll_01")
+         .find("{type:#TARGET}","{_id:0}")
          .sort("{_id:-1}")//.limit(1)
          .readOne("{#last_date:'date'}")
          .find("{$and:["+
@@ -120,8 +121,14 @@ public class Test {
              })
          .get_the_value(new ArrayList<Record>());
       System.out.println("records="+hiU.str(_recs2,hiU.WITH_INDENT));
-
-
+      hiU.out.println("---- the_value (class)");
+      Record _rec_value_set=new Record();
+      _rec_value_set.type="SPECIAL";
+      Record _rec_value_get
+      =db.in("coll_01")
+         .set_the_value(_rec_value_set)
+         .get_the_value(Record.class);
+      hiU.out.println(hiU.str(_rec_value_get));
 
       hiU.out.println("============ sub query ARRAY");
       db.drop();

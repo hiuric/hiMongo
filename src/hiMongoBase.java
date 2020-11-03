@@ -55,11 +55,7 @@ class hiMongoBase {
          context.setValue(name_,obj_);
          return this;
          }
-      /** {@link hi.db.hiMongo.Accessor#get(String) hiMongo.Accessor.get()}参照. */
-      @Override
-      public Object get(String text_){
-         return context.get(text_);
-         }
+
       /** {@link hi.db.hiMongo.Accessor#getValueAsDocument(String) hiMongo.Accessor.getValueAsDocument()}参照. */
       @Override
       @SuppressWarnings("unchecked")
@@ -76,21 +72,70 @@ class hiMongoBase {
       public hiJSON.Probe getValueAsProbe(String text_){
          return hiJSON.probe(context.get(text_));
          }
-      /** {@link hi.db.hiMongo.Accessor#getValueAsString(String) hiMongo.Accessor.getValueAsString)}参照. */
-      //@Override
-      //@SuppressWarnings("unchecked")
-      //public String getValueAsString(String text_){
-      //   return hiMongo.mson(context.get(text_));
-      //   }
-      /** {@link hi.db.hiMongo.Accessor#_kv.getValue(String) hiMongo.Accessor.disp()}参照. */
+      //======  GET/EVAL/DISP
+      //--- DB.get × 3
+      @Override
+      public Object get(String name_){
+         return context.get(name_);
+         }
+      @Override
+      @SuppressWarnings("unchecked")
+      public <T> T get(String value_name_,T default_value_){
+         return context.get(value_name_,default_value_);
+         }
+      @Override
+      @SuppressWarnings("unchecked")
+      public <T> T get(String value_name_,Class<T> class_){
+         return context.get(value_name_,class_);
+         }
+      //--- DB.eval × 3
+      @Override
+      public Object eval(Object obj_){
+         return context.evalAsObj(obj_);
+         }
+      @Override
+      public <T> T eval(Object obj_,T default_value_){
+         return context.evalAsObj(obj_,default_value_);
+         }
+      @Override
+      public <T> T eval(Object obj_,Class<T> class_){
+         return context.evalAsObj(obj_,class_);
+         }
+      //--- DB.disp × 2
       @Override
       public String disp(String text_){
          return context.disp(text_);
          }
-      /** {@link hi.db.hiMongo.Accessor#_kv.eval(String) hiMongo.eval.disp()}参照. */
       @Override
-      public Object eval(Object obj_){
-         return context.evalAsObj(obj_);
+      public String disp(String text_,long option_){
+         return context.disp(text_,option_);
+         }
+      //----- SET/GET_THE_VALUE DB
+      @Override
+      public DB set_the_value(Object obj_){
+         context.set_the_value(obj_);
+         return this;
+         }
+      @Override
+      @SuppressWarnings("unchecked")
+      public Object get_the_value(){
+         return context.get_the_value();
+         }
+      @Override
+      @SuppressWarnings("unchecked")
+      public <T> T get_the_value(T default_value_){
+         return (T)context.get_the_value(default_value_);
+         }
+      @Override
+      @SuppressWarnings("unchecked")
+      public <T> T get_the_value(Class<T> class_){
+         return (T)context.get_the_value(class_);
+         }
+      /** {@link hi.db.hiMongo.Collection#forThis(hiU.ConsumerEx) hiMongo.Collection.forThis()}参照. */
+      @Override
+      public hiMongo.DB forThis(hiU.ConsumerEx<hiMongo.DB,Exception> func_){
+         hiU.rap(func_,this);
+         return this;
          }
       }
    static abstract class Collection implements hiMongo.Collection { 
@@ -157,7 +202,7 @@ class hiMongoBase {
        *@param data_ 拡張JSON文字列、File、List<Document>
        *@param engine_ 拡張JSON解析エンジン(nullの場合は用いない)
        *@return List<Document>
-       *<!-- hiMongo -->
+       *<!-- Collection -->
        */
       @SuppressWarnings("unchecked")
       List<Bson> parseAsBsonList(Object data_){//,hiJSON.Engine engine_){
@@ -174,7 +219,7 @@ class hiMongoBase {
        *@param data_ 拡張JSON文字列、File、List<Document>
        *@param engine_ 拡張JSON解析エンジン(nullの場合は用いない)
        *@return List<Document>
-       *<!-- hiMongo -->
+       *<!-- Collection -->
        */
       @SuppressWarnings("unchecked")
       List<Document> parseAsDocumentList(Object data_){//,hiJSON.Engine engine_){
@@ -213,19 +258,66 @@ class hiMongoBase {
          context.setValue(name_,obj_);
          return this;
          }
+      //======  GET/DISP/EVAL
+      //--- Collection.get × 3
+      @Override
+      public Object get(String value_name_){
+         return context.get(value_name_);
+         }
+      @Override
+      @SuppressWarnings("unchecked")
+      public <T> T get(String value_name_,T default_value_){
+         return (T)context.get(value_name_,default_value_);
+         }
+      @Override
+      @SuppressWarnings("unchecked")
+      public <T> T get(String value_name_,Class<T> class_){
+         return (T)context.get(value_name_,class_);
+         }
+      //--- Collection.disp
       @Override
       public String disp(String text_){
          return context.disp(text_);
          }
       @Override
-      public Object get(String text_){
-         return context.get(text_);
+      public String disp(String text_,long option_){
+         return context.disp(text_,option_);
          }
+      //--- Collection.eval
       @Override
       public Object eval(Object obj_){
          return context.evalAsObj(obj_);
          }
-
+      @Override
+      public <T> T  eval(Object obj_,T default_value_){
+         return context.evalAsObj(obj_,default_value_);
+         }
+      @Override
+      public <T> T  eval(Object obj_,Class<T> class_){
+         return context.evalAsObj(obj_,class_);
+         }
+      //----- Collection SET/GET_THE_VALUE
+      @Override
+      public Collection set_the_value(Object obj_){
+         context.set_the_value(obj_);
+         return this;
+         }
+      @Override
+      @SuppressWarnings("unchecked")
+      public Object get_the_value(){
+         return context.get_the_value();
+         }
+      @Override
+      @SuppressWarnings("unchecked")
+      public <T> T get_the_value(T default_value_){
+         return (T) context.get_the_value(default_value_);
+         }
+      @Override
+      @SuppressWarnings("unchecked")
+      public <T> T get_the_value(Class<T> class_){
+         return (T) context.get_the_value(class_);
+         }
+      //--------
       @Override
       @SuppressWarnings("unchecked")
       public Document getValueAsDocument(String text_){
@@ -240,11 +332,6 @@ class hiMongoBase {
       public hiJSON.Probe getValueAsProbe(String text_){
          return hiJSON.probe(context.get(text_));
          }
-      //@Override
-      //@SuppressWarnings("unchecked")
-      //public String getValueAsString(String text_){
-      //   return (String)context.get(text_);
-      //   }
       }
    static abstract class Finder extends    hiMongoBase.Accessor
                                 implements hiMongo.Finder {
@@ -691,10 +778,6 @@ class hiMongoBase {
       public Aggregator forEachDocument(hiU.ConsumerEx<Document,Exception> func_){
          return (Aggregator)super_forEachDocument(func_);
          }
-      /** {@link #forEachDocument(hiU.ConsumerEx) forEachDocument(func_)}の別名. */
-      //public Aggregator forEach(hiU.ConsumerEx<Document,Exception> func_){
-      //   return (Aggregator)super_forEachDocument(func_);
-      //   }
       /** {@link hi.db.hiMongo.Aggregator#forEachJson(hiU.ConsumerEx) hiMongo.Aggregator.forEachJson()}参照. */
       @Override
       public Aggregator forEachJson(hiU.ConsumerEx<String,Exception> func_){
@@ -741,20 +824,6 @@ class hiMongoBase {
       //
       Accessor(hiMongoContext context_,hiMongoBase.Collection collection_){
          context   = context_;
-         }
-      @Override
-      public Object get_the_value(){
-         return context.the_value;
-         }
-      @Override
-      @SuppressWarnings("unchecked")
-      public <T> T get_the_value(T default_value_){
-         if( context.the_value==null ) return default_value_;
-         try{
-            return (T)context.the_value;
-            }
-         catch(Exception _ex){}
-         return default_value_;
          }
       /**
        * 解析済みnodeを再解釈する.
@@ -996,11 +1065,7 @@ class hiMongoBase {
       public String json(Object obj_){
          return cur_engineJ().str(obj_);
          }
-      /** {@link hi.db.hiMongo.Accessor#get(String) hiMongo.Accessor.get()}参照. */
-      @Override
-      public Object get(String text_){
-         return context.get(text_);
-         }
+ 
       /** {@link hi.db.hiMongo.Accessor#getValueAsDocument(String) hiMongo.Accessor.getValueAsDocument()}参照. */
       @Override
       @SuppressWarnings("unchecked")
@@ -1017,22 +1082,65 @@ class hiMongoBase {
       public hiJSON.Probe getValueAsProbe(String text_){
          return hiJSON.probe(context.get(text_));
          }
-      /** {@link hi.db.hiMongo.Accessor#getValueAsString(String) hiMongo.Accessor.getValueAsString)}参照. */
-      //@Override
-      //@SuppressWarnings("unchecked")
-      //public String getValueAsString(String text_){
-      //   return hiMongo.mson(context.get(text_));
-      //   }
+      //======  GET/DISP/EVAL
+      //--- Accessor.get × 3
+     /** {@link hi.db.hiMongo.Accessor#get(String) hiMongo.Accessor.get()}参照. */
+      @Override
+      public Object get(String text_){
+         return context.get(text_);
+         }
+      @Override
+      @SuppressWarnings("unchecked")
+      public <T> T get(String value_name_,T default_value_){
+         return (T)context.get(value_name_,default_value_);
+         }
+      @Override
+      @SuppressWarnings("unchecked")
+      public <T> T get(String value_name_,Class<T> class_){
+         return (T)context.get(value_name_,class_);
+         }
+      //--- Accessor.disp × 2
       /** {@link hi.db.hiMongo.Accessor#disp(String) hiMongo.Accessor.disp()}参照. */
       @Override
       public String disp(String text_){
          return context.disp(text_);
          }
+      /** {@link hi.db.hiMongo.Accessor#disp(String,long) hiMongo.Accessor.disp()}参照. */
+      @Override
+      public String disp(String text_,long option_){
+         return context.disp(text_,option_);
+         }
+      //--- Accessor.disp × 3
       /** {@link hi.db.hiMongo.Accessor#eval(Object) hiMongo.Accessor.eval()}参照. */
       @Override
       public Object eval(Object obj_){
          return context.evalAsObj(obj_);
          }
+      @Override
+      public <T> T eval(Object obj_,T default_value_){
+         return (T)context.evalAsObj(obj_,default_value_);
+         }
+      @Override
+      public <T> T eval(Object obj_,Class<T> class_){
+         return (T)context.evalAsObj(obj_,class_);
+         }
+      //----- Accessor SET/GET_THE_VALUE Collection
+      @Override
+      @SuppressWarnings("unchecked")
+      public Object get_the_value(){
+         return context.the_value;
+         }
+      @Override
+      @SuppressWarnings("unchecked")
+      public <T> T get_the_value(T default_value_){
+         return (T)context.get_the_value(default_value_);
+         }
+      @Override
+      @SuppressWarnings("unchecked")
+      public <T> T get_the_value(Class<T> class_){
+         return (T)context.get_the_value(class_);
+         }
+
       @SuppressWarnings("unchecked")
       List<Object> super_withValue(String name_){
          Object _list=context.get(name_);

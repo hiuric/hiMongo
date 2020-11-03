@@ -1,5 +1,6 @@
 #!/bin/bash
 # 注意！ 改行=LF
+mongo --quiet localhost/db01  ../test_data/db01.js
 source ../configure.sh
 eval ${BUILD_AND_RUN}
 status=$?

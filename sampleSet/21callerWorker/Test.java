@@ -31,7 +31,7 @@ public class Test {
                return null;
                }
            ,Ff->{ // 完了 #RESULT に主処理の戻り値
-               System.out.println(Ff.disp("#TOP.name")+Ff.get("#RESULT")+".");
+               System.out.println(Ff.disp("#TOP.name")+Ff.disp("#RESULT")+".");
                }
            ,Fn->{ // 完了
                System.out.println(Fn.disp("#TOP.name is not."));

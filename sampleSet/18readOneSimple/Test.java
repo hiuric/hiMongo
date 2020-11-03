@@ -6,8 +6,8 @@ public class Test {
         .find()
         .sort("{_id:-1}")
         .readOne("{#last_date:'date'}")
-        .find("{date:{$gte:{$calc:'#last_date-25000'}}}","{_id:0}")
-        .forEachMson(Rm->System.out.println(Rm))
+        .find("{date:{$gte:{$calc:'#last_date-25000'}}}")
+        .forEachJson(Jm->System.out.println(Jm))
         ;
       }
    }

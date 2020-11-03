@@ -1,0 +1,53 @@
+// MODE: DIRECT
+------------ DB->Collection
+-- null
+-- hi.db.hiMongoDirect$Collection
+NUL:()null
+DEF:(Test$Record){type=(String)"DEFAULT_VALUE", value=(double)0.0, date=(Date)null}
+NUL:()null
+-- REC
+-- hi.db.hiMongoDirect$Collection
+REC:(Test$Record){type=(String)"REC_VALUE", value=(double)0.0, date=(Date)null}
+REC:(Test$Record){type=(String)"REC_VALUE", value=(double)0.0, date=(Date)null}
+REC:(Test$Record){type=(String)"REC_VALUE", value=(double)0.0, date=(Date)null}
+-- STR
+-- hi.db.hiMongoDirect$Collection
+(S):(String)"{type:'STR-1',value:0.1,date:{$date:1597648120000}}"
+REC:(Test$Record){type=(String)"STR-1", value=(double)0.1, date=(Date)Mon Aug 17 16:08:40 JST 2020}
+REC:(Test$Record){type=(String)"STR-1", value=(double)0.1, date=(Date)Mon Aug 17 16:08:40 JST 2020}
+-- STR ERROR
+-- hi.db.hiMongoDirect$Collection
+(S):(String)"{type:'STR-1',value:0.1}"
+DEF:(Test$Record){type=(String)"DEFAULT_VALUE", value=(double)0.0, date=(Date)null}
+EXP:unset field Test$Record.date
+------------ Collection->Finder
+-- null
+-- hi.db.hiMongoDirect$Finder
+NUL:()null
+DEF:(Test$Record){type=(String)"DEFAULT_VALUE", value=(double)0.0, date=(Date)null}
+NUL:()null
+-- REC
+-- hi.db.hiMongoDirect$Finder
+NUL:(Test$Record){type=(String)"REC_VALUE", value=(double)0.0, date=(Date)null}
+DEF:(Test$Record){type=(String)"REC_VALUE", value=(double)0.0, date=(Date)null}
+NUL:(Test$Record){type=(String)"REC_VALUE", value=(double)0.0, date=(Date)null}
+-- STR
+-- hi.db.hiMongoDirect$Finder
+(S):(String)"{type:'STR-1',value:0.1,date:{$date:1597648120000}}"
+REC:(Test$Record){type=(String)"STR-1", value=(double)0.1, date=(Date)Mon Aug 17 16:08:40 JST 2020}
+REC:(Test$Record){type=(String)"STR-1", value=(double)0.1, date=(Date)Mon Aug 17 16:08:40 JST 2020}
+-- STR ERROR
+-- hi.db.hiMongoDirect$Finder
+(S):(String)"{type:'STR-1',value:0.1}"
+DEF:(Test$Record){type=(String)"DEFAULT_VALUE", value=(double)0.0, date=(Date)null}
+EXP:unset field Test$Record.date
+------------ DB:Collection<-Finder(for-scope)
+--- #CUR
+-- Collection hi.db.hiMongoDirect$Collection
+REC:(Document){(String)"type"=(String)"A", (String)"value"=(Double)12.3, (String)"date"=(Date)Mon Aug 17 16:07:00 JST 2020}
+REC:(Test$Record){type=(String)"A", value=(double)12.3, date=(Date)Mon Aug 17 16:07:00 JST 2020}
+REC:(Test$Record){type=(String)"A", value=(double)12.3, date=(Date)Mon Aug 17 16:07:00 JST 2020}
+-- DB hi.db.hiMongoDirect$DB
+REC:(Document){(String)"type"=(String)"A", (String)"value"=(Double)12.3, (String)"date"=(Date)Mon Aug 17 16:07:00 JST 2020}
+REC:(Test$Record){type=(String)"A", value=(double)12.3, date=(Date)Mon Aug 17 16:07:00 JST 2020}
+REC:(Test$Record){type=(String)"A", value=(double)12.3, date=(Date)Mon Aug 17 16:07:00 JST 2020}

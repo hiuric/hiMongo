@@ -1,7 +1,7 @@
 #!/bin/bash
 # 注意！ 改行=LF
 # (cd ../test_data;./composers.sh>/dev/null)
-mongo --quiet localhost/db02  ../test_data/composers.js
+mongo --quiet localhost/db01  ../test_data/db01.js
 source ../configure.sh
 eval ${BUILD_AND_RUN}
 status=$?

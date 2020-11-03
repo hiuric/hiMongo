@@ -1281,9 +1281,51 @@ Rp A/0.12/Mon Aug 17 16:07:40 JST 2020
 <p>
 {@link hi.db.hiMongo.Finder#forEach(hiU.ConsumerEx) forEach()},{@link hi.db.hiMongo.Finder#forOne(hiU.ConsumerEx) forOne()},{@link hi.db.hiMongo.Finder#forEachRecursive(String,hiU.FunctionEx) forEachRecursive()},{@link hi.db.hiMongo.Finder#forOneRecursive(String,hiU.FunctionEx) forOneRecursive()}の各メソッドではforスコープの変数が定義され、{@link hi.db.hiMongo.Accessor#get(String) get()}などのメソッドで取得できるほか、{@link hi.db.hiMongo.Finder#find(Object,Object) find()}他のメソッドで引数内の変数記述が展開されます。
 </p>
-<p>
-各forメソッドはラムダ式の他に変数マッピング定義を置くことができます。
-</p>
+<table class=t>
+<tr>
+<td style="width:3.2em">項目</td>
+<td>例</td>
+<td>説明</td>
+</tr>
+<tr>
+<td>{@link hi.db.hiMongo.Collection#find(Object,Object) find}など<br>dbアクセス</td>
+<td>
+<pre class=prog10>
+db.setValue("#TARGET","A");
+db.in("coll_01")
+  .find("{name:#TARGET}}")
+</pre>
+</td>
+<td>#TATGETに値を設定してあれば展開されfindが実行されます</td>
+</tr>
+<tr>
+<td>{@link hi.db.hiMongo.Accessor#get(String) get}</td>
+<td>
+<pre class=prog10>
+Object _target=get("#TARGET");
+</pre></td>
+<td>Javaプログラム上で変数内容を取得できます。得られるのオブジェクトです。</td>
+</tr>
+<tr>
+<td>{@link hi.db.hiMongo.Accessor#disp(String) disp}</td>
+<td>
+<pre class=prog10>
+String _text=disp("target=#TARGET name=#NAME"));
+</pre>
+</td>
+<td>Javaプログラム上で、文字列上に置いた変数を文字列に展開します。展開後の文字列が得られます。</td>
+</tr>
+<tr>
+<td>{@link hi.db.hiMongo.Accessor#eval(String) eval}</td>
+<td>
+<pre class=prog10>
+Object _obj=eval("{$gt:{$calc:'#CUR.date+17000'}}"));
+</pre>
+</td>
+<td>拡張JSON記述を解釈します。{$calc:'xxx'}は結合則付きの四則演算され展開されます。Dateインスタンスに対する加減算も実行されます</td>
+</tr>
+</table>
+
 <p>
 #CURがデフォルトでレコード全体を表しており、マッピング定義を省略しても#CURは設定されます。#CUR.フィールド名でフィールドのオブジェクトにアクセスできます。
 </p>
@@ -1316,18 +1358,18 @@ public class Test {
       }
    }
 ＊＊＊ 実行結果
------ 17forOneValue -----
---- get
-#CUR      org.bson.Document Document{{type=A, value=12.3, date=Mon Aug 17 16:07:00 JST 2020}}
-#tp       java.lang.String A
-#va       java.lang.Double 12.3
-#CUR.type java.lang.String A
-#CUR.date java.util.Date Mon Aug 17 16:07:00 JST 2020
---- disp
-CUR={'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
-tp='A' va=12.3 CUR.type='A' CUR.date=ISODate('2020-08-17T07:07:00.000Z')
---- eval
-{$gt:{$calc:'#CUR.date+17000}'}}->{'$gt':ISODate('2020-08-17T07:07:17.000Z')}
+---- 17forOneValue -----
+-- get
+CUR      org.bson.Document Document{{type=A, value=12.3, date=Mon Aug 17 16:07:00 JST 2020}}
+tp       java.lang.String A
+va       java.lang.Double 12.3
+CUR.type java.lang.String A
+CUR.date java.util.Date Mon Aug 17 16:07:00 JST 2020
+-- disp
+UR={'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+p=A va=12.3 CUR.type=A CUR.date=ISODate('2020-08-17T07:07:00.000Z')
+-- eval
+$gt:{$calc:'#CUR.date+17000}'}}->{'$gt':ISODate('2020-08-17T07:07:17.000Z')}
 </pre>
 <p>
 {@link hi.db.hiMongo.Accessor#eval(Object) elal()}の引数はJSON形式でなければなりません。{$calc:'数式'}は演算結果に置き換わります。数式は結合則付きの四則と括弧がサポートされます。
@@ -1460,7 +1502,7 @@ public class Test {
                return null;
                }
            ,Ff->{ // 完了 #RESULT に主処理の戻り値
-               System.out.println(Ff.disp("#TOP.name")+Ff.get("#RESULT")+".");
+               System.out.println(Ff.disp("#TOP.name")+Ff.disp("#RESULT")+".");
                }
            ,Fn->{ // 完了
                System.out.println(Fn.disp("#TOP.name is not."));
@@ -1471,11 +1513,11 @@ public class Test {
    }
 ＊＊＊ 実行結果
 ----- 13recursive -----
-'P0027' is not.
-'P0028' is a descendant of KING 'P0003'.
-'P0029' is not.
-'P0030' is a descendant of KING 'P0003'.
-'P0031' is not.
+P0027 is not.
+P0028 is a descendant of KING P0003.
+P0029 is not.
+P0030 is a descendant of KING P0003.
+P0031 is not.
 </pre>
 <p>
 試験に使用したＤＢデータを示します。
@@ -3061,7 +3103,7 @@ hiMongoを動かすには次のjarをリンクする必要があります。(バ
 # 注意！ 改行=LF
 MAIN=Test
 LIB_DIR=../lib
-hiMongoLIB=hiMongo_0_11.jar
+hiMongoLIB=hiMongo_0_12.jar
 hiNoteLIB=hiNote_3_10.jar
 mongoLIB=mongo-java-driver-3.12.5.jar
 LIBS=".:${LIB_DIR}/${hiNoteLIB}:${LIB_DIR}/${mongoLIB}:${LIB_DIR}/${hiMongoLIB}
@@ -3246,7 +3288,20 @@ hiMongo-APIとdriver呼び出し部を分離し仮想通信機で結ぶことに
 */
 public class hiMongo {
    final static boolean MASTERD=false;   // デバグフラグ（開発時用）
-   final static boolean D=MASTERD&&true;// デバグフラグ（開発時用）
+   final static boolean D=MASTERD&&false;// デバグフラグ（開発時用）
+   //===========================================
+   // 定数
+   //===========================================
+   /** json文字列を使う */
+   public final static long USE_JSON    = 0x0100000000L;
+   /** mson文字列を使う */
+   //public final static long USE_MSON    = 0x0200000000L;
+   /** objectの表示にtoStringを使う */
+   //public final static long USE_toString= 0x0400000000L;
+   /** objectの表示にhiU.strを使う */
+   public final static long USE_str     = 0x0800000000L;
+   //
+   final static long DISP_MASK=0x00ffffffffL&~hiU.KEEP_QUOTE&~hiU.AS_EMPTY_STRING;
    //===========================================
    // 解析/表示エンジン設定
    //===========================================
@@ -3304,6 +3359,7 @@ public class hiMongo {
    /**
     *mongo-driver直呼びの接続を得る.
     *@return 接続
+    *<!-- hiMongo -->
     */
    public static hiMongo.Client connect(){
       return new hiMongoDirect().connect(null);
@@ -3312,6 +3368,7 @@ public class hiMongo {
     *mongo-driver直呼びの接続を得る.
     *@param remote_ 接続情報
     *@return 接続
+    *<!-- hiMongo -->
     */
    public static hiMongo.Client connect(Object remote_){
       return new hiMongoDirect().connect(remote_);
@@ -3320,6 +3377,7 @@ public class hiMongo {
     *mongo-driver直呼び,デフォルト接続のDBを得る.
     *@param dbName_ Database名
     *@return Database
+    *<!-- hiMongo -->
     */
    public static hiMongo.DB use(String dbName_){
       return new hiMongoDirect().connect(null).use(dbName_);
@@ -3328,6 +3386,7 @@ public class hiMongo {
     *指定通信機を使うCallerによるClientを得る
     *@param comm_ 通信機
     *@return Database
+    *<!-- hiMongo -->
     */
    public static hiMongo.Client connect(hiStringCOM comm_){
       return new hiMongoCaller(comm_).connect(null);
@@ -3337,6 +3396,7 @@ public class hiMongo {
     *@param remote_ リモートDB情報
     *@param comm_ 通信機
     *@return Database
+    *<!-- hiMongo -->
     */
    public static hiMongo.Client connect(Object remote_,hiStringCOM comm_){
       return new hiMongoCaller(comm_).connect(remote_);
@@ -3346,6 +3406,7 @@ public class hiMongo {
     *@param dbName_ Database名
     *@param comm_ 通信機
     *@return Database
+    *<!-- hiMongo -->
     */
    public static hiMongo.DB use(String dbName_,hiStringCOM comm_){
       return new hiMongoCaller(comm_).connect(null).use(dbName_);
@@ -3354,6 +3415,7 @@ public class hiMongo {
     *mongo-driver直呼び,デフォルト接続でDatabase名一覧を得る.
     *@param sort_ ソート指定
     *@return Database名一覧
+    *<!-- hiMongo -->
     */
    public static ArrayList<String> show_dbs(boolean sort_){
       //return new hiMongoDirect.Client().connect().show_dbs(sort_);
@@ -3895,13 +3957,43 @@ public class hiMongo {
        *<!-- Accessor -->
        */
       public String json(Object obj_);
+      //======  GET/EVAL/DISP
+      //--- Accessor.get × 3
       /**
-       *  変数を参照し文字列を展開する.
-       *@param text_ 変数展開を行いたい文字列
-       *@return 変数展開された文字列
+       *  変数Objectを得る.
+       *<p>
+       *指定名の変数を登録された形のまま取得します。
+       *</p>
+       *@param value_name_ 値名
+       *@return 登録されているObject
        *<!-- Accessor -->
        */
-      public String disp(String text_);
+      public Object get(String value_name_);
+      /**
+       *  変数Objectを型を割り当てて得る.
+       *<p>
+       *戻り値の型は指定のデフォルト値と同じとなります。<br>
+       *記憶されているものと型が異なる場合は再解釈します。<br>
+       *記憶されていない場合、または再解釈に失敗した場合はデフォルト値が戻ります。
+       *</p>
+       *@param value_name_ 値名
+       *@param default_value_ デフォルト値
+       *@return 登録されているObject
+       *<!-- Accessor -->
+       */
+      public <T> T get(String value_name_,T default_value_);
+      /**
+       *  変数Objectを型を割り当てて得る.
+       *<p>
+       *型が異なる場合は再解釈します。
+       *</p>
+       *@param value_name_ 値名
+       *@param class_ 型
+       *@return 登録されているObject
+       *<!-- Accessor -->
+       */
+      public <T> T get(String value_name_,Class<T> class_);
+      //--- Accessor.eval × 3
       /**
        *  変数を参照しオブジェクトを評価する.
        *<p>
@@ -3917,15 +4009,80 @@ public class hiMongo {
        */
       public Object eval(Object obj_);
       /**
-       *  変数Objectを得る.
+       *  変数を参照しオブジェクトを評価する.
        *<p>
-       *指定名の変数を登録された形のまま取得します。
+       *変数の入ったオブジェクトを変数展開し$calc要素に関しては四則演算を実行します。
+       *<br>
+       *四則演算は結合則と括弧をサポートします。<br>
+       *Dateオブジェクトに対する数値の加算減算をサポートします。数値はミリ秒となります。<br>
+       *DateとDateの減算をサポートします。結果はミリ秒で得られます。
        *</p>
-       *@param value_name_ 値名
-       *@return 登録されているObject
+       *@param obj_ 評価したいオブジェクト
+       *@param default_value_ デフォルト値
+       *@return 評価された結果(評価不能の場合はデフォルト値)
        *<!-- Accessor -->
        */
-      public Object get(String value_name_);
+      public <T> T  eval(Object obj_,T default_value_);
+      /**
+       *  変数を参照しオブジェクトを評価する.
+       *<p>
+       *変数の入ったオブジェクトを変数展開し$calc要素に関しては四則演算を実行します。
+       *<br>
+       *四則演算は結合則と括弧をサポートします。<br>
+       *Dateオブジェクトに対する数値の加算減算をサポートします。数値はミリ秒となります。<br>
+       *DateとDateの減算をサポートします。結果はミリ秒で得られます。
+       *</p>
+       *@param obj_ 評価したいオブジェクト
+       *@param default_value_ デフォルト値
+       *@return 評価された結果(評価不能の場合は例外が投げられる)
+       *<!-- Accessor -->
+       */
+      public <T> T  eval(Object obj_,Class<T> class_);
+      //--- Accessor.disp × 2
+      /**
+       *  変数を参照し文字列を展開する.
+       *<p>
+       *第一層の変数には引用符を付加しません。<br>
+       *nullが与えられると空文字列が返ります。
+       *</p>
+       *@param text_ 変数展開を行いたい文字列
+       *@return 変数展開された文字列
+       *<!-- Accessor -->
+       */
+      public String disp(String text_);
+      /**
+       *  変数を参照し文字列をoption付きで展開する.
+       *<p>
+       *次のオプションが有効です。
+<table>
+<tr>
+<td>オプション</td>
+<td>説明</td>
+</tr>
+<tr>
+<td>hiU.KEEP_QUOTE</td>
+<td>textの第一階層の変数が文字列の場合引用符を保持します。</td>
+</tr>
+<tr>
+<td>hiMongo.USE_JSON</td>
+<td>変数をJSON展開します。</td>
+</tr>
+<tr>
+<td>hiMongo.USE_str</td>
+<td>変数をhiU.str展開します。</td>
+</tr>
+<tr>
+<td>その他hiUオプション</td>
+<td>展開のオプションとなります。</td>
+</tr>
+</table>
+
+       *</p>
+       *@param text_ 変数展開を行いたい文字列
+       *@return 変数展開された文字列
+       *<!-- Accessor -->
+       */
+      public String disp(String text_,long option_);
       /**
        * 変数をDocumentとして得る.
        *<p>
@@ -3975,6 +4132,12 @@ public class hiMongo {
        *<!-- Accessor -->
        */
       public <T> T get_the_value(T default_value_);
+      /**
+       * DBスコープの特別値(the_value)を指定クラス値で得る
+       *@return 引数の型にキャストされた値
+       *<!-- Accessor -->
+       */
+      public <T> T get_the_value(Class<T> class_);
       }
 
    /**
@@ -5072,17 +5235,43 @@ db.setValue("#TEMP","[{type:'X',value:1},{type:'Y',value:13},{type:'Z',value:11}
       /**{@link hi.db.hiMongo.Finder#setValue(String,Object)}参照 */
       public Collection setValue(String name_,Object obj_);
       /**{@link hi.db.hiMongo.Accessor#disp(String)}参照 */
-      public String disp(String text_);
-      /**{@link hi.db.hiMongo.Accessor#get(String)}参照 */
-      public Object get(String text_);
-      /**{@link hi.db.hiMongo.Accessor#eval(Object)}参照 */
+
+      //======  GET/EVAL/DISP
+      // Collection.get × 3
+      /**{@link hi.db.hiMongo.Accessor#get(String)参照 */
+      public Object get(String value_name_);
+      /**{@link hi.db.hiMongo.Accessor#get(String,Object) Accessor#eval(String,T)}参照 */
+      public <T> T get(String value_name_,T default_value_);
+      /**{@link hi.db.hiMongo.Accessor#get(String,Class)参照 */
+      public <T> T get(String value_name_,Class<T> class_);
+      // Collection.eval × 3
+      /**{@link hi.db.hiMongo.Accessor#eval(Object)参照 */
       public Object eval(Object obj_);
+      /**{@link hi.db.hiMongo.Accessor#eval(Object,Object) Accessor#eval(Object,T)}参照 */
+      public <T> T eval(Object obj_,T default_value_);
+      /**{@link hi.db.hiMongo.Accessor#eval(Object,Class)}参照 */
+      public <T> T eval(Object obj_,Class<T> class_);
+      // Collection.disp × 2
+      /**{@link hi.db.hiMongo.Accessor#disp(String)}参照 */
+      public String disp(String text_);
+      /**{@link hi.db.hiMongo.Accessor#disp(String,long)}参照 */
+      public String disp(String text_,long option_);
+      //=========== Collection SET/GET THE VALUE
+      /**{@link hi.db.hiMongo.Accessor#set_the_value(Object)}参照 */
+      public Collection set_the_value(Object obj_);
+      /**{@link hi.db.hiMongo.Accessor#get_the_value()}参照 */
+      public Object get_the_value();
+      /**{@link hi.db.hiMongo.Accessor#get_the_value(Object)}参照 */
+      public <T> T get_the_value(T default_value_);
+      /**{@link hi.db.hiMongo.Accessor#get_the_value(Class)}参照 */
+      public <T> T get_the_value(Class<T> default_value_);
+      //============
       /**{@link hi.db.hiMongo.Accessor#getValueAsDocument(String)}参照 */
       public Document getValueAsDocument(String text_);
       /**{@link hi.db.hiMongo.Accessor#getValueAsProbe(String)}参照 */
       public hiJSON.Probe getValueAsProbe(String text_);
-      /**{@link hi.db.hiMongo.Accessor#getValueAsString(String)}参照 */
-      //public String getValueAsString(String text_);
+      /**{@link hi.db.hiMongo.Accessor#set_the_value(String)}参照 */
+
       }
 
    /**
@@ -5177,21 +5366,51 @@ db.setValue("#TEMP","[{type:'X',value:1},{type:'Y',value:13},{type:'Z',value:11}
        *<!-- DB -->
        */
       public String name();
-
       /**{@link hi.db.hiMongo.Finder#setValue(String,Object)}参照 */
       public DB setValue(String name_,Object obj_);
       /**{@link hi.db.hiMongo.Accessor#disp(String)}参照 */
-      public String disp(String text_);
-      /**{@link hi.db.hiMongo.Accessor#get(String)}参照 */
-      public Object get(String text_);
+      //======  GET/EVAL/DISP
+      //--- DB.get × 3
+      public Object get(String value_name_);
+      /**{@link hi.db.hiMongo.Accessor#get(String,Object)}参照 */
+      public <T> T get(String value_name_,T default_value_);
+      /**{@link hi.db.hiMongo.Accessor#get(String,Class)}参照 */
+      public <T> T get(String value_name_,Class<T> class_);
+      //--- DB.eval × 3
       /**{@link hi.db.hiMongo.Accessor#eval(Object)}参照 */
       public Object eval(Object obj_);
+      /**{@link hi.db.hiMongo.Accessor#eval(Object,Object)}参照 */
+      public <T> T eval(Object obj_,T default_value_);
+      /**{@link hi.db.hiMongo.Accessor#eval(Object,Class)}参照 */
+      public <T> T eval(Object obj_,Class<T> class_);
+      //--- DB.disp × 2
+      /**{@link hi.db.hiMongo.Accessor#disp(String)}参照 */
+      public String disp(String text_);
+      /**{@link hi.db.hiMongo.Accessor#disp(String,long)}参照 */
+      public String disp(String text_,long option_);
+      //=========== DBn SET/GET THE VALUE
+      /**{@link hi.db.hiMongo.Accessor#set_the_value(Object)}参照 */
+      public DB set_the_value(Object obj_);
+      /**{@link hi.db.hiMongo.Accessor#get_the_value()}参照 */
+      public Object get_the_value();
+      /**{@link hi.db.hiMongo.Accessor#get_the_value(Object)}参照 */
+      public <T> T get_the_value(T default_value_);
+      /**{@link hi.db.hiMongo.Accessor#get_the_value(Class)}参照 */
+      public <T> T get_the_value(Class<T> default_value_);
+      //=====
       /**{@link hi.db.hiMongo.Accessor#getValueAsDocument(String)}参照 */
       public Document getValueAsDocument(String text_);
       /**{@link hi.db.hiMongo.Accessor#getValueAsProbe(String)}参照 */
       public hiJSON.Probe getValueAsProbe(String text_);
       /**{@link hi.db.hiMongo.Accessor#getValueAsString(String)}参照 */
       //public String getValueAsString(String text_);
+      /**
+       * このDBに対してラムダ式実行.
+       *@param func_ DBを引数とするラムダ式
+       *@return this
+       *<!-- DB -->
+       */
+      public DB forThis(hiU.ConsumerEx<DB,Exception> func_);
       }
   static class CapInfo{
      long    size;

@@ -3,7 +3,7 @@
 # src,testSet,sampleSetから共通に呼ばれる
 # mongoDBのログを抑止するためのだけライブラリは含んでいない
 export hiMongo=hiMongo
-export hiMongoVER=_0_11
+export hiMongoVER=_0_12
 export hiMongoJAR=${hiMongo}${hiMongoVER}.jar
 export hiNoteJAR=hiNote_3_10.jar
 export mongoJAR=mongo-java-driver-3.12.5.jar

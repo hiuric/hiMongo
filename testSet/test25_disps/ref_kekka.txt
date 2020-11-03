@@ -1,0 +1,63 @@
+// MODE: DIRECT
+------ Field in for scope hi.db.hiMongoDirect$Finder
+-- set #CUR -> #REC
+-- set #CUR.type -> #STR
+STR    =A
+REC_STR={type:'STRING',value:0.1,date:{$date:1597648120000}}
+REC    ={'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+CUR    ={'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+STR    ='A'
+REC_STR='{type:\'STRING\',value:0.1,date:{$date:1597648120000}}'
+REC    ={'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+CUR    ={'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+STR    =A
+REC_STR={type:'STRING',value:0.1,date:{$date:1597648120000}}
+REC    ={"type":"A", "value":12.3, "date":{"$date":1597648020000}}
+CUR    ={"type":"A", "value":12.3, "date":{"$date":1597648020000}}
+STR    =A
+REC_STR={type:'STRING',value:0.1,date:{$date:1597648120000}}
+REC    ={"type"="A", "value"=12.3, "date"=Mon Aug 17 16:07:00 JST 2020}
+CUR    ={"type"="A", "value"=12.3, "date"=Mon Aug 17 16:07:00 JST 2020}
+STR    =A
+REC_STR={type:'STRING',value:0.1,date:{$date:1597648120000}}
+REC    =(Document){
+   (String)"type"=(String)"A",
+   (String)"value"=(Double)12.3,
+   (String)"date"=(Date)Mon Aug 17 16:07:00 JST 2020}
+CUR    =(Document){
+   (String)"type"=(String)"A",
+   (String)"value"=(Double)12.3,
+   (String)"date"=(Date)Mon Aug 17 16:07:00 JST 2020}
+#REC and #CUR are the same instance
+------ Field in for other scope hi.db.hiMongoDirect$Finder
+STR    =A
+REC_STR={type:'STRING',value:0.1,date:{$date:1597648120000}}
+REC    ={'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+CUR    ={'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+STR    ='A'
+REC_STR='{type:\'STRING\',value:0.1,date:{$date:1597648120000}}'
+REC    ={'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+CUR    ={'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+#REC and #CUR are different instances
+------ Collection hi.db.hiMongoDirect$Collection
+STR    =A
+REC_STR={type:'STRING',value:0.1,date:{$date:1597648120000}}
+REC    ={'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+CUR    =
+STR    ='A'
+REC_STR='{type:\'STRING\',value:0.1,date:{$date:1597648120000}}'
+REC    ={'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+CUR    =
+------ DB hi.db.hiMongoDirect$DB
+STR    =A
+REC_STR={type:'STRING',value:0.1,date:{$date:1597648120000}}
+REC    ={'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+CUR    =
+STR    ='A'
+REC_STR='{type:\'STRING\',value:0.1,date:{$date:1597648120000}}'
+REC    ={'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+CUR    =
+STR    =A
+REC_STR={type:'STRING',value:0.1,date:{$date:1597648120000}}
+REC    ={'type':'A', 'value':12.3, 'date':ISODate('2020-08-17T07:07:00.000Z')}
+CUR    =

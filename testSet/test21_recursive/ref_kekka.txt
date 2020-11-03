@@ -1,4 +1,4 @@
-// MODE: Caller/Worker
+// MODE: DIRECT
 ---- famiryTree
 {'name':'P0001', 'status':'-', 'father':'-', 'mother':'-'}
 {'name':'P0002', 'status':'-', 'father':'-', 'mother':'-'}
@@ -33,12 +33,12 @@
 {'name':'P0028', 'friends':['P0027', 'P0030', 'P0032', 'P0033']}
 {'name':'P0029', 'friends':['P0028', 'P0031', 'P0033']}
 -------- check for specified person
-'P0027' is a descendant of KING 'P0003'
+P0027 is a descendant of KING P0003
 -------- check for friendLoop
-'P0027' is a descendant of KING 'P0003'.
-'P0030' is not.
-'P0032' is a descendant of KING 'P0003'.
-'P0033' is not.
-'P0028' is a descendant of KING 'P0003'.
-'P0031' is not.
-'P0033' is not.
+P0027 is a descendant of KING P0003.
+P0030 is not.
+P0032 is a descendant of KING P0003.
+P0033 is not.
+P0028 is a descendant of KING P0003.
+P0031 is not.
+P0033 is not.
