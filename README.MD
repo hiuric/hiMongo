@@ -56,7 +56,7 @@ public class Test {
                return null;
                }
            ,Ff->{ // finished with result (found)
-               System.out.println(Ff.disp("#TOP.name")+Ff.get("#RESULT")+".");
+               System.out.println(Ff.disp("#TOP.name")+Ff.disp("#RESULT")+".");
                }
            ,Fn->{ // finidhed with no result (not found)
                System.out.println(Fn.disp("#TOP.name is not."));
